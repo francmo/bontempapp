@@ -1,0 +1,3316 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
+    <title>BontempApp v3.1 - ENHANCED EDITION</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px;
+            overflow: hidden;
+        }
+        .container { 
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            max-width: 1000px;
+            width: 100%;
+            height: 98vh;
+            overflow-y: auto;
+            padding: 10px;
+            position: relative;
+        }
+        
+        /* HOME BUTTON - Compatto e posizionato in alto a destra */
+        .home-button {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(220, 53, 69, 0.95);
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 50%;
+            font-size: 1.3em;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 9999;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .home-button:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        
+        h1 { color: #667eea; text-align: center; margin-bottom: 5px; font-size: 1.5em; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 8px; font-size: 0.75em; }
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .input-group { margin-bottom: 10px; }
+        label { display: block; margin-bottom: 4px; color: #333; font-weight: 600; font-size: 0.8em; }
+        input[type="text"], input[type="number"], input[type="file"], select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.85em;
+        }
+        textarea { min-height: 80px; resize: vertical; font-family: inherit; }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .back-button { background: #868e96; margin-bottom: 8px; padding: 6px 12px; font-size: 0.75em; width: auto; }
+        
+        .mode-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .mode-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 12px 8px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        .mode-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+        .mode-icon { font-size: 1.8em; margin-bottom: 4px; }
+        .mode-title { font-size: 0.8em; font-weight: bold; color: #333; }
+        .mode-desc { font-size: 0.65em; color: #666; margin-top: 2px; }
+        .api-required {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            background: #ff6b6b;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.6em;
+            font-weight: bold;
+        }
+        
+        .canvas-container {
+            position: relative;
+            margin: 8px auto;
+            border-radius: 12px;
+            overflow: visible;
+        }
+        #drawingCanvas, #canvas3d {
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            cursor: crosshair;
+            touch-action: none;
+            background: white;
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 250px;
+        }
+        #canvas3d { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+        
+        .guide-ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            box-shadow: 0 0 15px rgba(255,255,255,0.6);
+            border: 2px solid white;
+            transition: transform 0.1s ease;
+        }
+        .guide-ball-0 { background: #667eea; }
+        .guide-ball-1 { background: #f5576c; }
+        .guide-ball-2 { background: #51cf66; }
+        
+        .overlay-data {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        .data-item {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 6px;
+            padding: 4px 8px;
+            border: 2px solid;
+            flex: 1;
+        }
+        .data-item.finger-0 { border-color: #667eea; }
+        .data-item.finger-1 { border-color: #f5576c; }
+        .data-item.finger-2 { border-color: #51cf66; }
+        .data-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 3px;
+        }
+        .data-label {
+            font-size: 0.65em;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .data-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .finger-0 .data-dot { background: #667eea; }
+        .finger-1 .data-dot { background: #f5576c; }
+        .finger-2 .data-dot { background: #51cf66; }
+        .data-values { display: flex; gap: 5px; font-size: 0.6em; color: rgba(255, 255, 255, 0.8); }
+        .data-val { font-weight: 500; font-family: 'Courier New', monospace; color: white; }
+        .data-val.active { color: #4ade80; }
+        .data-val.inactive { opacity: 0.4; }
+        
+        .acoustic-panel {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 8px;
+            color: white;
+            font-size: 0.7em;
+            line-height: 1.4;
+            margin-top: 5px;
+        }
+        .acoustic-panel h4 { color: #ffd700; margin-bottom: 3px; font-size: 0.85em; }
+        
+        .compact-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            background: #f8f9fa;
+            padding: 6px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+        .control-group { display: flex; align-items: center; gap: 5px; }
+        .compact-controls button {
+            width: auto;
+            padding: 4px 10px;
+            font-size: 0.75em;
+            margin: 0;
+        }
+        
+        .speed-control { display: flex; align-items: center; gap: 4px; }
+        .speed-control label { font-size: 0.75em; margin: 0; color: #667eea; font-weight: 600; }
+        .speed-control input[type="range"] { width: 70px; }
+        
+        .info-box {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-bottom: 8px;
+            font-size: 0.75em;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .recording-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        .record-btn {
+            background: #dc3545;
+            flex: 1;
+            margin: 0;
+        }
+        .record-btn.recording {
+            background: #28a745;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .record-indicator {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8em;
+            z-index: 10000;
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.5);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .modal h2 { color: #667eea; margin-bottom: 15px; font-size: 1.3rem; text-align: center; }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .modal-close:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: scale(1.1);
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .demo-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .demo-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+        .demo-card.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+        .demo-icon { font-size: 1.5em; margin-bottom: 5px; }
+        .demo-name { font-weight: 600; margin-bottom: 3px; font-size: 0.85em; }
+        .demo-desc { font-size: 0.7em; opacity: 0.8; }
+        .demo-category {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 5px 10px;
+            border-radius: 6px;
+            margin: 12px 0 8px 0;
+            font-weight: bold;
+            font-size: 0.85em;
+            color: #667eea;
+            border-left: 3px solid #667eea;
+        }
+        
+        .demo-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 215, 0, 0.95);
+            color: #333;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            z-index: 100000;
+            pointer-events: none;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            animation: fade-in-out 2.5s ease-out forwards;
+        }
+        @keyframes fade-in-out {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+        
+        @keyframes feedbackPop {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        @keyframes feedbackFadeOut {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+        
+        .challenge-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1em;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .photo-upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 8px;
+        }
+        .photo-upload-area:hover { background: #e9ecef; border-color: #764ba2; }
+        .photo-upload-area.has-image { border-style: solid; border-color: #51cf66; }
+        .preview-image { max-width: 100%; max-height: 250px; border-radius: 8px; margin: 10px 0; }
+        
+        .score-display {
+            background: #51cf66;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .question {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .question h3 { font-size: 1em; margin-bottom: 8px; }
+        .question p { font-size: 0.9em; }
+        
+        .quiz-timer {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85em;
+        }
+        .quiz-option:hover { background: #e9ecef; border-color: #667eea; }
+        .quiz-option input[type="radio"] { margin-right: 8px; cursor: pointer; }
+        
+        .difficulty-selector { display: flex; gap: 10px; margin: 15px 0; }
+        .difficulty-btn {
+            flex: 1;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85em;
+        }
+        .difficulty-btn:hover { border-color: #667eea; background: #e9ecef; }
+        .difficulty-btn.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .feedback-box {
+            background: #e7f5ff;
+            border: 2px solid #339af0;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            line-height: 1.5;
+            font-size: 0.9em;
+        }
+        .feedback-box.success { background: #d3f9d8; border-color: #51cf66; }
+        .feedback-box.error { background: #ffe0e0; border-color: #ff6b6b; }
+        
+        .curiosita-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #333;
+            margin: 15px 0;
+        }
+        .curiosita-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 8px; }
+            h1 { font-size: 1.3em; }
+            .mode-selector { grid-template-columns: repeat(2, 1fr); }
+            .demo-grid { grid-template-columns: 1fr; }
+        }
+
+        .victory-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            animation: victoryFadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes victoryFadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .victory-stars {
+            font-size: 8em;
+            animation: victoryBounce 1s ease-in-out infinite;
+        }
+
+        @keyframes victoryBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.1); }
+        }
+
+        .victory-text {
+            font-size: 3em;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            animation: victoryPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes victoryPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .victory-score {
+            font-size: 5em;
+            color: #ffd700;
+            font-weight: bold;
+            margin-top: 20px;
+            text-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="welcomeScreen" class="screen active">
+        <h1>🎵 BontempApp v3.1</h1>
+        <p class="subtitle">✨ ENHANCED EDITION - Quiz con Timer + Auto Photo AI ✨</p>
+
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; margin: 20px 0; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+            <h3 style="color: white; margin: 0 0 15px 0; font-size: 1.1em;">📖 Cos'è BontempApp?</h3>
+            <p style="color: rgba(255,255,255,0.95); font-size: 0.9em; line-height: 1.6; margin: 0 0 15px 0;">
+                Un'app interattiva per esplorare la musica attraverso il disegno audio, quiz musicali e sfide creative.
+                Creata dal Gruppo Apuano Sperimentale per rendere l'apprendimento musicale coinvolgente e divertente!
+            </p>
+
+            <h4 style="color: white; margin: 15px 0 10px 0; font-size: 1em;">🎯 Modalità disponibili:</h4>
+            <ul style="color: rgba(255,255,255,0.95); font-size: 0.85em; line-height: 1.8; margin: 0; padding-left: 20px; text-align: left;">
+                <li><strong>Disegno 2D/3D:</strong> Crea forme che producono suoni mentre disegni</li>
+                <li><strong>Modalità Guidata:</strong> 10 preset musicali con demo interattive</li>
+                <li><strong>Quiz Musicali:</strong> Testa le tue conoscenze su musica classica, jazz e '900</li>
+                <li><strong>Photo Challenge:</strong> Sfide creative valutate dall'intelligenza artificiale</li>
+                <li><strong>Curiosità GAS:</strong> Scopri fatti interessanti sul mondo musicale</li>
+            </ul>
+
+            <p style="color: rgba(255,255,255,0.9); font-size: 0.8em; margin: 15px 0 0 0; font-style: italic;">
+                💡 Suggerimento: Inizia con la modalità guidata per scoprire tutte le possibilità!
+            </p>
+        </div>
+
+        <div class="input-group">
+            <label for="userName">👤 Il tuo nome:</label>
+            <input type="text" id="userName" placeholder="Inserisci il tuo nome..." value="Studente" />
+        </div>
+
+        <button onclick="iniziaGioco()">🚀 Inizia l'Avventura!</button>
+        
+        <div style="margin-top: 15px; text-align: center; font-size: 0.7em; color: #999;">
+            <p>v3.1 ENHANCED - Timer Quiz + Auto Photo Submit + Compact UI</p>
+            <p>by Gruppo Apuano Sperimentale Rebecca Guerra</p>
+        </div>
+    </div>
+
+    <div id="modeScreen" class="screen">
+        <button class="home-button" onclick="backToWelcome()" title="Torna alla home">←</button>
+
+        <h2 style="text-align: center; color: #667eea; margin-bottom: 10px; font-size: 1.2em;">
+            Ciao <span id="playerName"></span>! Scegli la modalità:
+        </h2>
+
+        <div class="mode-selector">
+            <div class="mode-card" onclick="selectMode('2d')">
+                <div class="mode-icon">🎨</div>
+                <div class="mode-title">2D Libero</div>
+                <div class="mode-desc">Disegno audio libero</div>
+            </div>
+            <div class="mode-card" onclick="selectMode('2d-guided')">
+                <div class="mode-icon">🎯</div>
+                <div class="mode-title">2D Guidato</div>
+                <div class="mode-desc">10 preset + demo</div>
+            </div>
+            <div class="mode-card" onclick="selectMode('3d')">
+                <div class="mode-icon">🌍</div>
+                <div class="mode-title">3D Libero</div>
+                <div class="mode-desc">Disegno 3D spaziale</div>
+            </div>
+            <div class="mode-card" onclick="selectMode('3d-guided')">
+                <div class="mode-icon">✨</div>
+                <div class="mode-title">3D Guidato</div>
+                <div class="mode-desc">10 preset 3D + demo</div>
+            </div>
+            
+            <div class="mode-card" onclick="selectMode('quiz-novecento')">
+                <div class="mode-icon">🎼</div>
+                <div class="mode-title">Quiz '900</div>
+                <div class="mode-desc">Musica colta - 3 livelli</div>
+            </div>
+            <div class="mode-card" onclick="selectMode('quiz-jazz')">
+                <div class="mode-icon">🎷</div>
+                <div class="mode-title">Quiz Jazz</div>
+                <div class="mode-desc">Armonia Jazz - 3 livelli</div>
+            </div>
+            <div class="mode-card" onclick="selectMode('quiz-classica')">
+                <div class="mode-icon">🎻</div>
+                <div class="mode-title">Quiz Classica</div>
+                <div class="mode-desc">Armonia - 3 livelli</div>
+            </div>
+            
+            <div class="mode-card" onclick="selectMode('challenge')">
+                <span class="api-required">API</span>
+                <div class="mode-icon">📸</div>
+                <div class="mode-title">Photo Challenge</div>
+                <div class="mode-desc">Sfide creative GAS!</div>
+            </div>
+            <div class="mode-card" onclick="selectMode('volvo-challenge')">
+                <span class="api-required">API</span>
+                <div class="mode-icon">🚗</div>
+                <div class="mode-title">Volvo Challenge</div>
+                <div class="mode-desc">Trova una Volvo!</div>
+            </div>
+            
+            <div class="mode-card" onclick="selectMode('curiosita')">
+                <div class="mode-icon">🧠</div>
+                <div class="mode-title">Curiosità GAS</div>
+                <div class="mode-desc">Scopri curiosità</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameScreen" class="screen">
+        <button class="home-button" onclick="backToModes()" title="Torna alle modalità">🏠</button>
+        
+        <div id="scoreContainer" class="score-display" style="display:none;">
+            Punteggio: <span id="scoreValue">0</span> | Round: <span id="roundValue">1</span>/<span id="maxRounds">5</span>
+        </div>
+        
+        <div id="gameArea"></div>
+    </div>
+</div>
+
+<div class="modal" id="demoModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeDemoModal()">×</button>
+        <h2>🎭 Scegli la Demo</h2>
+        
+        <div class="demo-category">🎨 Demo 2D - Figure Geometriche</div>
+        <div class="demo-grid" id="demo2DGeometric"></div>
+        
+        <div class="demo-category">😊 Demo 2D - Figure Reali</div>
+        <div class="demo-grid" id="demo2DReal"></div>
+        
+        <div class="demo-category">🌍 Demo 3D - Figure Geometriche</div>
+        <div class="demo-grid" id="demo3DGeometric"></div>
+        
+        <div class="demo-category">🏠 Demo 3D - Figure Reali</div>
+        <div class="demo-grid" id="demo3DReal"></div>
+
+        <div style="margin-top: 15px; display: flex; gap: 8px;">
+            <button onclick="closeDemoModal()" style="background: #868e96;">Chiudi</button>
+        </div>
+    </div>
+</div>
+
+<div id="apiGuideModal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeApiGuide()">×</button>
+        <h2>🔑 Come Ottenere API Key Gratuita</h2>
+        <p style="margin-bottom: 15px; font-size: 0.9em;">Per le modalità con AI, serve una <strong>chiave API gratuita di Google Gemini</strong>:</p>
+        <ol style="margin-left: 20px; line-height: 1.8; font-size: 0.9em;">
+            <li>Vai su <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
+            <li>Accedi con account Google</li>
+            <li>Clicca "Get API Key"</li>
+            <li>Copia la chiave (es: AIzaSyD...)</li>
+        </ol>
+        <button onclick="closeApiGuide()">Ho capito, inserisco la chiave!</button>
+    </div>
+</div>
+
+<div id="instructionsModal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="proceedToGame()">×</button>
+        <h2>📋 Istruzioni</h2>
+        <div id="instructionsContent"></div>
+    </div>
+</div>
+
+<div id="resultsModal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="backToModes()">×</button>
+        <h2>🎉 Risultati Finali</h2>
+        <div id="resultsContent"></div>
+        <button onclick="backToModes()">Gioca Ancora</button>
+    </div>
+</div>
+
+<script>
+console.log('🎵 BontempApp v3.1 ENHANCED EDITION - Caricamento...');
+
+let userName = '';
+let currentMode = '';
+let apiKey = localStorage.getItem('geminiApiKey') || '';
+
+let canvas, ctx, activeTouches = new Map();
+let touchColors = ['#667eea', '#f5576c', '#51cf66'];
+let sharedAudioContext = null;
+let activeOscillators = new Map();
+let waveformSettings = { 0: 'sine', 1: 'square', 2: 'sawtooth' };
+let realtimeData = { 
+    0: { frequency: 0, amplitude: 0, active: false },
+    1: { frequency: 0, amplitude: 0, active: false },
+    2: { frequency: 0, amplitude: 0, active: false }
+};
+
+let guidesEnabled = false;
+let guideSpeed = 1.0;
+let guideBalls = [];
+let guideAnimationId = null;
+let guideTime = 0;
+let currentPreset = 'harmonic';
+let demoMode = false;
+let audioGuidedMode = false;
+let demoTouches = [null, null, null];
+let selectedDemoPreset = null;
+
+let scene3d, camera3d, renderer3d, meshes3d = [];
+let guideMeshes3d = [];
+let touchIdToFingerIndex = new Map();
+let nextFingerIndex = 0;
+let animationLoopId = null;
+
+let score = 0;
+let currentRound = 1;
+let maxRounds = 10;
+let currentQuestions = [];
+let currentDifficulty = '';
+let isExpertMode = false;
+
+// TIMER PER QUIZ
+let quizTimer = null;
+let quizTimeRemaining = 30; // 30 secondi per domanda
+let questionStartTime = 0;
+let isProcessingAnswer = false; // Previeni risposte multiple
+
+let uploadedImage = null;
+let uploadedImageMimeType = '';
+let currentChallenge = '';
+
+let curiositaTimer = null;
+let curiositaTimeRemaining = 0;
+let currentCuriositaIndex = 0;
+
+// RECORDING VARIABLES
+let mediaRecorder = null;
+let recordedChunks = [];
+let isRecording = false;
+let canvasStream = null;
+let audioDestination = null;
+let audioStream = null;
+
+const DEBUG_MODE = true;
+function debugLog(msg, data = null) {
+    if (DEBUG_MODE) console.log(`[🎵 v3.1 ENH] ${msg}`, data || '');
+}
+
+const presets2DGeometric = {
+    harmonic: {
+        name: '🎼 Armonico',
+        icon: '🎼',
+        desc: 'Triadi e accordi',
+        acousticInfo: 'Triadi (fondamentale, terza, quinta). Rapporti fissi = consonanza.',
+        calculate: (t, w, h, i) => {
+            const baseY = h / 2;
+            const heights = [0.2, 0, -0.2];
+            const x = w / 2 + Math.sin(t * 0.5) * (w * 0.3);
+            const y = baseY + (h * heights[i]) + Math.sin(t * 0.8 + i) * (h * 0.1);
+            return { x, y };
+        }
+    },
+    wave: {
+        name: '🌊 Onda',
+        icon: '🌊',
+        desc: 'Onde sincronizzate',
+        acousticInfo: 'Sfasamento 120°. Battimenti quando frequenze vicine.',
+        calculate: (t, w, h, i) => {
+            const phase = i * (Math.PI * 2 / 3);
+            const x = w / 2 + Math.sin(t * 0.7 + phase) * (w * 0.35);
+            const y = h / 2 + Math.sin(t * 0.9 + phase * 0.5) * (h * 0.3);
+            return { x, y };
+        }
+    },
+    spiral: {
+        name: '🌀 Spirale',
+        icon: '🌀',
+        desc: 'Glissando convergente',
+        acousticInfo: 'Glissando continuo. Raggio variabile = sweep frequenza.',
+        calculate: (t, w, h, i) => {
+            const baseAngle = t * 0.6 + i * (Math.PI * 2 / 3);
+            const radius = (w * 0.3) * (0.5 + 0.5 * Math.sin(t * 0.3));
+            const x = w / 2 + Math.cos(baseAngle) * radius;
+            const y = h / 2 + Math.sin(baseAngle) * radius;
+            return { x, y };
+        }
+    },
+    pulse: {
+        name: '💗 Pulsante',
+        icon: '💗',
+        desc: 'Pattern ritmico',
+        acousticInfo: 'ADSR rapido. ~120 BPM. Variazioni ampiezza = accenti.',
+        calculate: (t, w, h, i) => {
+            const pulse = Math.max(0, Math.sin(t * 8));
+            const positions = [
+                { x: w * 0.25, y: h * 0.5 },
+                { x: w * 0.5, y: h * 0.3 },
+                { x: w * 0.75, y: h * 0.5 }
+            ];
+            const activePos = positions[i];
+            return {
+                x: activePos.x + Math.sin(t * 4 + i) * 20 * pulse,
+                y: activePos.y + Math.cos(t * 4 + i) * 20 * pulse
+            };
+        }
+    },
+    orbit: {
+        name: '⭕ Orbite',
+        icon: '⭕',
+        desc: 'Cerchi concentrici',
+        acousticInfo: 'Tre raggi. Velocità diverse = pattern poliritmici.',
+        calculate: (t, w, h, i) => {
+            const speeds = [0.8, 1.0, 1.2];
+            const radii = [w * 0.15, w * 0.25, w * 0.35];
+            const angle = t * speeds[i];
+            const x = w / 2 + Math.cos(angle) * radii[i];
+            const y = h / 2 + Math.sin(angle) * radii[i];
+            return { x, y };
+        }
+    }
+};
+
+const presets2DReal = {
+    face: {
+        name: '😊 Volto',
+        icon: '😊',
+        desc: 'Volto stilizzato',
+        acousticInfo: 'Traccia occhi, naso, bocca. Frequenze corrispondono alle altezze.',
+        calculate: (t, w, h, i) => {
+            const cx = w / 2, cy = h / 2;
+            const phase = (t * 2 + i * 2) % 6;
+            
+            if (phase < 1) {
+                const angle = t * 4;
+                return {
+                    x: cx - w * 0.15 + Math.cos(angle) * 20,
+                    y: cy - h * 0.15 + Math.sin(angle) * 15
+                };
+            } else if (phase < 2) {
+                const angle = t * 4;
+                return {
+                    x: cx + w * 0.15 + Math.cos(angle) * 20,
+                    y: cy - h * 0.15 + Math.sin(angle) * 15
+                };
+            } else if (phase < 3) {
+                return { x: cx, y: cy + (phase - 2) * h * 0.15 };
+            } else {
+                const smileAngle = Math.PI * 0.2 + (phase - 3) * Math.PI * 0.6;
+                return {
+                    x: cx + Math.cos(smileAngle) * w * 0.25,
+                    y: cy + h * 0.15 + Math.sin(smileAngle) * h * 0.15
+                };
+            }
+        }
+    },
+    house: {
+        name: '🏠 Casa',
+        icon: '🏠',
+        desc: 'Casa con tetto',
+        acousticInfo: 'Struttura architettonica. Note basse per base, acute per tetto.',
+        calculate: (t, w, h, i) => {
+            const cx = w / 2, cy = h / 2;
+            const phase = (t + i * 0.5) % 4;
+            const size = 0.3;
+            
+            if (phase < 1) {
+                return { x: cx - w * size, y: cy - h * size + phase * h * size * 2 };
+            } else if (phase < 2) {
+                return { x: cx - w * size + (phase - 1) * w * size * 2, y: cy + h * size };
+            } else if (phase < 3) {
+                return {
+                    x: cx - w * size + (phase - 2) * w * size,
+                    y: cy + h * size - (phase - 2) * h * size * 2
+                };
+            } else {
+                return {
+                    x: cx + (phase - 3) * w * size,
+                    y: cy - h * size + (phase - 3) * h * size * 2
+                };
+            }
+        }
+    },
+    heart: {
+        name: '❤️ Cuore',
+        icon: '❤️',
+        desc: 'Cuore pulsante',
+        acousticInfo: 'Forma a cuore. Pulsazioni = variazioni di ampiezza.',
+        calculate: (t, w, h, i) => {
+            const angle = (t * 1.5 + i * (Math.PI * 2 / 3)) % (Math.PI * 2);
+            const pulse = 0.9 + Math.sin(t * 3) * 0.1;
+            const x = 16 * Math.pow(Math.sin(angle), 3);
+            const y = 13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle);
+            return {
+                x: w / 2 + x * w * 0.015 * pulse,
+                y: h / 2 - y * h * 0.015 * pulse + h * 0.05
+            };
+        }
+    },
+    star: {
+        name: '⭐ Stella',
+        icon: '⭐',
+        desc: 'Stella rotante',
+        acousticInfo: 'Stella a 5 punte. Rotazione = modulazione circolare.',
+        calculate: (t, w, h, i) => {
+            const cx = w / 2, cy = h / 2;
+            const numPoints = 5;
+            const outerRadius = w * 0.25;
+            const innerRadius = w * 0.12;
+            const rotation = t * 0.5;
+            const progress = (t * 2 + i * 0.66) % (numPoints * 2);
+            const pointIndex = Math.floor(progress);
+            const isOuter = pointIndex % 2 === 0;
+            const radius = isOuter ? outerRadius : innerRadius;
+            const angle = (pointIndex * Math.PI / numPoints) + rotation;
+            return {
+                x: cx + Math.cos(angle) * radius,
+                y: cy + Math.sin(angle) * radius
+            };
+        }
+    },
+    flower: {
+        name: '🌸 Fiore',
+        icon: '🌸',
+        desc: 'Petali che si aprono',
+        acousticInfo: 'Petali che si aprono/chiudono. Raggio variabile = glissando.',
+        calculate: (t, w, h, i) => {
+            const cx = w / 2, cy = h / 2;
+            const petals = 6;
+            const baseAngle = (i * Math.PI * 2 / 3);
+            const petalAngle = (t * 2) % (Math.PI * 2 / petals);
+            const angle = baseAngle + petalAngle;
+            const opening = 0.5 + 0.5 * Math.sin(t * 0.8);
+            const radius = w * 0.15 * (0.3 + opening * 0.7);
+            return {
+                x: cx + Math.cos(angle) * radius,
+                y: cy + Math.sin(angle) * radius
+            };
+        }
+    }
+};
+
+const presets3DGeometric = {
+    helix: {
+        name: '🌊 Elica',
+        icon: '🌊',
+        desc: 'Spirale ascendente',
+        acousticInfo: 'Spirale ascendente. Altezza Y = frequenza crescente.',
+        calculate: (t, i) => {
+            const angle = t * 0.8 + i * (Math.PI * 2 / 3);
+            const radius = 5;
+            const height = Math.sin(t * 0.3) * 4;
+            return {
+                x: Math.cos(angle) * radius,
+                y: height + (i - 1) * 2,
+                z: Math.sin(angle) * radius
+            };
+        }
+    },
+    sphere: {
+        name: '🔮 Sfera',
+        icon: '🔮',
+        desc: 'Sfera pulsante',
+        acousticInfo: 'Movimento su sfera. Raggio pulsante = variazione ampiezza.',
+        calculate: (t, i) => {
+            const phi = t * 0.6 + i * (Math.PI * 2 / 3);
+            const theta = t * 0.4 + i * 0.5;
+            const radius = 4 + Math.sin(t * 2) * 1.5;
+            return {
+                x: radius * Math.sin(phi) * Math.cos(theta),
+                y: radius * Math.sin(phi) * Math.sin(theta),
+                z: radius * Math.cos(phi)
+            };
+        }
+    },
+    cube: {
+        name: '📦 Cubo',
+        icon: '📦',
+        desc: 'Cubo rotante',
+        acousticInfo: 'Vertici di cubo. Rotazione = modulazione circolare.',
+        calculate: (t, i) => {
+            const positions = [
+                { x: 4, y: 2, z: 4 },
+                { x: -4, y: 0, z: 4 },
+                { x: 4, y: -2, z: -4 }
+            ];
+            const pos = positions[i];
+            const angle = t * 0.5;
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+            return {
+                x: pos.x * cos - pos.z * sin,
+                y: pos.y + Math.sin(t * 1.5 + i) * 1,
+                z: pos.x * sin + pos.z * cos
+            };
+        }
+    },
+    lissajous: {
+        name: '∞ Lissajous',
+        icon: '∞',
+        desc: 'Figure complesse',
+        acousticInfo: 'Figure di Lissajous. Rapporti frequenze = pattern.',
+        calculate: (t, i) => {
+            const freqRatios = [[3, 2], [4, 3], [5, 4]];
+            const [fx, fy] = freqRatios[i];
+            return {
+                x: 5 * Math.sin(t * fx * 0.5),
+                y: 4 * Math.sin(t * fy * 0.5 + Math.PI / 4),
+                z: 4 * Math.cos(t * 0.6 + i * Math.PI / 2)
+            };
+        }
+    },
+    vortex: {
+        name: '🌪️ Vortice',
+        icon: '🌪️',
+        desc: 'Spirale convergente',
+        acousticInfo: 'Spirale verso centro. Velocità crescente = glissando rapido.',
+        calculate: (t, i) => {
+            const angle = t * 1.2 + i * (Math.PI * 2 / 3);
+            const radiusBase = 6 - (t * 0.3) % 6;
+            const radius = radiusBase + i * 0.5;
+            const height = Math.sin(t * 0.8 + i) * 3;
+            return {
+                x: Math.cos(angle) * radius,
+                y: height,
+                z: Math.sin(angle) * radius
+            };
+        }
+    }
+};
+
+const presets3DReal = {
+    house3d: {
+        name: '🏠 Casa 3D',
+        icon: '🏠',
+        desc: 'Casa cubica rotante',
+        acousticInfo: 'Struttura 3D di casa. Base + tetto in rotazione.',
+        calculate: (t, i) => {
+            const angle = t * 0.6;
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+            const phase = (t * 2 + i) % 3;
+            
+            if (phase < 1) {
+                const basePos = [
+                    { x: -3, y: -2, z: 0 },
+                    { x: 0, y: -2, z: 0 },
+                    { x: 3, y: -2, z: 0 }
+                ][i];
+                return {
+                    x: basePos.x * cos - basePos.z * sin,
+                    y: basePos.y + phase * 3,
+                    z: basePos.x * sin + basePos.z * cos
+                };
+            } else {
+                const roofPos = [
+                    { x: -2, y: 2, z: 0 },
+                    { x: 0, y: 3, z: 0 },
+                    { x: 2, y: 2, z: 0 }
+                ][i];
+                return {
+                    x: roofPos.x * cos - roofPos.z * sin,
+                    y: roofPos.y,
+                    z: roofPos.x * sin + roofPos.z * cos
+                };
+            }
+        }
+    },
+    tree3d: {
+        name: '🌳 Albero',
+        icon: '🌳',
+        desc: 'Albero che oscilla',
+        acousticInfo: 'Tronco + chioma. Oscillazione = variazione timbrica.',
+        calculate: (t, i) => {
+            const sway = Math.sin(t * 1.5) * 0.5;
+            const phase = (t + i * 0.5) % 2;
+            
+            if (phase < 1) {
+                return { x: sway * phase, y: -3 + phase * 4, z: 0 };
+            } else {
+                const leafAngle = (t * 2 + i * Math.PI * 2 / 3) % (Math.PI * 2);
+                const leafRadius = 2 + Math.sin(t * 2 + i) * 0.5;
+                return {
+                    x: sway + Math.cos(leafAngle) * leafRadius,
+                    y: 1 + Math.sin(leafAngle * 2) * 1,
+                    z: Math.sin(leafAngle) * leafRadius
+                };
+            }
+        }
+    },
+    dna3d: {
+        name: '🧬 DNA',
+        icon: '🧬',
+        desc: 'Doppia elica',
+        acousticInfo: 'Doppia elica del DNA. Due spirali intrecciate.',
+        calculate: (t, i) => {
+            const helixAngle = t * 1.2 + i * Math.PI;
+            const height = (t * 2) % 10 - 5;
+            const radius = 3;
+            const offset = i < 2 ? 0 : Math.PI;
+            return {
+                x: Math.cos(helixAngle + offset) * radius,
+                y: height + i * 0.3,
+                z: Math.sin(helixAngle + offset) * radius
+            };
+        }
+    },
+    butterfly3d: {
+        name: '🦋 Farfalla',
+        icon: '🦋',
+        desc: 'Ali che battono',
+        acousticInfo: 'Farfalla 3D. Movimento ali = variazione ampiezza.',
+        calculate: (t, i) => {
+            const wingBeat = Math.sin(t * 3) * 0.7 + 0.3;
+            const flight = Math.sin(t * 0.8) * 2;
+            const side = i < 1.5 ? -1 : 1;
+            const wingShape = (t * 2 + i) % 1;
+            const wingX = side * (2 + wingShape * 2) * wingBeat;
+            const wingY = flight + Math.sin(wingShape * Math.PI) * 1.5;
+            const wingZ = Math.cos(wingShape * Math.PI) * 1;
+            return { x: wingX, y: wingY, z: wingZ };
+        }
+    },
+    note3d: {
+        name: '🎵 Nota',
+        icon: '🎵',
+        desc: 'Chiave di violino',
+        acousticInfo: 'Nota musicale 3D. Traccia spirale della chiave.',
+        calculate: (t, i) => {
+            const rotation = t * 0.5;
+            const cos = Math.cos(rotation);
+            const sin = Math.sin(rotation);
+            const progress = (t * 2 + i * 0.66) % (Math.PI * 4);
+            const radius = 2 + Math.sin(progress * 0.5) * 1;
+            const height = Math.cos(progress * 0.3) * 3;
+            const x = Math.cos(progress) * radius;
+            const z = Math.sin(progress) * radius;
+            return {
+                x: x * cos - z * sin,
+                y: height,
+                z: x * sin + z * cos
+            };
+        }
+    }
+};
+
+// ==================== QUIZ DATABASE - ESPANDIBILE ====================
+// Per aggiungere domande: basta aggiungere oggetti in questi array!
+// Formato: {q: "domanda", o: ["opzione1", "opzione2", "opzione3", "opzione4"], c: indiceRispostaCorretta}
+
+const quizNovecento = {
+    facile: [
+        {q: "In quale periodo si colloca il Medioevo musicale?", o: ["200-1000 d.C.","500-1400 d.C.","1000-1600 d.C.","400-1300 d.C."], c: 1},
+        {q: "Come si chiama il canto liturgico monodico?", o: ["Canto ambrosiano","Canto mozarabico","Canto gregoriano","Canto romano"], c: 2},
+        {q: "Chi è il 'Padre della Sinfonia'?", o: ["Wolfgang A. Mozart","Ludwig van Beethoven","Franz Joseph Haydn","Carl P. E. Bach"], c: 2},
+        {q: "Quanti movimenti ha una sinfonia classica?", o: ["Tre movimenti","Quattro movimenti","Cinque movimenti","Due movimenti"], c: 1},
+        {q: "Quale compositore divenne sordo?", o: ["Franz Schubert","Ludwig van Beethoven","Robert Schumann","Gabriel Fauré"], c: 1},
+        {q: "Chi compose 'Le Quattro Stagioni'?", o: ["J. S. Bach","G. F. Händel","Antonio Vivaldi","A. Corelli"], c: 2},
+        {q: "Cos'è la dodecafonia?", o: ["Tecnica 12 semitoni","Danza barocca","Strumento musicale","Forma poetica"], c: 0},
+        {q: "Chi inventò la dodecafonia?", o: ["Igor Stravinskij","Arnold Schoenberg","Claude Debussy","Béla Bartók"], c: 1},
+        {q: "Cosa significa 'atonale'?", o: ["Senza centro tonale","Musica forte","Senza ritmo","Senza melodia"], c: 0},
+        {q: "Chi compose 'La Sagra della Primavera'?", o: ["Claude Debussy","Maurice Ravel","Igor Stravinskij","S. Prokof'ev"], c: 2},
+        // AGGIUNGI ALTRE DOMANDE QUI:
+        {q: "In che anno nacque Mozart?", o: ["1756","1770","1685","1750"], c: 0},
+        {q: "Chi compose 'Il Flauto Magico'?", o: ["Haydn","Mozart","Beethoven","Schubert"], c: 1},
+        {q: "Quale strumento suonava Paganini?", o: ["Pianoforte","Violino","Violoncello","Flauto"], c: 1},
+        {q: "Chi compose 'La Traviata'?", o: ["Verdi","Puccini","Rossini","Donizetti"], c: 0},
+        {q: "In quale città nacque Wagner?", o: ["Berlino","Vienna","Monaco","Lipsia"], c: 3},
+        {q: "In quale epoca visse Bach?", o: ["Rinascimento","Barocco","Classicismo","Romanticismo"], c: 1},
+        {q: "Chi ha composto il 'Boléro'?", o: ["Debussy","Ravel","Satie","Fauré"], c: 1},
+        {q: "Cos'è un sintetizzatore?", o: ["Strumento elettronico","Effetto acustico","Tecnica compositiva","Software audio"], c: 0},
+        {q: "Chi è Karlheinz Stockhausen?", o: ["Compositore classico","Compositore elettronico","Direttore d'orchestra","Musicologo"], c: 1},
+        {q: "Cos'è un loop musicale?", o: ["Sezione ripetuta","Accordo dissonante","Scala particolare","Ritmo irregolare"], c: 0},
+        {q: "Cosa significa 'musica concreta'?", o: ["Suoni reali registrati","Musica orchestrale","Musica dodecafonica","Musica minimalista"], c: 0},
+        {q: "Quale compositore scrisse 'Music for 18 Musicians'?", o: ["Philip Glass","Steve Reich","Terry Riley","John Adams"], c: 1},
+        {q: "In quale anno debuttò 'Le Sacre du Printemps' causando uno scandalo?", o: ["1910","1913","1917","1920"], c: 1},
+        {q: "Chi compose 'Atmosphères', brano senza melodia né ritmo tradizionale?", o: ["György Ligeti","Krzysztof Penderecki","Witold Lutosławski","Iannis Xenakis"], c: 0},
+        {q: "Quale compositore usò il 'prepared piano' inserendo oggetti tra le corde?", o: ["Erik Satie","John Cage","Morton Feldman","La Monte Young"], c: 1},
+        {q: "Qual è il nome della tecnica che usa sequenze di Fibonacci in musica?", o: ["Serialismo","Atonalità","Proporzionalismo","Minimalismo"], c: 2},
+        {q: "Chi scrisse l'opera 'Einstein on the Beach'?", o: ["Steve Reich","Philip Glass","John Adams","Terry Riley"], c: 1},
+        {q: "Quale compositore è considerato il padre del minimalismo con 'In C'?", o: ["Philip Glass","Terry Riley","Steve Reich","La Monte Young"], c: 1},
+        {q: "Quale opera di Stockhausen richiede l'esecuzione in un elicottero?", o: ["Helikopter-Streichquartett","Gesang der Jünglinge","Kontakte","Gruppen"], c: 0},
+        {q: "Chi compose 'Threnody for the Victims of Hiroshima' usando cluster sonori?", o: ["György Ligeti","Krzysztof Penderecki","Witold Lutosławski","Henryk Górecki"], c: 1},
+        {q: "Quale compositore scrisse 'Vexations', da ripetere 840 volte?", o: ["John Cage","Erik Satie","Morton Feldman","La Monte Young"], c: 1},
+        {q: "Chi compose 'Amériques', opera per grande orchestra?", o: ["Edgard Varèse","Charles Ives","Henry Cowell","Carl Ruggles"], c: 0},
+        {q: "Quale compositore scrisse 'The Unanswered Question'?", o: ["Charles Ives","Aaron Copland","Samuel Barber","Leonard Bernstein"], c: 0},
+        {q: "Chi compose 'Density 21.5' per flauto solo?", o: ["Edgard Varèse","Pierre Boulez","Luciano Berio","Elliott Carter"], c: 0},
+        {q: "Quale opera di Cage richiede 12 radio sintonizzate casualmente?", o: ["Imaginary Landscape No. 4","4'33''","HPSCHD","Variations IV"], c: 0},
+        {q: "Chi scrisse 'Short Ride in a Fast Machine'?", o: ["Steve Reich","John Adams","Philip Glass","Michael Nyman"], c: 1},
+        {q: "Quale compositore scrisse 'In the White Silence' per coro?", o: ["Eric Whitacre","Morten Lauridsen","Arvo Pärt","John Tavener"], c: 0},
+        {q: "Chi compose 'Fratres' in stile tintinnabuli?", o: ["John Tavener","Arvo Pärt","Henryk Górecki","Sofia Gubaidulina"], c: 1},
+        {q: "Quale compositore scrisse 'Symphony of Sorrowful Songs'?", o: ["Witold Lutosławski","Henryk Górecki","Krzysztof Penderecki","Karol Szymanowski"], c: 1},
+        {q: "Chi compose 'Shaker Loops' per archi?", o: ["Philip Glass","John Adams","Steve Reich","Terry Riley"], c: 1},
+        {q: "Quale compositore scrisse 'Déserts' con nastro magnetico?", o: ["Karlheinz Stockhausen","Edgard Varèse","Pierre Schaeffer","Pierre Henry"], c: 1},
+        {q: "Chi compose 'Symphony No. 3' detta 'Symphony of Sorrowful Songs'?", o: ["Henryk Górecki","Arvo Pärt","John Tavener","Sofia Gubaidulina"], c: 0},
+        {q: "Quale opera di Reich usa ripetizione di parole registrate?", o: ["Music for 18 Musicians","Different Trains","Come Out","Drumming"], c: 2},
+        {q: "Chi scrisse 'Nixon in China', opera minimalista?", o: ["Philip Glass","John Adams","Steve Reich","Michael Torke"], c: 1},
+        {q: "Quale compositore scrisse 'The Protecting Veil' per cello?", o: ["Arvo Pärt","John Tavener","Henryk Górecki","Sofia Gubaidulina"], c: 1},
+        {q: "Chi compose 'The Death of Klinghoffer'?", o: ["Steve Reich","John Adams","Philip Glass","Michael Nyman"], c: 1},
+        {q: "Quale compositore scrisse 'Koyaanisqatsi' per film?", o: ["Michael Nyman","Philip Glass","Steve Reich","John Adams"], c: 1},
+        {q: "Chi compose 'Tabula Rasa' per due violini preparati?", o: ["John Tavener","Arvo Pärt","Henryk Górecki","Alfred Schnittke"], c: 1}
+    ],
+    medio: [
+        {q: "Quale tecnica caratterizza il serialismo integrale?", o: ["Solo altezze","Parametri multipli","Scale modali","Pattern ritmici"], c: 1},
+        {q: "Chi scrisse 'Structures'?", o: ["K. Stockhausen","Pierre Boulez","Luigi Nono","B. Maderna"], c: 1},
+        {q: "Quale opera segna l'atonalità?", o: ["Verklärte Nacht","Pierrot Lunaire","Erwartung","Moses und Aron"], c: 2},
+        {q: "Cos'è il 'Klangfarbenmelodie'?", o: ["Melodia timbri","Melodia cromatica","Melodia diatonica","Melodia pentatonica"], c: 0},
+        {q: "Chi compose 'Metastaseis'?", o: ["G. Ligeti","I. Xenakis","K. Penderecki","W. Lutosławski"], c: 1},
+        // AGGIUNGI ALTRE DOMANDE QUI:
+        {q: "Cos'è la 'Sprechstimme'?", o: ["Canto parlato","Canto lirico","Canto corale","Canto gregoriano"], c: 0},
+        {q: "Chi compose '4'33\"'?", o: ["John Cage","Morton Feldman","Karlheinz Stockhausen","Pierre Schaeffer"], c: 0},
+        {q: "Chi ha composto 'Pierrot Lunaire'?", o: ["Berg","Webern","Schoenberg","Stravinsky"], c: 2},
+        {q: "Cosa rappresenta 'La sagra della primavera'?", o: ["Festa pagana","Sinfonia pastorale","Opera lirica","Balletto sacro"], c: 0},
+        {q: "Cos'è un cluster?", o: ["Gruppo note vicine","Scala pentatonica","Accordo perfetto","Cadenza armonica"], c: 0},
+        {q: "Chi ha composto 'Ionisation'?", o: ["Cage","Varèse","Xenakis","Stockhausen"], c: 1},
+        {q: "Cos'è un sequencer?", o: ["Dispositivo programmazione sequenze","Strumento a corde","Effetto audio","Software notazione"], c: 0},
+        {q: "Cosa significa MIDI?", o: ["Protocollo comunicazione","Tipo di microfono","Formato audio","Software DAW"], c: 0},
+        {q: "Quale compositore scrisse 'Le marteau sans maître' usando serialismo integrale?", o: ["Karlheinz Stockhausen","Pierre Boulez","Luigi Nono","Luciano Berio"], c: 1},
+        {q: "Cosa significa 'aleatoric music' o musica aleatoria?", o: ["Musica dodecafonica","Musica con elementi casuali","Musica seriale","Musica spettrale"], c: 1},
+        {q: "Chi compose 'Threnody for the Victims of Hiroshima' nel 1960?", o: ["Witold Lutosławski","Krzysztof Penderecki","Henryk Górecki","Karol Szymanowski"], c: 1},
+        {q: "Quale tecnica usa Messiaen basata sui canti degli uccelli?", o: ["Serialismo","Trascrizione ornitologica","Musica concreta","Minimalismo"], c: 1},
+        {q: "Chi scrisse il 'Poème électronique' per il padiglione Philips nel 1958?", o: ["Pierre Schaeffer","Edgard Varèse","Karlheinz Stockhausen","Pierre Henry"], c: 1},
+        {q: "Quale opera di Berio incorpora citazioni di Mahler e altri compositori?", o: ["Sequenza III","Sinfonia","Circles","Visage"], c: 1},
+        {q: "Cosa caratterizza la 'musica spettrale' di Grisey e Murail?", o: ["Analisi armonica tradizionale","Analisi dello spettro sonoro","Dodecafonia","Minimalismo"], c: 1},
+        {q: "Chi compose 'Different Trains' usando registrazioni vocali campionate?", o: ["John Adams","Steve Reich","Philip Glass","Terry Riley"], c: 1},
+        {q: "Quale compositore ungherese raccolse migliaia di canti popolari?", o: ["György Ligeti","Béla Bartók","Zoltán Kodály","Franz Liszt"], c: 1},
+        {q: "Cosa sono i 'modi a trasposizione limitata' di Messiaen?", o: ["Scale simmetriche","Scale pentatoniche","Modi gregoriani","Scale cromatiche"], c: 0},
+        {q: "Chi compose 'Lontano' con texture microp olifonica?", o: ["Krzysztof Penderecki","György Ligeti","Witold Lutosławski","Karlheinz Stockhausen"], c: 1},
+        {q: "Quale opera di Nono usa elettronica dal vivo?", o: ["Il canto sospeso","Prometeo","A floresta é jovem e cheja de vida","Intolleranza 1960"], c: 1},
+        {q: "Chi scrisse 'Gruppen' per tre orchestre?", o: ["Pierre Boulez","Karlheinz Stockhausen","Iannis Xenakis","Luciano Berio"], c: 1},
+        {q: "Quale compositore usò calcoli stocastici in 'Pithoprakta'?", o: ["Karlheinz Stockhausen","Iannis Xenakis","Pierre Boulez","Luigi Nono"], c: 1},
+        {q: "Chi compose 'Sequenza III' per voce femminile?", o: ["Pierre Boulez","Luciano Berio","Karlheinz Stockhausen","Luigi Nono"], c: 1},
+        {q: "Quale opera di Stockhausen dura oltre 29 ore?", o: ["Gruppen","Licht","Kontakte","Hymnen"], c: 1},
+        {q: "Chi scrisse 'Circles' su poesie di E.E. Cummings?", o: ["John Cage","Luciano Berio","Karlheinz Stockhausen","Pierre Boulez"], c: 1},
+        {q: "Quale compositore scrisse 'Laborintus II'?", o: ["Luigi Nono","Luciano Berio","Karlheinz Stockhausen","Pierre Boulez"], c: 1},
+        {q: "Chi compose 'De Natura Sonorum' elettroacustica?", o: ["Pierre Schaeffer","Bernard Parmegiani","Pierre Henry","François Bayle"], c: 1},
+        {q: "Quale opera di Xenakis usa la teoria dei giochi?", o: ["Metastaseis","Pithoprakta","Duel","Terretektorh"], c: 2},
+        {q: "Chi scrisse 'Répons' per ensemble e elettronica?", o: ["Karlheinz Stockhausen","Pierre Boulez","Luigi Nono","Luciano Berio"], c: 1},
+        {q: "Quale compositore scrisse 'Anaklasis' per archi e percussioni?", o: ["Henryk Górecki","Krzysztof Penderecki","Witold Lutosławski","György Ligeti"], c: 1},
+        {q: "Chi compose 'Tehillim' usando testi biblici?", o: ["Philip Glass","Steve Reich","John Adams","Arvo Pärt"], c: 1},
+        {q: "Quale opera di Ligeti usa 'harmonic rhythm' stratificato?", o: ["Atmosphères","Lontano","Lux Aeterna","Requiem"], c: 2},
+        {q: "Chi scrisse 'La Monte Young's Well-Tuned Piano'?", o: ["Terry Riley","La Monte Young","Philip Glass","Steve Reich"], c: 1},
+        {q: "Quale compositore scrisse 'Canti di Prigionia'?", o: ["Goffredo Petrassi","Luigi Dallapiccola","Luciano Berio","Luigi Nono"], c: 1},
+        {q: "Chi compose 'Divertimento for Band'?", o: ["Vincent Persichetti","Elliott Carter","Samuel Barber","Aaron Copland"], c: 0}
+    ],
+    avanzato: [
+        {q: "Descrivi la tecnica seriale di Webern in 'Variationen op. 27'", a: "Webern usa serie di 12 note con simmetrie rigorose e inversioni speculari.", type: "open"},
+        {q: "Spiega il 'Krebsgang' nella dodecafonia", a: "Retrogradazione della serie: la serie viene suonata al contrario.", type: "open"},
+        {q: "Quale compositore sviluppò la teoria dei set per analisi atonale?", a: "Allen Forte sviluppò la set theory per analizzare musica atonale.", type: "open"},
+        // AGGIUNGI ALTRE DOMANDE APERTE QUI:
+        {q: "Spiega il concetto di 'musica concreta' di Pierre Schaeffer", a: "Musica composta manipolando suoni registrati, non strumenti tradizionali.", type: "open"},
+        {q: "Cosa rappresenta 'Gesang der Jünglinge' di Stockhausen?", a: "Opera pionieristica musica elettronica che unisce voce di ragazzo registrata con suoni elettronici.", type: "open"},
+        {q: "Cos'è la microtonalità?", a: "Sistema che usa intervalli più piccoli del semitono tradizionale.", type: "open"},
+        {q: "Descrivi la musica spettrale", a: "Corrente compositiva basata su analisi spettrale del suono e sue componenti armoniche.", type: "open"},
+        {q: "Come funzionano i sistemi interattivi in musica?", a: "Sistemi che rispondono in tempo reale all'esecutore tramite sensori e algoritmi.", type: "open"},
+        {q: "Qual è il ruolo dell'AI nella composizione musicale?", a: "Generazione automatica di musica, assistenza compositiva, analisi pattern e stili musicali.", type: "open"},
+        {q: "Descrivi la 'tecnica del totale cromatico' nella Scuola di Darmstadt", a: "Uso di tutte le 12 altezze cromatiche prima di ripetere una nota, per evitare centri tonali.", type: "open"},
+        {q: "Cosa sono i 'modi ritmici' di Messiaen?", a: "Modelli ritmici non retrogradabili basati su palindromi e proporzioni matematiche.", type: "open"},
+        {q: "Spiega il concetto di 'moment form' in Stockhausen", a: "Forma musicale composta da momenti indipendenti senza sviluppo narrativo lineare.", type: "open"},
+        {q: "Qual è la differenza tra musica concreta e musica elettronica?", a: "Musica concreta usa suoni registrati manipolati; elettronica usa suoni sintetizzati elettronicamente.", type: "open"},
+        {q: "Descrivi la 'texture micropolifonica' di Ligeti", a: "Densa stratificazione di linee melodiche che creano masse sonore cangianti senza ritmo percepibile.", type: "open"},
+        {q: "Cosa significa 'process music' nel minimalismo?", a: "Musica basata su processi gradualmente percepibili come sfasamento o addizione.", type: "open"},
+        {q: "Spiega il concetto di 'open form' in musica", a: "Forma aperta dove l'ordine o il contenuto sono determinati dall'esecutore o dal caso.", type: "open"},
+        {q: "Cosa sono gli 'harmonic series' nella musica spettrale?", a: "Serie armoniche naturali usate come base per costruire armonia e orchestrazione.", type: "open"},
+        {q: "Descrivi la tecnica del 'cloud polyphony'", a: "Sovrapposizione di molte voci indipendenti che creano nuvole sonore senza linee distinguibili.", type: "open"},
+        {q: "Qual è la relazione tra serialismo e numero aureo in Webern?", a: "Webern usava proporzioni del numero aureo per strutturare sezioni e simmetrie seriali.", type: "open"},
+        {q: "Descrivi il 'ring modulation' nella sintesi sonora", a: "Modulazione ad anello che moltiplica due segnali creando somme e differenze di frequenze.", type: "open"},
+        {q: "Cosa caratterizza il 'New Complexity' di Ferneyhough?", a: "Estrema densità notazionale con poliritmia complessa e virtuosismo estremo.", type: "open"},
+        {q: "Spiega la 'grafic notation' di Earle Brown", a: "Notazione grafica aperta che lascia interpretazione ritmica e di altezza all'esecutore.", type: "open"},
+        {q: "Qual è la tecnica dell''instrumental synthesis' di Grisey?", a: "Orchestrazione che imita spettri armonici complessi degli strumenti acustici.", type: "open"},
+        {q: "Descrivi il 'phasing' di Steve Reich", a: "Tecnica di sfasamento graduale di pattern identici suonati a velocità leggermente diverse.", type: "open"},
+        {q: "Cosa sono i 'sound masses' di Penderecki?", a: "Cluster di suoni microtonali e texture dense senza altezze distinguibili.", type: "open"},
+        {q: "Spiega la 'indeterminacy' di John Cage", a: "Elementi musicali lasciati al caso o a scelta dell'esecutore, eliminando controllo compositivo.", type: "open"},
+        {q: "Qual è la differenza tra 'Klangfarbenmelodie' e orchestrazione tradizionale?", a: "Melodia creata da cambiamenti di timbro invece che di altezza.", type: "open"},
+        {q: "Descrivi il 'spatial music' di Stockhausen", a: "Musica che usa movimento del suono nello spazio come parametro compositivo.", type: "open"},
+        {q: "Cosa caratterizza la 'New Romanticism' di Del Tredici?", a: "Ritorno a tonalità espansiva e melodia lir ica dopo serialismo.", type: "open"},
+        {q: "Spiega il 'granular synthesis'", a: "Sintesi basata su grani sonori brevissimi (1-100ms) ricombinati per creare texture.", type: "open"},
+        {q: "Qual è la tecnica della 'saturation' in musica spettrale?", a: "Riempimento completo dello spettro armonico con tutte le parziali.", type: "open"},
+        {q: "Descrivi il 'moment form' vs 'linear form'", a: "Forma basata su momenti statici autonomi vs sviluppo narrativo lineare.", type: "open"},
+        {q: "Cosa sono le 'Coltrane Changes' applicate alla composizione contemporanea?", a: "Progressioni per terze maggiori usate in contesti orchestrali moderni.", type: "open"},
+        {q: "Spiega il 'timbre melody' di Ligeti", a: "Melodia percepita attraverso cambiamenti graduali di colore orchestrale.", type: "open"}
+    ]
+};
+
+const quizJazz = {
+    facile: [
+        {q: "Chi è il 'Re dello Swing'?", o: ["Duke Ellington","Benny Goodman","Count Basie","Glenn Miller"], c: 1},
+        {q: "Strumento di Louis Armstrong?", o: ["Sassofono","Tromba","Pianoforte","Clarinetto"], c: 1},
+        {q: "Dove nacque il jazz?", o: ["New York","New Orleans","Chicago","Kansas City"], c: 1},
+        {q: "Cos'è lo 'swing'?", o: ["Danza","Sensazione ritmica","Strumento","Compositore"], c: 1},
+        {q: "Chi compose 'Take Five'?", o: ["Miles Davis","Paul Desmond","J. Coltrane","D. Brubeck"], c: 1},
+        {q: "Chi suonava il sassofono soprano?", o: ["Charlie Parker","John Coltrane","Sonny Rollins","Dexter Gordon"], c: 1},
+        {q: "Che tempo ha 'Take Five'?", o: ["4/4","3/4","5/4","6/8"], c: 2},
+        {q: "Quale strumento è tipico del jazz?", o: ["Saxofono","Fagotto","Oboe","Arpa"], c: 0},
+        {q: "Chi ha scritto 'Kind of Blue'?", o: ["Miles Davis","John Coltrane","Duke Ellington","Thelonious Monk"], c: 0},
+        {q: "Quale pianista jazz è famoso per le sue composizioni angolari e dissonanti?", o: ["Bill Evans","Thelonious Monk","Oscar Peterson","Herbie Hancock"], c: 1},
+        {q: "Chi suonava il vibrafono ed era soprannominato 'Bags'?", o: ["Lionel Hampton","Milt Jackson","Gary Burton","Bobby Hutcherson"], c: 1},
+        {q: "Quale sassofonista registrò 'Giant Steps' con cambi armonici rapidissimi?", o: ["Charlie Parker","Sonny Rollins","John Coltrane","Cannonball Adderley"], c: 2},
+        {q: "Chi è la 'First Lady of Song' del jazz?", o: ["Billie Holiday","Ella Fitzgerald","Sarah Vaughan","Nina Simone"], c: 1},
+        {q: "Quale trombettista era noto per suonare con la campana verso l'alto?", o: ["Dizzy Gillespie","Clifford Brown","Freddie Hubbard","Lee Morgan"], c: 0},
+        {q: "Chi diresse la 'Royal Roost' sessions che definirono il cool jazz?", o: ["Charlie Parker","Miles Davis","Gerry Mulligan","Chet Baker"], c: 1},
+        {q: "Quale pianista cieco era famoso per 'Georgia on My Mind'?", o: ["Stevie Wonder","Ray Charles","Art Tatum","George Shearing"], c: 1},
+        {q: "Chi suonava il sax contralto ed era chiamato 'Bird'?", o: ["John Coltrane","Charlie Parker","Ornette Coleman","Eric Dolphy"], c: 1},
+        {q: "Quale bassista rivoluzionò il jazz con il suo approccio modale?", o: ["Charles Mingus","Scott LaFaro","Paul Chambers","Ron Carter"], c: 1},
+        {q: "Chi compose 'A Love Supreme', suite spirituale in quattro parti?", o: ["Miles Davis","John Coltrane","Charles Mingus","Wayne Shorter"], c: 1},
+        {q: "Quale pianista registrò l'album 'Kind of Blue' con Miles Davis?", o: ["Herbie Hancock","Bill Evans","McCoy Tyner","Chick Corea"], c: 1},
+        {q: "Chi suonava il sax tenore in 'Giant Steps'?", o: ["Sonny Rollins","John Coltrane","Dexter Gordon","Stan Getz"], c: 1},
+        {q: "Quale batterista suonò con il Miles Davis Quintet negli anni '60?", o: ["Max Roach","Art Blakey","Tony Williams","Elvin Jones"], c: 2},
+        {q: "Chi compose 'Maiden Voyage'?", o: ["Wayne Shorter","Herbie Hancock","Joe Henderson","Bobby Hutcherson"], c: 1},
+        {q: "Quale sassofonista suonò con Art Blakey's Jazz Messengers?", o: ["Wayne Shorter","Sonny Rollins","Dexter Gordon","Joe Henderson"], c: 0},
+        {q: "Chi registrò 'Moanin'' con i Jazz Messengers?", o: ["Horace Silver","Art Blakey","Charles Mingus","Max Roach"], c: 1},
+        {q: "Quale trombettista suonò in 'Birth of the Cool'?", o: ["Clifford Brown","Miles Davis","Chet Baker","Lee Morgan"], c: 1},
+        {q: "Chi compose 'Blue Train'?", o: ["John Coltrane","Sonny Rollins","Dexter Gordon","Wayne Shorter"], c: 0},
+        {q: "Quale pianista suonò con John Coltrane Quartet?", o: ["Bill Evans","McCoy Tyner","Herbie Hancock","Chick Corea"], c: 1},
+        {q: "Chi suonava il contrabbasso con Bill Evans Trio?", o: ["Charles Mingus","Scott LaFaro","Paul Chambers","Ron Carter"], c: 1},
+        {q: "Quale sassofonista registrò 'Saxophone Colossus'?", o: ["John Coltrane","Sonny Rollins","Dexter Gordon","Stan Getz"], c: 1},
+        {q: "Chi compose 'So What' per Miles Davis?", o: ["Bill Evans","Miles Davis","John Coltrane","Gil Evans"], c: 1},
+        {q: "Quale batterista suonò con John Coltrane Quartet?", o: ["Tony Williams","Elvin Jones","Art Blakey","Max Roach"], c: 1},
+        {q: "Chi registrò 'Mingus Ah Um'?", o: ["Art Blakey","Charles Mingus","Max Roach","Horace Silver"], c: 1},
+        {q: "Quale pianista compose 'Song for My Father'?", o: ["Herbie Hancock","Horace Silver","McCoy Tyner","Bill Evans"], c: 1},
+        {q: "Chi suonò il sax alto in 'Somethin' Else' con Cannonball Adderley?", o: ["Charlie Parker","Cannonball Adderley","Art Pepper","Ornette Coleman"], c: 1},
+        {q: "Quale pianista registrò 'Waltz for Debby' dal vivo al Village Vanguard?", o: ["Oscar Peterson","Bill Evans","Ahmad Jamal","Wynton Kelly"], c: 1},
+        {q: "Chi compose 'Stolen Moments' per Oliver Nelson?", o: ["Wayne Shorter","Oliver Nelson","Freddie Hubbard","Eric Dolphy"], c: 1},
+        {q: "Quale trombettista fu chiamato 'The Sidewinder'?", o: ["Freddie Hubbard","Lee Morgan","Donald Byrd","Woody Shaw"], c: 1},
+        {q: "Chi suonò l'organo Hammond B3 in 'The Cat'?", o: ["Larry Young","Jimmy Smith","Jack McDuff","Jimmy McGriff"], c: 1},
+        {q: "Quale sassofonista registrò 'Speak No Evil'?", o: ["Joe Henderson","Wayne Shorter","Hank Mobley","Dexter Gordon"], c: 1}
+    ],
+    medio: [
+        {q: "Progressione tipica jazz?", o: ["I-IV-V","II-V-I","I-VI-II-V","III-VI-II-V"], c: 1},
+        {q: "Cos'è un 'turnaround'?", o: ["Solo","Progressione ritorno","Cambio tonalità","Tecnica ritmica"], c: 1},
+        {q: "Qual è la forma del blues?", o: ["8 battute","12 battute","16 battute","32 battute"], c: 1},
+        {q: "Cos'è un 'tritone substitution'?", o: ["Sostituzione 3 semitoni","Sostituzione 6 semitoni","Sostituzione 4 semitoni","Sostituzione 2 semitoni"], c: 1},
+        {q: "Quale scala è tipicamente usata su un accordo minore 7?", o: ["Lidia","Dorica","Frigia","Misolidia"], c: 1},
+        {q: "Cos'è un accordo 'alt' o 'altered'?", o: ["Dominante con 5a e 9a alterate","Accordo aumentato","Accordo diminuito","Accordo sospeso"], c: 0},
+        {q: "Quale armonica usa McCoy Tyner nei suoi voicings?", o: ["Voicings per quarte","Voicings per terze","Voicings chiusi","Voicings stretti"], c: 0},
+        {q: "Cos'è la 'interpolazione' in 'Rhythm changes'?", o: ["Aggiunta di II-V","Cambio metro","Modulazione","Cadenza plagale"], c: 0},
+        {q: "Quale modo si usa tipicamente su un accordo V7 alterato?", o: ["Lidio b7","Alterato (superlocrio)","Misolidio","Dorico"], c: 1},
+        {q: "Cosa significa 'comping' nel jazz?", o: ["Accompagnamento armonico ritmico","Composizione","Improvvisazione melodica","Trading fours"], c: 0},
+        {q: "Quale tecnica armonica caratterizza 'Giant Steps' di Coltrane?", o: ["Ciclo di quinte","Ciclo di terze maggiori","Progressione cromatica","Blues changes"], c: 1},
+        {q: "Cos'è una 'backdoor progression'?", o: ["IV-bVII-I","II-V-I","I-VI-II-V","III-VI-II-V"], c: 0},
+        {q: "Quale scala usa Bill Evans su un accordo minore maj7?", o: ["Melodica minore","Dorica","Frigia","Eolia"], c: 0},
+        {q: "Cos'è il 'drop 2 voicing'?", o: ["Seconda nota dall'alto abbassata di un'ottava","Accordo con fondamentale omessa","Voicing per quarte","Accordo sus4"], c: 0},
+        {q: "Quale scala si usa su un accordo maj7#11?", o: ["Ionica","Lidia","Misolidia","Dorica"], c: 1},
+        {q: "Cos'è un accordo 'half-diminished'?", o: ["m7b5","dim7","m7","7alt"], c: 0},
+        {q: "Quale modo si usa su un accordo minore 7b5?", o: ["Dorico","Locrio","Frigio","Eolico"], c: 1},
+        {q: "Cos'è la 'rhythm section' tipica?", o: ["Piano, basso, batteria","Sax, tromba, trombone","Chitarra, basso, voce","Violino, viola, cello"], c: 0},
+        {q: "Quale scala caratterizza il bebop dominante?", o: ["Scala maggiore con b7","Scala dominante con nota di passaggio cromatica","Scala alterata","Scala whole tone"], c: 1},
+        {q: "Cos'è un 'secondary dominant'?", o: ["V/V","V7","IIm7","bVII7"], c: 0},
+        {q: "Quale tecnica usa McCoy Tyner per 'quartal voicings'?", o: ["Accordi per terze","Accordi per quarte","Accordi per quinte","Accordi per seste"], c: 1},
+        {q: "Cos'è la 'clave' in musica afro-cubana?", o: ["Pattern ritmico 3-2 o 2-3","Strumento a percussione","Scala particolare","Progressione armonica"], c: 0},
+        {q: "Quale accordo si usa in 'Blue Bossa' sul II grado?", o: ["IIm7","IIm7b5","II7","IImaj7"], c: 1},
+        {q: "Cos'è un 'shell voicing'?", o: ["Accordo completo","1-3-7 o 1-7-3","Drop 2","Rootless voicing"], c: 1},
+        {q: "Quale scala si usa su un accordo V7#5#9?", o: ["Whole tone","Alterata","Lidia b7","Misolidia"], c: 1},
+        {q: "Cos'è la 'interpolation' in 'Stella by Starlight'?", o: ["Aggiunta di II-V","Modulazione","Sostituzione tritonica","Cadenza plagale"], c: 0},
+        {q: "Quale voicing usa Bill Evans in 'rootless voicings'?", o: ["3-5-7-9","1-3-5-7","3-6-7-9","5-7-9-11"], c: 2},
+        {q: "Cos'è un 'approach note' nel bebop?", o: ["Nota cromatica o diatonica prima del target","Appoggiatura","Mordente","Acciaccatura"], c: 0},
+        {q: "Quale scala si usa su un accordo 7sus4?", o: ["Dorica","Misolidia","Frigia","Lidia"], c: 1},
+        {q: "Cos'è il 'chord tone targeting'?", o: ["Risolvere su note dell'accordo","Evitare terza e settima","Usare solo pentatoniche","Suonare outside"], c: 0},
+        {q: "Quale progressione caratterizza 'Autumn Leaves'?", o: ["IIm7-V7-Imaj7","IIm7b5-V7-Im","IVmaj7-V7-IIIm7","VIm7-IIm7-V7"], c: 0},
+        {q: "Quale scala si usa su un accordo diminuito?", o: ["Diminuita whole-half","Diminuita half-whole","Whole tone","Lidia b7"], c: 1},
+        {q: "Cos'è la 'blue note' nella scala blues?", o: ["b3, b5, b7","#4, b6","#9, b9","b2, #4"], c: 0},
+        {q: "Quale modo si usa su un accordo IVmaj7?", o: ["Ionico","Lidio","Misolidio","Dorico"], c: 1},
+        {q: "Cos'è un accordo 'sus2'?", o: ["1-2-5","1-3-5","1-4-5","1-2-3"], c: 0},
+        {q: "Quale tecnica usa Wes Montgomery per gli assoli?", o: ["Fingerstyle","Octaves (ottave)","Tapping","Sweep picking"], c: 1}
+    ],
+    avanzato: [
+        {q: "Analizza le Coltrane Changes", a: "Progressione armonica per terze maggiori usando cicli con sostituzioni tritonali.", type: "open"},
+        {q: "Cos'è un 'line cliché'?", a: "Linea cromatica discendente o ascendente dentro un accordo statico.", type: "open"},
+        {q: "Spiega il concetto di 'modal jazz'", a: "Jazz basato su modi/scale invece che progressioni armoniche complesse.", type: "open"},
+        {q: "Cos'è l'armonia jazz?", o: ["L'arte di combinare suoni con accordi complessi e alterati","Un tipo di danza","Un effetto elettronico","Un ballo popolare"], c: 0},
+        {q: "Spiega il reharmonization tramite 'constant structure'", a: "Tecnica di spostare lo stesso voicing per gradi cromatici o diatonici mantenendo la struttura.", type: "open"},
+        {q: "Descrivi la tecnica del 'side-slipping'", a: "Spostamento cromatico temporaneo di una frase mezzo tono sopra o sotto per creare tensione.", type: "open"},
+        {q: "Cosa sono le 'upper structure triads'?", a: "Triadi costruite sulla 9a, 11a o 13a di un accordo di dominante per creare tensioni.", type: "open"},
+        {q: "Spiega il concetto di 'chord-scale relationship'", a: "Associazione di scale specifiche a ogni tipo di accordo per l'improvvisazione.", type: "open"},
+        {q: "Cosa caratterizza l'approccio 'outside' di Eric Dolphy?", a: "Uso di intervalli ampi, cromatismi e note estranee all'armonia per creare tensione.", type: "open"},
+        {q: "Descrivi la tecnica del 'rhythmic displacement'", a: "Spostamento di una frase ritmica in avanti o indietro rispetto al battere originale.", type: "open"},
+        {q: "Qual è la funzione della scala 'bebop' dominante?", a: "Scala con nota di passaggio cromatica che permette di iniziare accordi sul battere.", type: "open"},
+        {q: "Spiega il concetto di 'interpolation' nei Rhythm Changes", a: "Aggiunta di progressioni II-V che collegano gli accordi della forma originale.", type: "open"},
+        {q: "Cosa sono i 'polychords' nell'armonia moderna?", a: "Sovrapposizione di due accordi diversi suonati simultaneamente per creare cluster armonici.", type: "open"},
+        {q: "Descrivi la tecnica del 'motivic development' di Sonny Rollins", a: "Sviluppo tematico dove un breve motivo viene variato ritmicamente e armonicamente nel solo.", type: "open"},
+        {q: "Spiega il 'diminished scale' su accordi dominanti", a: "Scala simmetrica semitono-tono o tono-semitono usata su V7b9 per tensioni.", type: "open"},
+        {q: "Cos'è il 'linear chromaticism' di Charlie Parker?", a: "Approccio cromatico lineare dove note cromatiche connettono chord tones.", type: "open"},
+        {q: "Descrivi il 'substitute chord' per V7", a: "bII7 (tritone substitution) condivide tritono con V7 permettendo risoluzione cromatica.", type: "open"},
+        {q: "Qual è la funzione della 'Coltrane Matrix'?", a: "Sistema di sostituzioni armoniche basato su divisioni simmetriche dell'ottava.", type: "open"},
+        {q: "Spiega il 'pentatonic pairs' di Michael Brecker", a: "Sovrapposizione di due scale pentatoniche per creare tensioni su accordi dominanti.", type: "open"},
+        {q: "Cosa caratterizza il 'displacement' ritmico di Herbie Hancock?", a: "Spostamento di frasi su battiti deboli creando tensione metrica.", type: "open"},
+        {q: "Descrivi la tecnica del 'hexatonic' system", a: "Scala di sei note usata per collegare accordi maggiori e minori distanti terza minore.", type: "open"},
+        {q: "Qual è il 'tritone substitution' esteso?", a: "Sostituzione di intera progressione II-V con bII-bV.", type: "open"},
+        {q: "Spiega il 'Barry Harris' sixth diminished scale", a: "Sistema che aggiunge sesta maggiore alla scala diminuita per movimento cromatico.", type: "open"},
+        {q: "Cosa sono i 'Guide Tones' nell'improvvisazione?", a: "Terza e settima degli accordi che guidano il movimento armonico.", type: "open"},
+        {q: "Descrivi il 'superimposition' armonico", a: "Suonare progressione diversa sopra quella esistente creando polychords.", type: "open"},
+        {q: "Qual è la tecnica del 'tri-tone relationship'?", a: "Sfruttare relazione tritonica tra V7 e bII7 per sostituzioni.", type: "open"},
+        {q: "Spiega il 'modal interchange' nel jazz", a: "Prendere in prestito accordi da scale parallele (maggiore/minore).", type: "open"},
+        {q: "Cosa caratterizza il 'quartal harmony' di McCoy Tyner?", a: "Voicings costruiti per intervalli di quarta invece che per terze.", type: "open"},
+        {q: "Descrivi la 'negative harmony' applicata al jazz", a: "Inversione speculare di progressioni attorno all'asse tonica-dominante.", type: "open"}
+    ]
+};
+
+const quizClassica = {
+    facile: [
+        {q: "Note della triade maggiore?", o: ["Due","Tre","Quattro","Cinque"], c: 1},
+        {q: "Nome del primo grado?", o: ["Dominante","Tonica","Mediante","Sottodominante"], c: 1},
+        {q: "Qual è il quinto grado?", o: ["Tonica","Dominante","Mediante","Sopradominante"], c: 1},
+        {q: "Quante note ha la scala maggiore?", o: ["5","6","7","8"], c: 2},
+        {q: "Cos'è un accordo diminuito?", o: ["1-3b-5b","1-3-5","1-3-5#","1-3b-5"], c: 0},
+        {q: "Chi ha composto la 'Nona Sinfonia'?", o: ["Wolfgang Amadeus Mozart","Ludwig van Beethoven","Antonio Vivaldi","Franz Schubert"], c: 1},
+        {q: "Quale strumento suonava Niccolò Paganini?", o: ["Violino","Tromba","Organo","Fagotto"], c: 0},
+        {q: "Chi ha composto 'Le Quattro Stagioni'?", o: ["Antonio Vivaldi","Gioachino Rossini","Giuseppe Verdi","Béla Bartók"], c: 0},
+        {q: "Quale strumento ha i tasti bianchi e neri?", o: ["Violino","Pianoforte","Trombone","Oboe"], c: 1},
+        {q: "Cos'è un'orchestra?", o: ["Un gruppo di quattro musicisti","Un grande gruppo di musicisti con vari strumenti","Un solo musicista","Un duo di chitarre"], c: 1},
+        {q: "Chi è il compositore della 'Turandot'?", o: ["Giacomo Puccini","Giuseppe Verdi","Richard Wagner","Georges Bizet"], c: 0},
+        {q: "Quale strumento si suona soffiando e ha un'ancia?", o: ["Clarinetto","Violoncello","Timpano","Chitarra"], c: 0},
+        {q: "Chi ha composto 'Il flauto magico'?", o: ["Ludwig van Beethoven","Wolfgang Amadeus Mozart","Franz Liszt","Gustav Mahler"], c: 1},
+        {q: "Quale strumento si accorda con le chiavi di accordatura?", o: ["Pianoforte","Tromba","Flauto traverso","Maracas"], c: 0},
+        {q: "Cos'è l'armonia?", o: ["L'arte di combinare più suoni simultaneamente","Un tipo di danza","Un effetto per chitarra","Un genere musicale"], c: 0},
+        {q: "Quale strumento ha corde e si suona pizzicandole?", o: ["Arpa","Trombone","Oboe","Timpano"], c: 0},
+        {q: "Chi ha scritto 'La Traviata'?", o: ["Giuseppe Verdi","Giacomo Puccini","Richard Wagner","Antonio Salieri"], c: 0},
+        {q: "Cos'è un pentagramma?", o: ["Un insieme di cinque linee per scrivere la musica","Un tipo di chitarra","Un ballo popolare","Un effetto elettronico"], c: 0},
+        {q: "Quale strumento si suona con un archetto?", o: ["Violino","Tromba","Pianoforte","Clarinetto"], c: 0},
+        {q: "Chi ha scritto 'Carmen'?", o: ["Georges Bizet","Giuseppe Verdi","Richard Wagner","Giacomo Puccini"], c: 0},
+        {q: "Cos'è un metronomo?", o: ["Uno strumento per tenere il tempo","Un tipo di tromba","Un microfono","Un effetto per chitarra"], c: 0},
+        {q: "Chi ha composto 'Il lago dei cigni'?", o: ["Pëtr Il'ič Čajkovskij","Sergej Prokof'ev","Igor Stravinsky","Modest Musorgskij"], c: 0},
+        {q: "Quale strumento è a fiato?", o: ["Oboe","Violoncello","Arpa","Timpano"], c: 0},
+        {q: "Chi ha scritto 'La Bohème'?", o: ["Giacomo Puccini","Giuseppe Verdi","Richard Wagner","Georges Bizet"], c: 0},
+        {q: "Cos'è un accordo?", o: ["Tre o più suoni suonati insieme","Un tipo di danza","Un effetto per chitarra","Un microfono"], c: 0},
+        {q: "Chi ha composto 'Il carnevale degli animali'?", o: ["Camille Saint-Saëns","Claude Debussy","Maurice Ravel","Paul Dukas"], c: 0},
+        {q: "Quale strumento ha le corde più gravi in orchestra?", o: ["Contrabbasso","Violino","Viola","Chitarra"], c: 0},
+        {q: "Chi ha scritto 'Il Requiem' (K.626)?", o: ["Wolfgang Amadeus Mozart","Ludwig van Beethoven","Franz Schubert","Joseph Haydn"], c: 0},
+        {q: "Cos'è un tema musicale?", o: ["Una melodia principale","Un tipo di strumento","Un effetto elettronico","Un ballo popolare"], c: 0},
+        {q: "Quale strumento si suona con le bacchette?", o: ["Timpano","Violino","Tromba","Clarinetto"], c: 0},
+        {q: "Cos'è una sinfonia?", o: ["Una composizione orchestrale in più movimenti","Un tipo di chitarra","Un effetto elettronico","Un ballo popolare"], c: 0},
+        {q: "Quale compositore romantico morì a soli 31 anni di tubercolosi?", o: ["Franz Schubert","Frédéric Chopin","Felix Mendelssohn","Robert Schumann"], c: 1},
+        {q: "Chi compose 'L'Apprenti sorcier' (L'apprendista stregone)?", o: ["Claude Debussy","Maurice Ravel","Paul Dukas","Erik Satie"], c: 2},
+        {q: "Quale compositore scrisse 'Gymnopédies', pezzi minimalisti per pianoforte?", o: ["Claude Debussy","Erik Satie","Maurice Ravel","Gabriel Fauré"], c: 1},
+        {q: "Chi compose l'opera 'Orfeo ed Euridice' nel periodo classico?", o: ["Christoph Willibald Gluck","Wolfgang Amadeus Mozart","Joseph Haydn","Antonio Salieri"], c: 0},
+        {q: "Quale strumento è protagonista nel 'Concerto Brandeburghese n. 5' di Bach?", o: ["Violino","Clavicembalo","Tromba","Flauto"], c: 1},
+        {q: "Chi scrisse 'Pictures at an Exhibition', poi orchestrato da Ravel?", o: ["Alexander Borodin","Modest Musorgskij","Nikolaj Rimskij-Korsakov","Pëtr Il'ič Čajkovskij"], c: 1},
+        {q: "Quale compositore barocco era noto come 'Il Prete Rosso'?", o: ["Johann Sebastian Bach","Antonio Vivaldi","Georg Friedrich Händel","Arcangelo Corelli"], c: 1},
+        {q: "Chi compose 'Danse macabre', poema sinfonico sulla morte?", o: ["Hector Berlioz","Camille Saint-Saëns","Franz Liszt","Richard Strauss"], c: 1},
+        {q: "Quale compositore scrisse 'The Firebird' (L'uccello di fuoco)?", o: ["Sergej Prokof'ev","Igor Stravinsky","Dmitrij Šostakovič","Aram Khachaturian"], c: 1},
+        {q: "Chi compose la famosa 'Toccata e Fuga in re minore' per organo?", o: ["Johann Sebastian Bach","Dietrich Buxtehude","Johann Pachelbel","Georg Friedrich Händel"], c: 0},
+        {q: "Quale compositore scrisse 'Peer Gynt'?", o: ["Jean Sibelius","Edvard Grieg","Carl Nielsen","Johan Svendsen"], c: 1},
+        {q: "Chi compose 'Nessun dorma' dall'opera Turandot?", o: ["Giuseppe Verdi","Giacomo Puccini","Ruggero Leoncavallo","Pietro Mascagni"], c: 1},
+        {q: "Quale compositore scrisse 'Finlandia'?", o: ["Edvard Grieg","Jean Sibelius","Carl Nielsen","Johan Halvorsen"], c: 1},
+        {q: "Chi compose 'Nabucco' con il coro 'Va, pensiero'?", o: ["Gaetano Donizetti","Giuseppe Verdi","Vincenzo Bellini","Gioachino Rossini"], c: 1},
+        {q: "Quale compositore scrisse 'Pavane pour une infante défunte'?", o: ["Claude Debussy","Maurice Ravel","Erik Satie","Gabriel Fauré"], c: 1},
+        {q: "Chi compose 'Scheherazade'?", o: ["Modest Musorgskij","Nikolaj Rimskij-Korsakov","Pëtr Il'ič Čajkovskij","Alexander Borodin"], c: 1},
+        {q: "Quale compositore scrisse 'La Mer' (Il mare)?", o: ["Maurice Ravel","Claude Debussy","Erik Satie","Paul Dukas"], c: 1},
+        {q: "Chi compose 'Il Messia' con l'Hallelujah?", o: ["Johann Sebastian Bach","Georg Friedrich Händel","Henry Purcell","Antonio Vivaldi"], c: 1},
+        {q: "Quale compositore scrisse 'Adagio for Strings'?", o: ["Aaron Copland","Samuel Barber","Leonard Bernstein","George Gershwin"], c: 1},
+        {q: "Chi compose 'Rhapsody in Blue'?", o: ["Aaron Copland","George Gershwin","Leonard Bernstein","Charles Ives"], c: 1},
+        {q: "Quale compositore scrisse 'Carmina Burana'?", o: ["Gustav Holst","Carl Orff","Paul Hindemith","Kurt Weill"], c: 1},
+        {q: "Chi compose 'The Planets'?", o: ["Ralph Vaughan Williams","Gustav Holst","Edward Elgar","Benjamin Britten"], c: 1},
+        {q: "Quale compositore scrisse 'Enigma Variations'?", o: ["Ralph Vaughan Williams","Edward Elgar","Gustav Holst","Frederick Delius"], c: 1},
+        {q: "Chi compose 'Fantasia on a Theme by Thomas Tallis'?", o: ["Edward Elgar","Ralph Vaughan Williams","Gustav Holst","Benjamin Britten"], c: 1},
+        {q: "Quale compositore scrisse 'Appalachian Spring'?", o: ["George Gershwin","Aaron Copland","Leonard Bernstein","Samuel Barber"], c: 1},
+        {q: "Chi compose 'Peter and the Wolf'?", o: ["Dmitrij Šostakovič","Sergej Prokof'ev","Igor Stravinsky","Aram Khachaturian"], c: 1},
+        {q: "Quale compositore scrisse 'Má vlast' (La mia patria)?", o: ["Antonín Dvořák","Bedřich Smetana","Leoš Janáček","Bohuslav Martinů"], c: 1}
+    ],
+    medio: [
+        {q: "Cos'è la sesta napoletana?", o: ["Sesta aumentata","bII in rivolto","Accordo diminuito","Dominante"], c: 1},
+        {q: "Cos'è la sesta aumentata?", o: ["9 semitoni","Accordo cromatico predominante","Accordo maggiore","Modulazione"], c: 1},
+        {q: "Funzione della dominante secondaria?", o: ["Tonicizza V","Tonicizza altri gradi","Solo decorazione","Modulazione"], c: 1},
+        {q: "Cos'è un quartetto d'archi?", o: ["Quattro pianoforti","Due violini, una viola, un violoncello","Quattro trombe","Tre clarinetti e un oboe"], c: 1},
+        {q: "Chi ha composto 'La Moldava'?", o: ["Bedřich Smetana","Antonín Dvořák","Gustav Mahler","Jean Sibelius"], c: 0},
+        {q: "Chi ha composto 'Sinfonia dal Nuovo Mondo'?", o: ["Antonín Dvořák","Gustav Mahler","Jean Sibelius","Bedřich Smetana"], c: 0},
+        {q: "Chi ha scritto 'Il Barbiere di Siviglia'?", o: ["Gioachino Rossini","Giuseppe Verdi","Gaetano Donizetti","Vincenzo Bellini"], c: 0},
+        {q: "Quale strumento è protagonista nel 'Concerto per clarinetto' di Mozart?", o: ["Clarinetto","Violino","Tromba","Pianoforte"], c: 0},
+        {q: "Chi ha scritto 'La Mer'?", o: ["Claude Debussy","Maurice Ravel","Erik Satie","Paul Dukas"], c: 0},
+        {q: "Cos'è un glissando?", o: ["Uno scivolamento continuo tra due note","Un tipo di danza","Un effetto elettronico","Un ballo popolare"], c: 0},
+        {q: "Chi ha composto 'Sinfonia n. 5' con il celebre motivo 'ta-ta-ta-taaa'?", o: ["Ludwig van Beethoven","Wolfgang Amadeus Mozart","Franz Schubert","Joseph Haydn"], c: 0},
+        {q: "Quale strumento è protagonista nel 'Concerto per violino' di Mendelssohn?", o: ["Violino","Pianoforte","Tromba","Clarinetto"], c: 0},
+        {q: "Chi ha composto 'Sinfonia n. 9' detta 'Dal nuovo mondo'?", o: ["Antonín Dvořák","Gustav Mahler","Jean Sibelius","Bedřich Smetana"], c: 0},
+        {q: "Quale strumento è protagonista nel 'Concerto per pianoforte n. 2' di Rachmaninov?", o: ["Pianoforte","Violino","Tromba","Clarinetto"], c: 0},
+        {q: "Quale compositore scrisse 'Il castello del principe Barbablù'?", o: ["Béla Bartók","Zoltán Kodály","György Ligeti","Franz Liszt"], c: 0},
+        {q: "Cos'è una 'cadenza piccarda' o 'di Piccardia'?", o: ["Cadenza con terza maggiore in modo minore","Cadenza plagale","Cadenza sospesa","Cadenza d'inganno"], c: 0},
+        {q: "Chi compose le '4 Ballate' per pianoforte solo?", o: ["Franz Liszt","Frédéric Chopin","Robert Schumann","Johannes Brahms"], c: 1},
+        {q: "Quale opera di Wagner dura circa 15 ore in totale?", o: ["Parsifal","Tristan und Isolde","Der Ring des Nibelungen","Die Meistersinger"], c: 2},
+        {q: "Cosa caratterizza il 'Lied' tedesco romantico?", o: ["Canzone per voce e pianoforte","Forma sinfonica","Danza barocca","Forma operistica"], c: 0},
+        {q: "Chi scrisse la 'Sinfonia n. 8' detta 'Incompiuta' con solo 2 movimenti?", o: ["Franz Schubert","Anton Bruckner","Gustav Mahler","Antonín Dvořák"], c: 0},
+        {q: "Quale compositore usò il leitmotiv nelle sue opere?", o: ["Giuseppe Verdi","Richard Wagner","Giacomo Puccini","Georges Bizet"], c: 1},
+        {q: "Cosa sono i 'Preludi e Fughe' del 'Clavicembalo ben temperato'?", o: ["48 pezzi in tutte le tonalità","24 pezzi in modo maggiore","12 pezzi cromatici","36 studi tecnici"], c: 0},
+        {q: "Chi compose 'Also sprach Zarathustra', reso famoso dal film 2001?", o: ["Gustav Mahler","Richard Strauss","Anton Bruckner","Johannes Brahms"], c: 1},
+        {q: "Quale forma musicale ha schema ABACA?", o: ["Sonata","Rondò","Tema con variazioni","Fuga"], c: 1},
+        {q: "Quale compositore scrisse 'Sinfonia n. 41' detta 'Jupiter'?", o: ["Joseph Haydn","Wolfgang Amadeus Mozart","Ludwig van Beethoven","Franz Schubert"], c: 1},
+        {q: "Chi compose 'Konzert für Orchester' (Concerto per orchestra)?", o: ["György Ligeti","Béla Bartók","Zoltán Kodály","Witold Lutosławski"], c: 1},
+        {q: "Quale opera di Mahler include 'Urlicht' (Luce primordiale)?", o: ["Sinfonia n. 1","Sinfonia n. 2","Sinfonia n. 3","Sinfonia n. 5"], c: 1},
+        {q: "Chi scrisse 'Kindertotenlieder' (Canti per bambini morti)?", o: ["Richard Strauss","Gustav Mahler","Hugo Wolf","Anton Bruckner"], c: 1},
+        {q: "Quale compositore scrisse 'Ein deutsches Requiem'?", o: ["Franz Schubert","Johannes Brahms","Robert Schumann","Felix Mendelssohn"], c: 1},
+        {q: "Chi compose 'Variations on a Theme by Haydn'?", o: ["Robert Schumann","Johannes Brahms","Felix Mendelssohn","Franz Liszt"], c: 1},
+        {q: "Quale opera di Strauss si basa su 'Don Quixote'?", o: ["Don Juan","Don Quixote","Till Eulenspiegel","Ein Heldenleben"], c: 1},
+        {q: "Chi scrisse 'Les Préludes', poema sinfonico?", o: ["Hector Berlioz","Franz Liszt","Richard Wagner","César Franck"], c: 1},
+        {q: "Quale compositore scrisse 'Symphonie fantastique'?", o: ["Franz Liszt","Hector Berlioz","Richard Strauss","César Franck"], c: 1},
+        {q: "Chi compose 'Harold en Italie' per viola e orchestra?", o: ["Franz Liszt","Hector Berlioz","Niccolò Paganini","Carl Maria von Weber"], c: 1},
+        {q: "Quale opera di Bruckner è detta 'Romantic'?", o: ["Sinfonia n. 3","Sinfonia n. 4","Sinfonia n. 7","Sinfonia n. 9"], c: 1},
+        {q: "Chi scrisse 'Verklärte Nacht' (Notte trasfigurata)?", o: ["Gustav Mahler","Arnold Schoenberg","Alban Berg","Anton Webern"], c: 1},
+        {q: "Quale compositore scrisse 'Gurre-Lieder'?", o: ["Gustav Mahler","Arnold Schoenberg","Richard Strauss","Alexander Zemlinsky"], c: 1},
+        {q: "Chi compose 'Turangalîla-Symphonie'?", o: ["Pierre Boulez","Olivier Messiaen","Maurice Ravel","Darius Milhaud"], c: 1},
+        {q: "Quale opera di Debussy si basa su un poema di Mallarmé?", o: ["La Mer","Prélude à l'après-midi d'un faune","Nocturnes","Pelléas et Mélisande"], c: 1},
+        {q: "Chi scrisse 'Daphnis et Chloé'?", o: ["Claude Debussy","Maurice Ravel","Erik Satie","Paul Dukas"], c: 1},
+        {q: "Quale compositore scrisse 'Ma mère l'Oye'?", o: ["Claude Debussy","Maurice Ravel","Gabriel Fauré","Camille Saint-Saëns"], c: 1}
+    ],
+    avanzato: [
+        {q: "Spiega la modulazione per note comuni", a: "Modulazione tramite accordi pivot che condividono note tra due tonalità.", type: "open"},
+        {q: "Funzione della sesta napoletana", a: "Accordo di bII in rivolto con funzione predominante verso V.", type: "open"},
+        {q: "Descrivi una cadenza d'inganno", a: "Risoluzione V-VI invece della prevista V-I, creando sorpresa armonica.", type: "open"},
+        {q: "Chi ha scritto 'Sinfonia n. 3' detta 'Eroica'?", o: ["Ludwig van Beethoven","Wolfgang Amadeus Mozart","Franz Schubert","Joseph Haydn"], c: 0},
+        {q: "Chi ha scritto 'Sinfonia n. 6' detta 'Pastorale'?", o: ["Ludwig van Beethoven","Wolfgang Amadeus Mozart","Franz Schubert","Joseph Haydn"], c: 0},
+        {q: "Chi ha scritto 'Sinfonia n. 8' detta 'Incompiuta'?", o: ["Franz Schubert","Ludwig van Beethoven","Wolfgang Amadeus Mozart","Joseph Haydn"], c: 0},
+        {q: "Chi ha composto 'Sinfonia n. 9' detta 'Corale'?", o: ["Ludwig van Beethoven","Wolfgang Amadeus Mozart","Franz Schubert","Joseph Haydn"], c: 0},
+        {q: "Quale strumento è protagonista nel 'Concerto per violoncello' di Dvořák?", o: ["Violoncello","Pianoforte","Tromba","Clarinetto"], c: 0},
+        {q: "Chi ha scritto 'Sinfonia n. 5' di Mahler?", o: ["Gustav Mahler","Anton Bruckner","Richard Strauss","Jean Sibelius"], c: 0},
+        {q: "Chi ha composto 'Sinfonia n. 1' detta 'Titan'?", o: ["Gustav Mahler","Anton Bruckner","Richard Strauss","Jean Sibelius"], c: 0},
+        {q: "Chi ha composto 'Sinfonia n. 2' di Brahms?", o: ["Johannes Brahms","Robert Schumann","Felix Mendelssohn","Franz Schubert"], c: 0},
+        {q: "Quale strumento è protagonista nel 'Concerto per tromba' di Haydn?", o: ["Tromba","Violino","Pianoforte","Clarinetto"], c: 0},
+        {q: "Chi ha scritto 'Sinfonia n. 4' di Tchaikovsky?", o: ["Pëtr Il'ič Čajkovskij","Sergej Prokof'ev","Dmitrij Šostakovič","Béla Bartók"], c: 0},
+        {q: "Chi ha composto 'Sinfonia n. 6' di Čajkovskij?", o: ["Pëtr Il'ič Čajkovskij","Sergej Prokof'ev","Dmitrij Šostakovič","Béla Bartók"], c: 0},
+        {q: "Spiega la differenza tra sesta italiana, francese e tedesca", a: "Tre tipi di seste aumentate: italiana (1-3-#6), francese (+4), tedesca (+5b).", type: "open"},
+        {q: "Cosa caratterizza una fuga a 4 voci rispetto a una a 3?", a: "Maggiore densità contrappuntistica e possibilità di stretto più complesso.", type: "open"},
+        {q: "Descrivi la forma sonata-rondò", a: "Forma ibrida che combina elementi del rondò (ritornelli) con sviluppo sonatistico.", type: "open"},
+        {q: "Qual è la funzione dell'accordo di sesta napoletana?", a: "Accordo cromatico predominante (bII6) che prepara la dominante con forte tensione.", type: "open"},
+        {q: "Spiega il 'contrappunto invertibile' alla decima", a: "Contrappunto che funziona quando le voci vengono invertite a distanza di decima.", type: "open"},
+        {q: "Cosa sono i 'toni di chiesa' o modi ecclesiastici?", a: "Sistema modale medievale con otto modi (dorico, frigio, lidio, misolidio e plagali).", type: "open"},
+        {q: "Descrivi la tecnica del 'pedale armonico'", a: "Nota tenuta mentre l'armonia cambia sopra, creando dissonanze e risoluzioni.", type: "open"},
+        {q: "Qual è la struttura della 'passacaglia'?", a: "Forma con basso ostinato ripetuto su cui si costruiscono variazioni continue.", type: "open"},
+        {q: "Spiega il 'contrappunto doppio' o 'invertibile'", a: "Contrappunto dove le voci possono essere scambiate mantenendo correttezza armonica.", type: "open"},
+        {q: "Cosa caratterizza la 'forma ciclica' nelle opere romantiche?", a: "Uso di temi ricorrenti trasformati attraverso i movimenti dell'opera.", type: "open"},
+        {q: "Descrivi la 'tecnica dello sviluppo motivico' in Beethoven", a: "Elaborazione di brevi motivi attraverso variazione, frammentazione e ricombinazione.", type: "open"},
+        {q: "Qual è la funzione della 'cadenza plagale'?", a: "Cadenza IV-I con carattere modale e contemplativo, usata spesso nelle chiusure.", type: "open"},
+        {q: "Spiega il 'contrappunto fiorito'", a: "Contrappunto con valori ritmici variati e ornamentazioni tra le voci.", type: "open"},
+        {q: "Cosa caratterizza la 'fugato' vs 'fuga' vera?", a: "Fugato è episodio fugato dentro forma più ampia, non indipendente come fuga.", type: "open"},
+        {q: "Descrivi l''accordo di settima diminuita'", a: "Accordo simmetrico con tre terze minori, funzione di dominante alterata.", type: "open"},
+        {q: "Qual è la tecnica dell''enarmonia' in modulazione?", a: "Reinterpretazione enarmonica di un accordo per modulare a tonalità lontane.", type: "open"},
+        {q: "Spiega il 'canone cancrizante'", a: "Canone dove seconda voce suona tema al contrario (retrogrado).", type: "open"},
+        {q: "Cosa caratterizza la 'variazione ornamentale'?", a: "Variazione che mantiene armonia base aggiungendo ornamenti melodici.", type: "open"},
+        {q: "Descrivi la 'texture omofo nica' vs 'polifonica'", a: "Omofonica: melodia con accompagnamento; polifonica: voci indipendenti di uguale importanza.", type: "open"},
+        {q: "Qual è la funzione della 'dominante preparata'?", a: "Uso di IV o II prima della dominante per rafforzare approccio alla tonica.", type: "open"},
+        {q: "Spiega il 'tema con variazioni' barocco", a: "Forma con tema iniziale seguito da variazioni che mantengono basso o armonia.", type: "open"},
+        {q: "Cosa caratterizza la 'sinfonia concertante'?", a: "Forma orchestrale con più solisti in dialogo, tra concerto e sinfonia.", type: "open"},
+        {q: "Descrivi il 'recitativo accompagnato' vs 'secco'", a: "Accompagnato ha orchestra; secco solo continuo, più declamatorio.", type: "open"},
+        {q: "Qual è la tecnica della 'stretto' nella fuga?", a: "Entrate ravvicinate del soggetto sovrapposte prima della conclusione normale.", type: "open"},
+        {q: "Spiega la 'risoluzione eccezionale' della dominante", a: "Dominante che risolve su accordo diverso dalla tonica (es. VI, IV).", type: "open"}
+    ]
+};
+
+const curiositaGAS = [
+    {title: "Mozart e il Canone Scurrile", text: "Mozart compose un canone intitolato 'Leck mich im Arsch' ('Leccami il...') per divertire i suoi amici aristocratici.", readingTime: 25},
+    {title: "Berlioz sotto Oppio", text: "Hector Berlioz scrisse la 'Symphonie Fantastique' sotto l'effetto dell'oppio.", readingTime: 20},
+    {title: "La Testa Rubata di Haydn", text: "Joseph Haydn fu sepolto senza la testa: fu trafugata da collezionisti di teschi e restituita solo nel 1954.", readingTime: 25},
+    {title: "Il Theremin Magico", text: "Il theremin è uno strumento che si suona senza toccarlo, usando solo il movimento delle mani nell'aria.", readingTime: 23},
+    {title: "Strauss e il Copyright", text: "Richard Strauss fu citato in tribunale per aver usato 'Funiculì Funiculà' credendola una canzone popolare, mentre era protetta da copyright.", readingTime: 28},
+    {title: "Mozart Poliglotta", text: "Mozart era poliglotta: parlava fluentemente almeno 12 lingue.", readingTime: 18},
+    {title: "Rossini il Pigro", text: "Gioachino Rossini era così pigro che compose l''Ouverture' del 'Barbiere di Siviglia' riciclando materiale da altre sue opere.", readingTime: 26},
+    {title: "Beethoven Sordo Dirige", text: "Beethoven, ormai sordo, dirigeva la 'Nona Sinfonia' senza sentire una nota, affidandosi solo alla memoria e alla vista dei musicisti.", readingTime: 28},
+    {title: "Il Primo Pianoforte", text: "Il primo pianoforte fu inventato da Bartolomeo Cristofori a Padova nel 1700.", readingTime: 20},
+    {title: "Edith Piaf 'Passerotto'", text: "Edith Piaf deve il suo nome d'arte al termine francese 'piaf', che significa 'passerotto', per la sua statura minuta e la voce potente.", readingTime: 26},
+    {title: "Keith Richards e Satisfaction", text: "Keith Richards dei Rolling Stones ha scritto il riff di '(I Can't Get No) Satisfaction' nel sonno e lo ha registrato appena sveglio.", readingTime: 27},
+    {title: "Black Sabbath e Mario Bava", text: "Il nome 'Black Sabbath' deriva da un film horror italiano di Mario Bava.", readingTime: 20},
+    {title: "Mozart Bambino Prodigio", text: "Mozart compose la sua prima sinfonia a 8 anni.", readingTime: 15},
+    {title: "4'33'' - Il Silenzio di Cage", text: "Il brano '4'33''' di John Cage è composto solo da silenzio: l'esecutore non suona nulla per 4 minuti e 33 secondi.", readingTime: 25},
+    {title: "Mozart e il Clarinetto", text: "Il clarinetto fu uno degli strumenti preferiti da Mozart, che gli dedicò un concerto e un quintetto.", readingTime: 23},
+    {title: "L'Elvis del Banjo", text: "Il banjo a 5 corde fu reso popolare da Joel Walker Sweeney, considerato l'Elvis Presley dell'Ottocento.", readingTime: 24},
+    {title: "Stratocaster da Record", text: "La chitarra più costosa mai venduta è una Fender Stratocaster appartenuta a David Gilmour dei Pink Floyd, battuta all'asta per oltre 3 milioni di dollari.", readingTime: 30},
+    {title: "Theremin Spaziale", text: "Il theremin fu usato per la colonna sonora di molti film di fantascienza degli anni '50.", readingTime: 22},
+    {title: "Bach Arrestato", text: "Bach fu arrestato per 'testardaggine' e insubordinazione verso il suo datore di lavoro.", readingTime: 21},
+    {title: "Chopin in Penombra", text: "Chopin suonava il pianoforte solo in penombra e con pochi intimi presenti.", readingTime: 20},
+    {title: "Dies Irae Immortale", text: "Il 'Dies Irae' gregoriano è stato citato in centinaia di colonne sonore e opere classiche.", readingTime: 22},
+    {title: "Hindemith e le Cene Musicali", text: "Il compositore Paul Hindemith organizzava cene in cui gli ospiti dovevano portare strumenti a caso, anche se non li sapevano suonare, e componeva per loro un pezzo improvvisato.", readingTime: 32},
+    {title: "Il Primo Pick-up", text: "Il primo pick-up per chitarra fu inventato da George Beauchamp negli anni '20.", readingTime: 20},
+    {title: "La Canzone Infinita", text: "La canzone più lunga mai registrata dura oltre 13 ore.", readingTime: 18},
+    {title: "Requiem Incompiuto", text: "Il 'Requiem' di Mozart fu completato dopo la sua morte da Franz Xaver Süssmayr.", readingTime: 22},
+    {title: "Funiculì per la Funicolare", text: "Il brano 'Funiculì Funiculà' fu scritto per celebrare la funicolare del Vesuvio.", readingTime: 22},
+    {title: "Satie e le 840 Ripetizioni", text: "Il compositore Erik Satie era ossessionato dai numeri e dalle ripetizioni: in 'Vexations' chiede di ripetere il brano 840 volte.", readingTime: 28},
+    {title: "Chitarre d'Autore", text: "Il liutaio Tony Zemaitis costruiva chitarre personalizzate per rockstar come George Harrison e Ronnie Wood.", readingTime: 24},
+    {title: "Il Tacchino di Rossini", text: "Il compositore era così goloso che inventò una ricetta a base di tacchino e tartufo.", readingTime: 21},
+    {title: "Flauto Magico Massonico", text: "Il 'Flauto Magico' di Mozart contiene messaggi massonici nascosti.", readingTime: 20},
+    {title: "Yesterday Scrambled", text: "Il brano 'Yesterday' dei Beatles fu inizialmente intitolato 'Scrambled Eggs'.", readingTime: 20},
+    {title: "Salieri Sabotatore", text: "Il compositore Salieri sabotò un vecchio spinetta per costringere il teatro a comprarne una nuova.", readingTime: 23},
+    {title: "Flying V Aerospaziale", text: "La Flying V di Gibson fu ispirata ai primi aerei a reazione.", readingTime: 19},
+    {title: "Stokowski contro la Tosse", text: "Il direttore Leopold Stokowski si fermò durante un concerto per rimproverare il pubblico che tossiva troppo.", readingTime: 25},
+    {title: "Bolero Ossessivo", text: "Il 'Bolero' di Ravel è costruito su un unico tema ripetuto ossessivamente.", readingTime: 20},
+    {title: "Bach e il Temperamento", text: "Il 'Clavicembalo ben temperato' di Bach fu scritto per dimostrare la validità del temperamento equabile.", readingTime: 25},
+    {title: "Shostakovich e la Censura", text: "Il compositore Shostakovich inviava cartoline a se stesso per testare la censura sovietica.", readingTime: 22},
+    {title: "Brian May ed Eddie Van Halen", text: "Il brano 'Starfleet Project' di Brian May (Queen) vede la partecipazione di Eddie Van Halen.", readingTime: 23},
+    {title: "Requiem per Manzoni", text: "Il 'Requiem' di Verdi fu scritto in memoria di Alessandro Manzoni.", readingTime: 20},
+    {title: "VOX da Jennings", text: "Il nome della band 'VOX' deriva dalla 'Jennings Organ Company'.", readingTime: 19},
+    {title: "Pachelbel Riscoperto", text: "Il 'Canone di Pachelbel' fu riscoperto solo nel Novecento.", readingTime: 19},
+    {title: "Beethoven contro Steibelt", text: "Beethoven sfidò il pianista Steibelt in un duello musicale e lo umiliò improvvisando su un tema banale.", readingTime: 26},
+    {title: "Il Trillo del Diavolo", text: "Il 'Trillo del diavolo' di Tartini fu ispirato da un sogno in cui il diavolo suonava il violino.", readingTime: 24},
+    {title: "Clair de Lune Poetico", text: "Il 'Clair de Lune' di Debussy prende il nome da una poesia di Paul Verlaine.", readingTime: 22},
+    {title: "Notturno Insonne", text: "Il 'Notturno' di Chopin fu ispirato dalle notti insonni del compositore.", readingTime: 20},
+    {title: "Carillon Improvvisato", text: "Il 'Carillon de Westminster' di Louis Vierne fu improvvisato durante una messa.", readingTime: 21},
+    {title: "Dies Irae nei Videogiochi", text: "Il 'Dies Irae' è stato usato anche nei videogiochi come tema di morte.", readingTime: 20},
+    {title: "Concerto per Mutilato", text: "Il 'Concerto per la mano sinistra' di Ravel fu scritto per un pianista mutilato in guerra.", readingTime: 23},
+    {title: "Mendelssohn a 17 Anni", text: "Il 'Sogno di una notte di mezza estate' di Mendelssohn fu composto quando aveva solo 17 anni.", readingTime: 24},
+    {title: "Ave Maria di Gounod", text: "Il 'Preludio in do maggiore' di Bach è stato usato come base per la canzone 'Ave Maria' di Gounod.", readingTime: 25},
+    {title: "Glissando Famoso", text: "Il 'Glissando' del clarinetto all'inizio di 'Rhapsody in Blue' di Gershwin fu un errore diventato celebre.", readingTime: 25},
+    {title: "Dies Irae in Shining", text: "Il 'Dies Irae' è citato anche nella colonna sonora di 'Shining' di Kubrick.", readingTime: 21},
+    {title: "Poulenc Balinese", text: "Il 'Concerto per due pianoforti' di Poulenc fu ispirato dalla musica balinese.", readingTime: 22},
+    {title: "Tema di Lara Vietato", text: "Il 'Tema di Lara' dal film 'Il dottor Zivago' è stato vietato in URSS per decenni.", readingTime: 23},
+    {title: "Violino Impossibile", text: "Il 'Concerto per violino' di Sibelius fu inizialmente rifiutato dai violinisti per la sua difficoltà.", readingTime: 24},
+    {title: "Valzer Botanico", text: "Il 'Valzer dei fiori' di Čajkovskij fu ispirato da un giardino botanico.", readingTime: 21},
+    {title: "Tromba a Chiavi", text: "Il 'Concerto per tromba' di Haydn fu scritto per la prima tromba a chiavi.", readingTime: 21},
+    {title: "Concerto allo Psicanalista", text: "Il 'Concerto per pianoforte n. 2' di Rachmaninov fu dedicato al suo psicanalista.", readingTime: 23},
+    {title: "Insuccesso di Beethoven", text: "Il 'Concerto per violino' di Beethoven fu un insuccesso alla prima esecuzione.", readingTime: 22},
+    {title: "Rifiuto di Tchaikovsky", text: "Il 'Concerto per pianoforte n. 1' di Tchaikovsky fu rifiutato dal dedicatario.", readingTime: 22},
+    {title: "Mozart e Stadler", text: "Il 'Concerto per clarinetto' di Mozart fu scritto per Anton Stadler, virtuoso dello strumento.", readingTime: 23},
+    {title: "Mendelssohn Innovativo", text: "Il 'Concerto per violino' di Mendelssohn fu uno dei primi a collegare i movimenti senza pause.", readingTime: 25},
+    {title: "Prokofiev in Treno", text: "Il 'Concerto per pianoforte n. 3' di Prokofiev fu scritto durante un viaggio in treno.", readingTime: 23},
+    {title: "Brahms Difficile", text: "Il 'Concerto per violino' di Brahms fu considerato troppo difficile da molti violinisti.", readingTime: 23},
+    {title: "L'Imperatore", text: "Il 'Concerto per pianoforte n. 5' di Beethoven è soprannominato 'Imperatore'.", readingTime: 20},
+    {title: "Unico Successo di Bruch", text: "Il 'Concerto per violino' di Bruch fu il suo unico vero successo.", readingTime: 20},
+    {title: "Elvira Madigan", text: "Il 'Concerto per pianoforte n. 21' di Mozart è noto come 'Elvira Madigan' per l'uso nel film omonimo.", readingTime: 25},
+    {title: "Dvořák e Joachim", text: "Il 'Concerto per violino' di Dvořák fu scritto per il violinista Joseph Joachim.", readingTime: 22},
+    {title: "Shostakovich per il Figlio", text: "Il 'Concerto per pianoforte n. 2' di Shostakovich fu scritto per il figlio Maxim.", readingTime: 23},
+    {title: "Sibelius Riscoperto", text: "Il 'Concerto per violino' di Sibelius fu riscoperto solo nel Novecento.", readingTime: 21},
+    {title: "20 Anni di Liszt", text: "Il 'Concerto per pianoforte n. 1' di Liszt fu scritto in oltre 20 anni.", readingTime: 21},
+    {title: "Paganini Diabolico", text: "Il 'Concerto per violino' di Paganini fu considerato 'diabolico' per la sua difficoltà.", readingTime: 23},
+    {title: "Saint-Saëns in 17 Giorni", text: "Il 'Concerto per pianoforte n. 2' di Saint-Saëns fu scritto in 17 giorni.", readingTime: 22},
+    {title: "Rifiuto d'Amore", text: "Il 'Concerto per violino' di Bartók fu dedicato a una donna che lo rifiutò.", readingTime: 22},
+    {title: "Do Minore Drammatico", text: "Il 'Concerto per pianoforte n. 3' di Beethoven fu scritto in do minore, la sua tonalità 'drammatica'.", readingTime: 25},
+    {title: "Delusione Amorosa", text: "Il 'Concerto per violino' di Tchaikovsky fu scritto dopo una delusione amorosa.", readingTime: 22},
+    {title: "Rachmaninov Sfortunato", text: "Il 'Concerto per pianoforte n. 4' di Rachmaninov fu un insuccesso alla prima.", readingTime: 22},
+    {title: "Korngold Hollywoodiano", text: "Il 'Concerto per violino' di Korngold fu ispirato da colonne sonore hollywoodiane.", readingTime: 23},
+    {title: "Prokofiev Giovane", text: "Il 'Concerto per pianoforte n. 1' di Prokofiev fu scritto a 19 anni.", readingTime: 21},
+    {title: "Elgar e Kreisler", text: "Il 'Concerto per violino' di Elgar fu dedicato a Fritz Kreisler.", readingTime: 20},
+    {title: "22 Anni di Attesa", text: "Il 'Concerto per pianoforte n. 2' di Brahms fu scritto 22 anni dopo il primo.", readingTime: 23},
+    {title: "Glazunov in una Notte", text: "Il 'Concerto per violino' di Glazunov fu scritto in una sola notte.", readingTime: 21},
+    {title: "Chopin a 20", text: "Il 'Concerto per pianoforte n. 1' di Chopin fu scritto a 20 anni.", readingTime: 20},
+    {title: "Nielsen e Møller", text: "Il 'Concerto per violino' di Nielsen fu scritto per il violinista Peder Møller.", readingTime: 22},
+    {title: "Liszt Libero", text: "Il 'Concerto per pianoforte n. 2' di Liszt fu scritto in forma libera, senza movimenti separati.", readingTime: 25},
+    {title: "Szymanowski Polacco", text: "Il 'Concerto per violino' di Szymanowski fu ispirato dalla musica popolare polacca.", readingTime: 23},
+    {title: "Rifiuto di Rubinstein", text: "Il 'Concerto per pianoforte n. 1' di Tchaikovsky fu rifiutato da Nikolai Rubinstein.", readingTime: 23},
+    {title: "Walton e Heifetz", text: "Il 'Concerto per violino' di Walton fu scritto per Jascha Heifetz.", readingTime: 21},
+    {title: "Bartók Finale", text: "Il 'Concerto per pianoforte n. 3' di Bartók fu scritto poco prima della morte del compositore.", readingTime: 25},
+    {title: "Shostakovich Staliniano", text: "Il 'Concerto per violino' di Shostakovich fu scritto durante la repressione staliniana.", readingTime: 24},
+    {title: "Rachmaninov Riscritto", text: "Il 'Concerto per pianoforte n. 1' di Rachmaninov fu riscritto più volte.", readingTime: 22},
+    {title: "Britten in Guerra", text: "Il 'Concerto per violino' di Britten fu scritto durante la Seconda guerra mondiale.", readingTime: 23},
+    {title: "Prokofiev Perduto", text: "Il 'Concerto per pianoforte n. 2' di Prokofiev fu ricostruito dopo essere andato perduto.", readingTime: 24},
+    {title: "Khachaturian in 3 Mesi", text: "Il 'Concerto per violino' di Khachaturian fu scritto in tre mesi.", readingTime: 21},
+    {title: "Shostakovich Solista", text: "Il 'Concerto per pianoforte n. 1' di Shostakovich fu scritto per sé stesso come solista.", readingTime: 24},
+    {title: "Barber Americano", text: "Il 'Concerto per violino' di Barber fu scritto per un giovane violinista americano.", readingTime: 23},
+    {title: "Ravel per Wittgenstein", text: "Il 'Concerto per pianoforte n. 2' di Ravel fu scritto per Paul Wittgenstein, pianista con una sola mano.", readingTime: 27},
+    {title: "Berg per Manon", text: "Il 'Concerto per violino' di Berg fu dedicato a Manon Gropius, figlia di Alma Mahler.", readingTime: 24},
+    {title: "Gershwin Jazz", text: "Il 'Concerto per pianoforte n. 1' di Gershwin fu scritto in stile jazz sinfonico.", readingTime: 22},
+    {title: "Stravinsky e Dushkin", text: "Il 'Concerto per violino' di Stravinsky fu scritto per Samuel Dushkin, che aiutò il compositore a superare le difficoltà tecniche dello strumento.", readingTime: 30}
+];
+
+const challengeFotoGAS = [
+    "📸 Selfie con cuffie alle 3 di notte",
+    "📸 Mani che mimano chitarra in cucina",
+    "📸 Strumento musicale in posto insolito",
+    "📸 Dirigi un'orchestra immaginaria"
+];
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function updateScore() {
+    document.getElementById('scoreValue').textContent = score;
+    document.getElementById('roundValue').textContent = currentRound;
+    document.getElementById('maxRounds').textContent = maxRounds;
+}
+
+function createOverlayData() {
+    return `
+        <div class="overlay-data">
+            <div class="data-item finger-0">
+                <div class="data-content">
+                    <div class="data-label"><div class="data-dot"></div>D1</div>
+                    <div class="data-values">
+                        <span><span class="data-val inactive" id="freq0">---</span>Hz</span>
+                        <span>A:<span class="data-val inactive" id="amp0">--</span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="data-item finger-1">
+                <div class="data-content">
+                    <div class="data-label"><div class="data-dot"></div>D2</div>
+                    <div class="data-values">
+                        <span><span class="data-val inactive" id="freq1">---</span>Hz</span>
+                        <span>A:<span class="data-val inactive" id="amp1">--</span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="data-item finger-2">
+                <div class="data-content">
+                    <div class="data-label"><div class="data-dot"></div>D3</div>
+                    <div class="data-values">
+                        <span><span class="data-val inactive" id="freq2">---</span>Hz</span>
+                        <span>A:<span class="data-val inactive" id="amp2">--</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function createAcousticPanel() {
+    return `
+        <div class="acoustic-panel" id="acousticPanel">
+            <h4 id="presetNameDisplay"></h4>
+            <div id="acousticDescription" style="margin-bottom: 5px; font-size: 0.8em; color: #ccc;"></div>
+        </div>
+    `;
+}
+
+function createRecordingControls() {
+    return `
+        <div class="recording-controls">
+            <button class="record-btn" id="recordBtn" onclick="toggleRecording()">
+                🔴 Avvia Registrazione
+            </button>
+        </div>
+    `;
+}
+
+function updateRealtimeData(f, freq, amp, active) {
+    realtimeData[f] = { frequency: freq, amplitude: amp, active: active };
+    let fe = document.getElementById('freq' + f);
+    let ae = document.getElementById('amp' + f);
+    if (fe) {
+        fe.textContent = active ? Math.round(freq) : '---';
+        fe.className = active ? 'data-val active' : 'data-val inactive';
+    }
+    if (ae) {
+        ae.textContent = active ? (amp * 100).toFixed(0) : '--';
+        ae.className = active ? 'data-val active' : 'data-val inactive';
+    }
+}
+
+function showIndicator(text) {
+    const indicator = document.createElement('div');
+    indicator.className = 'demo-indicator';
+    indicator.textContent = text;
+    document.body.appendChild(indicator);
+    setTimeout(() => indicator.remove(), 2500);
+}
+
+function showQuizFeedback(isCorrect, correctAnswer = '', timeBonus = 0) {
+    const feedback = document.createElement('div');
+    feedback.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: ${isCorrect ? 'linear-gradient(135deg, #51cf66, #2f9e44)' : 'linear-gradient(135deg, #ff6b6b, #e03131)'};
+        color: white;
+        padding: 25px 40px;
+        border-radius: 15px;
+        font-size: 1.2em;
+        font-weight: bold;
+        z-index: 100000;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        text-align: center;
+        animation: feedbackPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    `;
+    
+    let bonusText = '';
+    if (isCorrect && timeBonus > 0) {
+        bonusText = `<div style="font-size: 0.8em; margin-top: 8px; color: #ffd700;">⚡ Bonus velocità: +${timeBonus} punti!</div>`;
+    }
+    
+    feedback.innerHTML = `
+        <div style="font-size: 2.5em; margin-bottom: 8px;">${isCorrect ? '✅' : '❌'}</div>
+        <div>${isCorrect ? 'RISPOSTA CORRETTA!' : 'RISPOSTA ERRATA'}</div>
+        ${correctAnswer ? `<div style="font-size: 0.75em; margin-top: 8px; opacity: 0.9;">Corretta: ${correctAnswer}</div>` : ''}
+        ${isCorrect ? `<div style="font-size: 0.85em; margin-top: 6px;">+${10 + timeBonus} punti</div>` : ''}
+        ${bonusText}
+    `;
+    
+    document.body.appendChild(feedback);
+    
+    setTimeout(() => {
+        feedback.style.animation = 'feedbackFadeOut 0.3s ease-out forwards';
+        setTimeout(() => feedback.remove(), 300);
+    }, 3000);
+}
+
+function iniziaGioco() {
+    userName = document.getElementById('userName').value.trim() || 'Studente';
+    document.getElementById('playerName').textContent = userName;
+    
+    initAudio();
+    
+    document.getElementById('welcomeScreen').classList.remove('active');
+    document.getElementById('modeScreen').classList.add('active');
+}
+
+function backToWelcome() {
+    stopRecording();
+    stopAllAudio();
+    stopQuizTimer();
+    document.getElementById('modeScreen').classList.remove('active');
+    document.getElementById('welcomeScreen').classList.add('active');
+}
+
+function selectMode(mode) {
+    debugLog('Modalità selezionata:', mode);
+    currentMode = mode;
+    score = 0;
+    currentRound = 1;
+    
+    const needsAPI = mode === 'challenge' || mode === 'volvo-challenge';
+    
+    if (needsAPI && !apiKey) {
+        showApiGuide();
+        return;
+    }
+    
+    showInstructions();
+}
+
+function showApiGuide() {
+    document.getElementById('apiGuideModal').classList.add('active');
+}
+
+function closeApiGuide() {
+    document.getElementById('apiGuideModal').classList.remove('active');
+    requestApiKey();
+}
+
+function requestApiKey() {
+    const key = prompt('🔑 INCOLLA QUI LA TUA API KEY GOOGLE GEMINI\n\n(Esempio: AIzaSyD...)');
+    if (key && key.trim().length > 30) {
+        apiKey = key.trim();
+        localStorage.setItem('geminiApiKey', apiKey);
+        alert('✅ API Key salvata!');
+        showInstructions();
+    } else {
+        backToModes();
+    }
+}
+
+function showInstructions() {
+    const modal = document.getElementById('instructionsModal');
+    const content = document.getElementById('instructionsContent');
+    let instructions = '';
+
+    if (currentMode === '2d') instructions = '<h3>🎨 Disegno 2D Libero</h3><p style="font-size:0.9em">Tocca e muovi per disegnare con audio sempre attivo! Usa il pulsante Registra per salvare!</p>';
+    else if (currentMode === '2d-guided') instructions = '<h3>🎯 Disegno 2D Guidato</h3><p style="font-size:0.9em">Scegli preset dal menu Demo e segui le guide animate con audio! Registra le performance!</p>';
+    else if (currentMode === '3d') instructions = '<h3>🌍 Disegno 3D Libero</h3><p style="font-size:0.9em">Disegna nello spazio tridimensionale con audio spaziale! Registra le creazioni!</p>';
+    else if (currentMode === '3d-guided') instructions = '<h3>✨ Disegno 3D Guidato</h3><p style="font-size:0.9em">Esplora 10 preset 3D con demo automatiche e audio! Registra tutto!</p>';
+    else if (currentMode === 'challenge') instructions = '<h3>📸 Photo Challenge</h3><p style="font-size:0.9em">Ricevi sfide creative, scatta foto, AI valuta AUTOMATICAMENTE!</p>';
+    else if (currentMode === 'volvo-challenge') instructions = '<h3>🚗 Volvo Challenge</h3><p style="font-size:0.9em">Trova una Volvo e scatta foto creativa! Invio automatico!</p>';
+    else if (currentMode === 'curiosita') instructions = '<h3>🧠 Curiosità GAS</h3><p style="font-size:0.9em">Leggi curiosità musicali ...</p>';
+    else if (currentMode.startsWith('quiz-')) instructions = '<h3>🎵 Quiz Musicale</h3><p style="font-size:0.9em">Scegli difficoltà e rispondi alle domande! <strong>Più veloce = più punti!</strong> Timer: 30 secondi per domanda.</p>';
+
+    content.innerHTML = instructions;
+    modal.classList.add('active');
+
+    // Chiudi automaticamente dopo 2.5 secondi
+    setTimeout(() => {
+        proceedToGame();
+    }, 2500);
+}
+
+function proceedToGame() {
+    document.getElementById('instructionsModal').classList.remove('active');
+    
+    if (currentMode.startsWith('quiz-')) {
+        showDifficultySelector();
+    } else {
+        startGame();
+    }
+}
+
+function showDifficultySelector() {
+    const gameArea = document.getElementById('gameArea');
+    gameArea.innerHTML = `
+        <h2 style="text-align: center; color: #667eea; margin-bottom: 10px; font-size: 1.1em;">Scegli difficoltà</h2>
+        <div class="difficulty-selector">
+            <div class="difficulty-btn" onclick="selectDifficulty('facile')">
+                <h3 style="font-size: 1em;">😊 Facile</h3><p style="font-size: 0.8em;">Domande base</p>
+            </div>
+            <div class="difficulty-btn" onclick="selectDifficulty('medio')">
+                <h3 style="font-size: 1em;">🤔 Medio</h3><p style="font-size: 0.8em;">Più impegnative</p>
+            </div>
+            <div class="difficulty-btn" onclick="selectDifficulty('avanzato')">
+                <span class="api-required">API</span>
+                <h3 style="font-size: 1em;">🧠 Avanzato</h3><p style="font-size: 0.8em;">Risposte libere + AI!</p>
+            </div>
+        </div>
+    `;
+    document.getElementById('modeScreen').classList.remove('active');
+    document.getElementById('gameScreen').classList.add('active');
+}
+
+function selectDifficulty(level) {
+    currentDifficulty = level;
+    isExpertMode = (level === 'avanzato');
+    
+    if (isExpertMode && !apiKey) {
+        alert('⚠️ Livello Avanzato richiede API Key!');
+        showApiGuide();
+        return;
+    }
+    
+    // MODIFICA: Prende domande RANDOM da tutto il pool invece che le prime N
+    let questionPool = [];
+    if (currentMode === 'quiz-novecento') questionPool = [...quizNovecento[level]];
+    else if (currentMode === 'quiz-jazz') questionPool = [...quizJazz[level]];
+    else if (currentMode === 'quiz-classica') questionPool = [...quizClassica[level]];
+    
+    // Mischia TUTTE le domande e prendi maxRounds casuali
+    currentQuestions = shuffleArray(questionPool).slice(0, maxRounds);
+    startGame();
+}
+
+function startGame() {
+    document.getElementById('modeScreen').classList.remove('active');
+    document.getElementById('gameScreen').classList.add('active');
+    
+    if (!['curiosita', '2d', '2d-guided', '3d', '3d-guided'].includes(currentMode)) {
+        document.getElementById('scoreContainer').style.display = 'block';
+        updateScore();
+    }
+    
+    debugLog('Avvio modalità:', currentMode);
+    
+    if (currentMode === '2d') startDrawing2D(false);
+    else if (currentMode === '2d-guided') startDrawing2D(true);
+    else if (currentMode === '3d') startDrawing3D(false);
+    else if (currentMode === '3d-guided') startDrawing3D(true);
+    else if (currentMode === 'challenge') startPhotoChallenge();
+    else if (currentMode === 'volvo-challenge') startVolvoChallenge();
+    else if (currentMode === 'curiosita') startCuriosita();
+    else if (currentMode.startsWith('quiz-')) startQuiz();
+}
+
+function backToModes() {
+    stopRecording();
+    stopAllAudio();
+    stopQuizTimer();
+    activeTouches.clear();
+    touchIdToFingerIndex.clear();
+    nextFingerIndex = 0;
+    demoMode = false;
+    audioGuidedMode = false;
+    
+    if (guideAnimationId) {
+        cancelAnimationFrame(guideAnimationId);
+        guideAnimationId = null;
+    }
+    
+    if (animationLoopId) {
+        cancelAnimationFrame(animationLoopId);
+        animationLoopId = null;
+    }
+    
+    if (renderer3d) {
+        try { renderer3d.domElement.remove(); } catch(e) {}
+        renderer3d = null;
+        scene3d = null;
+        camera3d = null;
+        meshes3d = [];
+        guideMeshes3d = [];
+    }
+    
+    if (curiositaTimer) clearInterval(curiositaTimer);
+    
+    guideBalls = [];
+    guidesEnabled = false;
+    guideTime = 0;
+    score = 0;
+    currentRound = 1;
+    
+    document.getElementById('gameScreen').classList.remove('active');
+    document.getElementById('resultsModal').classList.remove('active');
+    document.getElementById('modeScreen').classList.add('active');
+}
+
+function startDrawing2D(withGuides) {
+    guidesEnabled = withGuides;
+    currentPreset = 'harmonic';
+    
+    let g = document.getElementById('gameArea');
+    g.innerHTML = `
+        <div class="info-box">
+            <strong>🎨 2D Audio${withGuides ? ' Guidato' : ''}</strong> - Audio sempre attivo! 🔊<br>
+            ${withGuides ? 'Clicca su un preset: la demo parte automaticamente con audio!' : 'Tocca e muovi: Y = Frequenza'}
+        </div>
+        <div class="compact-controls">
+            <div class="control-group">
+                ${withGuides ? `
+                <button onclick="openDemoModal()" id="demoBtn" style="background: #28a745; padding: 4px 10px; font-size: 0.75em; margin: 0;">🎭 Menu Demo</button>
+                <div class="speed-control"><label>⚡</label><input type="range" id="speedSlider" min="0.3" max="2" step="0.1" value="1" onchange="guideSpeed=parseFloat(this.value)"></div>
+                ` : ''}
+            </div>
+        </div>
+        <div class="canvas-container" id="canvasContainer2D">
+            <canvas id="drawingCanvas"></canvas>
+        </div>
+        ${createOverlayData()}
+        ${withGuides ? createAcousticPanel() : ''}
+        ${createRecordingControls()}
+    `;
+    
+    canvas = document.getElementById('drawingCanvas');
+    ctx = canvas.getContext('2d');
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = 250;
+    
+    canvas.addEventListener('touchstart', handleTouch2D, { passive: false });
+    canvas.addEventListener('touchmove', handleTouch2D, { passive: false });
+    canvas.addEventListener('touchend', endTouch2D, { passive: false });
+    
+    initAudio();
+    
+    if (withGuides) {
+        initGuides2D();
+        animateGuides2D();
+        updateAcousticDescription2D();
+    }
+}
+
+function initGuides2D() {
+    const container = document.getElementById('canvasContainer2D');
+    guideBalls = [];
+    for (let i = 0; i < 3; i++) {
+        const ball = document.createElement('div');
+        ball.className = `guide-ball guide-ball-${i}`;
+        container.appendChild(ball);
+        guideBalls.push(ball);
+    }
+}
+
+function animateGuides2D() {
+    if (!guidesEnabled || guideBalls.length === 0) return;
+
+    // Se demoMode è false, ferma l'animazione
+    if (!demoMode) {
+        guideAnimationId = null;
+        return;
+    }
+
+    guideTime += 0.016 * guideSpeed;
+    const w = canvas.width;
+    const h = canvas.height;
+    const preset = presets2DGeometric[currentPreset] || presets2DReal[currentPreset];
+    if (!preset) return;
+
+    guideBalls.forEach((ball, i) => {
+        const pos = preset.calculate(guideTime, w, h, i);
+        ball.style.left = pos.x + 'px';
+        ball.style.top = pos.y + 'px';
+        if (demoMode) simulateTouch2D(i, pos.x, pos.y);
+    });
+    guideAnimationId = requestAnimationFrame(animateGuides2D);
+}
+
+function updateAcousticDescription2D(presetCategory) {
+    const preset = presetCategory 
+        ? presetCategory[currentPreset]
+        : (presets2DGeometric[currentPreset] || presets2DReal[currentPreset]);
+    if (!preset) return;
+    const panel = document.getElementById('presetNameDisplay');
+    const desc = document.getElementById('acousticDescription');
+    if (panel) panel.textContent = preset.name;
+    if (desc) desc.textContent = preset.acousticInfo;
+}
+
+function handleTouch2D(e) {
+    if (demoMode) return;
+    e.preventDefault();
+    
+    if (sharedAudioContext && sharedAudioContext.state === 'suspended') {
+        sharedAudioContext.resume();
+    }
+    
+    let rect = canvas.getBoundingClientRect();
+    for (let i = 0; i < e.touches.length && i < 3; i++) {
+        let t = e.touches[i];
+        let x = t.clientX - rect.left;
+        let y = t.clientY - rect.top;
+        let id = t.identifier;
+        
+        if (!touchIdToFingerIndex.has(id) && nextFingerIndex < 3) {
+            touchIdToFingerIndex.set(id, nextFingerIndex);
+            nextFingerIndex++;
+        }
+        
+        let f = touchIdToFingerIndex.get(id);
+        if (f !== undefined) {
+            if (activeTouches.has(id)) {
+                let old = activeTouches.get(id);
+                ctx.strokeStyle = touchColors[f];
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(old.x, old.y);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
+            activeTouches.set(id, { x, y, fingerIndex: f });
+            createAudio(id, y, f, canvas.height);
+        }
+    }
+}
+
+function endTouch2D(e) {
+    if (demoMode) return;
+    e.preventDefault();
+    for (let i = 0; i < e.changedTouches.length; i++) {
+        let id = e.changedTouches[i].identifier;
+        let d = activeTouches.get(id);
+        if (d) stopAudio(id, d.fingerIndex);
+        activeTouches.delete(id);
+        touchIdToFingerIndex.delete(id);
+        if (nextFingerIndex > 0) nextFingerIndex--;
+    }
+}
+
+function simulateTouch2D(fingerIndex, x, y) {
+    const touchId = 'demo-' + fingerIndex;
+    if (demoTouches[fingerIndex]) {
+        const old = demoTouches[fingerIndex];
+        ctx.strokeStyle = touchColors[fingerIndex];
+        ctx.lineWidth = audioGuidedMode ? 6 : 4;
+        ctx.beginPath();
+        ctx.moveTo(old.x, old.y);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    }
+    demoTouches[fingerIndex] = { x, y };
+    createAudio(touchId, y, fingerIndex, canvas.height);
+}
+
+function toggleDemoMode() {
+    demoMode = !demoMode;
+    const btn = document.getElementById('demoBtn') || document.getElementById('demoBtn3D');
+
+    debugLog('🎭 toggleDemoMode - demoMode:', demoMode);
+
+    if (demoMode) {
+        if (btn) {
+            btn.textContent = '⏸️ Stop Demo';
+            btn.style.background = '#dc3545';
+        }
+
+        if (!sharedAudioContext || sharedAudioContext.state === 'closed') {
+            initAudio();
+        }
+        if (sharedAudioContext.state === 'suspended') {
+            debugLog('🔊 Resume AudioContext per demo');
+            sharedAudioContext.resume();
+        }
+
+        // Riavvia le animazioni se erano ferme
+        if (guidesEnabled && guideBalls.length > 0 && !guideAnimationId) {
+            debugLog('🎬 Riavvio animazione 2D');
+            animateGuides2D();
+        }
+        // Riavvia animazione 3D se necessario (l'animazione 3D continua sempre ma senza audio quando demoMode è false)
+        if (scene3d && camera3d && renderer3d && guideMeshes3d.length > 0) {
+            debugLog('🎬 Audio 3D attivato per demo');
+        }
+
+    } else {
+        if (btn) {
+            btn.textContent = '🎭 Menu Demo';
+            btn.style.background = '#28a745';
+        }
+
+        // Ferma tutte le animazioni in corso
+        if (guideAnimationId) {
+            cancelAnimationFrame(guideAnimationId);
+            guideAnimationId = null;
+        }
+        if (animationLoopId) {
+            cancelAnimationFrame(animationLoopId);
+            animationLoopId = null;
+        }
+
+        // Reset demo touches
+        demoTouches.forEach((touch, i) => {
+            demoTouches[i] = null;
+        });
+
+        // Ferma TUTTI gli audio attivi usando stopAllAudio
+        stopAllAudio();
+
+        debugLog('🔇 Demo fermata - Tutti gli audio interrotti');
+    }
+}
+
+function startDrawing3D(withGuides) {
+    guidesEnabled = withGuides;
+    currentPreset = 'helix';
+    
+    let g = document.getElementById('gameArea');
+    g.innerHTML = `
+        <div class="info-box">
+            <strong>🌍 3D Audio${withGuides ? ' Guidato' : ''}</strong> - Audio sempre attivo! 🔊<br>
+            ${withGuides ? '<strong>✨ DEMO AUTOMATICA CON AUDIO:</strong> Clicca preset per demo con suono!' : 'Disegna nello spazio 3D'}
+        </div>
+        <div class="compact-controls">
+            <div class="control-group">
+                ${withGuides ? `
+                <button onclick="openDemoModal()" id="demoBtn3D" style="background: #28a745; padding: 4px 10px; font-size: 0.75em; margin: 0;">🎭 Menu Demo</button>
+                <div class="speed-control"><label>⚡</label><input type="range" id="speedSlider3D" min="0.3" max="2" step="0.1" value="1" onchange="guideSpeed=parseFloat(this.value)"></div>
+                ` : ''}
+            </div>
+        </div>
+        <div class="canvas-container" id="canvas3dContainer"></div>
+        ${createOverlayData()}
+        ${withGuides ? createAcousticPanel() : ''}
+        ${createRecordingControls()}
+    `;
+    
+    init3DScene(withGuides);
+    initAudio();
+    
+    if (withGuides) updateAcousticDescription3D();
+}
+
+function init3DScene(withGuides) {
+    let c = document.getElementById('canvas3dContainer');
+    let w = c.clientWidth;
+    let h = 250;
+    
+    scene3d = new THREE.Scene();
+    scene3d.background = new THREE.Color(0x1a1a2e);
+    
+    camera3d = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
+    camera3d.position.set(0, 3, 15);
+    
+    renderer3d = new THREE.WebGLRenderer({ antialias: true });
+    renderer3d.setSize(w, h);
+    renderer3d.domElement.style.borderRadius = '12px';
+    renderer3d.domElement.style.border = '2px solid #667eea';
+    renderer3d.domElement.style.touchAction = 'none';
+    renderer3d.domElement.style.width = '100%';
+    c.appendChild(renderer3d.domElement);
+    
+    scene3d.add(new THREE.AmbientLight(0xffffff, 0.5));
+    scene3d.add(new THREE.GridHelper(20, 20, 0x667eea, 0x333333));
+    
+    if (withGuides) initGuides3D();
+    
+    let lastPos = [null, null, null];
+    
+    renderer3d.domElement.addEventListener('touchstart', e => {
+        e.preventDefault();
+        if (sharedAudioContext && sharedAudioContext.state === 'suspended') {
+            debugLog('🔊 Resuming AudioContext on 3D touch');
+            sharedAudioContext.resume();
+        }
+        for (let i = 0; i < e.changedTouches.length; i++) {
+            let id = e.changedTouches[i].identifier;
+            if (!touchIdToFingerIndex.has(id) && nextFingerIndex < 3) {
+                touchIdToFingerIndex.set(id, nextFingerIndex);
+                nextFingerIndex++;
+            }
+            let f = touchIdToFingerIndex.get(id);
+            if (f !== undefined) lastPos[f] = null;
+        }
+    }, { passive: false });
+    
+    renderer3d.domElement.addEventListener('touchmove', e => {
+        if (demoMode) return;
+        e.preventDefault();
+        let r = renderer3d.domElement.getBoundingClientRect();
+        for (let i = 0; i < e.touches.length; i++) {
+            let t = e.touches[i];
+            let id = t.identifier;
+            if (!touchIdToFingerIndex.has(id)) continue;
+            let f = touchIdToFingerIndex.get(id);
+            let tk = 't3d-' + id;
+            let x = ((t.clientX - r.left) / r.width) * 2 - 1;
+            let y = -((t.clientY - r.top) / r.height) * 2 + 1;
+            let pos = new THREE.Vector3(x * 10, y * 5, y * 5);
+            drawIn3D(f, pos, lastPos[f]);
+            lastPos[f] = pos.clone();
+            let yPos = t.clientY - r.top;
+            let freqY = r.height * (1 - yPos / r.height);
+            createAudio(tk, freqY, f, r.height);
+        }
+    }, { passive: false });
+    
+    renderer3d.domElement.addEventListener('touchend', e => {
+        e.preventDefault();
+        for (let i = 0; i < e.changedTouches.length; i++) {
+            let id = e.changedTouches[i].identifier;
+            if (!touchIdToFingerIndex.has(id)) continue;
+            let f = touchIdToFingerIndex.get(id);
+            lastPos[f] = null;
+            stopAudio('t3d-' + id, f);
+            touchIdToFingerIndex.delete(id);
+            if (nextFingerIndex > 0) nextFingerIndex--;
+        }
+    }, { passive: false });
+    
+    animate3D();
+}
+
+function initGuides3D() {
+    // Rimuovi le vecchie guide mesh se esistono
+    if (guideMeshes3d.length > 0) {
+        guideMeshes3d.forEach(mesh => {
+            if (scene3d) {
+                scene3d.remove(mesh);
+                if (mesh.geometry) mesh.geometry.dispose();
+                if (mesh.material) mesh.material.dispose();
+            }
+        });
+    }
+    guideMeshes3d = [];
+
+    // Crea nuove guide mesh
+    for (let i = 0; i < 3; i++) {
+        const geometry = new THREE.SphereGeometry(0.3, 16, 16);
+        const material = new THREE.MeshBasicMaterial({
+            color: new THREE.Color(touchColors[i]),
+            transparent: true,
+            opacity: 0.8
+        });
+        const sphere = new THREE.Mesh(geometry, material);
+        const light = new THREE.PointLight(new THREE.Color(touchColors[i]), 1, 10);
+        sphere.add(light);
+        scene3d.add(sphere);
+        guideMeshes3d.push(sphere);
+    }
+}
+
+function drawIn3D(f, pos, lastPos) {
+    let col = new THREE.Color(touchColors[f]);
+    if (lastPos && lastPos.distanceTo(pos) > 0.1) {
+        let g = new THREE.BufferGeometry().setFromPoints([lastPos, pos]);
+        let m = new THREE.LineBasicMaterial({ color: col, opacity: 0.8, transparent: true });
+        let l = new THREE.Line(g, m);
+        scene3d.add(l);
+        meshes3d.push(l);
+    }
+    let sg = new THREE.SphereGeometry(audioGuidedMode ? 0.12 : 0.08, 8, 8);
+    let sm = new THREE.MeshBasicMaterial({ color: col });
+    let s = new THREE.Mesh(sg, sm);
+    s.position.copy(pos);
+    scene3d.add(s);
+    meshes3d.push(s);
+}
+
+function animate3D() {
+    if (!scene3d || !camera3d || !renderer3d) return;
+
+    let time = Date.now() * 0.0001;
+    camera3d.position.x = Math.sin(time) * 15;
+    camera3d.position.z = Math.cos(time) * 15;
+    camera3d.lookAt(0, 0, 0);
+
+    if (guidesEnabled && guideMeshes3d.length > 0) {
+        // Se demoMode è false, non simulare touch ma continua a renderizzare
+        if (demoMode) {
+            guideTime += 0.016 * guideSpeed;
+            const preset = presets3DGeometric[currentPreset] || presets3DReal[currentPreset];
+            if (preset) {
+                guideMeshes3d.forEach((sphere, i) => {
+                    const pos = preset.calculate(guideTime, i);
+                    sphere.position.set(pos.x, pos.y, pos.z);
+                    simulateTouch3D(i, pos);
+                });
+            }
+            // Non stampare warning se il preset non è trovato (potrebbe essere un preset 2D)
+        }
+    }
+    try { renderer3d.render(scene3d, camera3d); } catch (e) {}
+
+    animationLoopId = requestAnimationFrame(animate3D);
+}
+
+function simulateTouch3D(fingerIndex, pos3d) {
+    const touchId = 'demo3d-' + fingerIndex;
+
+    const minY = -5;
+    const maxY = 5;
+    const normalizedY = Math.max(0, Math.min(1, (pos3d.y - minY) / (maxY - minY)));
+
+    const virtualCanvasHeight = 250;
+    const yPos = virtualCanvasHeight * (1 - normalizedY);
+
+    if (demoTouches[fingerIndex]) {
+        drawIn3D(fingerIndex, new THREE.Vector3(pos3d.x, pos3d.y, pos3d.z), demoTouches[fingerIndex]);
+    }
+    demoTouches[fingerIndex] = new THREE.Vector3(pos3d.x, pos3d.y, pos3d.z);
+
+    if (sharedAudioContext) {
+        if (sharedAudioContext.state === 'running') {
+            createAudio(touchId, yPos, fingerIndex, virtualCanvasHeight);
+        } else if (sharedAudioContext.state === 'suspended') {
+            console.log('⚠️ AudioContext suspended in simulateTouch3D, attempting resume...');
+            sharedAudioContext.resume().then(() => {
+                console.log('✅ AudioContext resumed, creating audio');
+                createAudio(touchId, yPos, fingerIndex, virtualCanvasHeight);
+            });
+        }
+    } else {
+        console.error('❌ sharedAudioContext non disponibile in simulateTouch3D!');
+    }
+}
+
+function updateAcousticDescription3D(presetCategory) {
+    const preset = presetCategory 
+        ? presetCategory[currentPreset]
+        : (presets3DGeometric[currentPreset] || presets3DReal[currentPreset]);
+    if (!preset) return;
+    const panel = document.getElementById('presetNameDisplay');
+    const desc = document.getElementById('acousticDescription');
+    if (panel) panel.textContent = preset.name;
+    if (desc) desc.textContent = preset.acousticInfo;
+}
+
+function openDemoModal() {
+    // Se demoMode è attivo, fermalo invece di aprire il modale
+    if (demoMode) {
+        toggleDemoMode();
+        return;
+    }
+    populateDemoModal();
+    document.getElementById('demoModal').classList.add('active');
+}
+
+function closeDemoModal() {
+    document.getElementById('demoModal').classList.remove('active');
+}
+
+function populateDemoModal() {
+    // Determina se siamo in modalità 2D o 3D
+    const is2DMode = currentMode === '2d-guided' || currentMode === '2d';
+    const is3DMode = currentMode === '3d-guided' || currentMode === '3d';
+
+    const demo2DGeom = document.getElementById('demo2DGeometric');
+    demo2DGeom.innerHTML = '';
+    // Mostra demo 2D solo se siamo in modalità 2D
+    if (is2DMode) {
+        Object.keys(presets2DGeometric).forEach(key => {
+            const preset = presets2DGeometric[key];
+            const card = document.createElement('div');
+            card.className = 'demo-card';
+            if (selectedDemoPreset === `2d-${key}`) card.classList.add('active');
+            card.onclick = () => selectDemoCardAndStart(`2d-${key}`);
+            card.innerHTML = `<div class="demo-icon">${preset.icon}</div><div class="demo-name">${preset.name}</div><div class="demo-desc">${preset.desc}</div>`;
+            demo2DGeom.appendChild(card);
+        });
+    }
+
+    const demo2DReal = document.getElementById('demo2DReal');
+    demo2DReal.innerHTML = '';
+    if (is2DMode) {
+        Object.keys(presets2DReal).forEach(key => {
+            const preset = presets2DReal[key];
+            const card = document.createElement('div');
+            card.className = 'demo-card';
+            if (selectedDemoPreset === `2d-${key}`) card.classList.add('active');
+            card.onclick = () => selectDemoCardAndStart(`2d-${key}`);
+            card.innerHTML = `<div class="demo-icon">${preset.icon}</div><div class="demo-name">${preset.name}</div><div class="demo-desc">${preset.desc}</div>`;
+            demo2DReal.appendChild(card);
+        });
+    }
+
+    const demo3DGeom = document.getElementById('demo3DGeometric');
+    demo3DGeom.innerHTML = '';
+    // Mostra demo 3D solo se siamo in modalità 3D
+    if (is3DMode) {
+        Object.keys(presets3DGeometric).forEach(key => {
+            const preset = presets3DGeometric[key];
+            const card = document.createElement('div');
+            card.className = 'demo-card';
+            if (selectedDemoPreset === `3d-${key}`) card.classList.add('active');
+            card.onclick = () => selectDemoCardAndStart(`3d-${key}`);
+            card.innerHTML = `<div class="demo-icon">${preset.icon}</div><div class="demo-name">${preset.name}</div><div class="demo-desc">${preset.desc}</div>`;
+            demo3DGeom.appendChild(card);
+        });
+    }
+
+    const demo3DReal = document.getElementById('demo3DReal');
+    demo3DReal.innerHTML = '';
+    if (is3DMode) {
+        Object.keys(presets3DReal).forEach(key => {
+            const preset = presets3DReal[key];
+            const card = document.createElement('div');
+            card.className = 'demo-card';
+            if (selectedDemoPreset === `3d-${key}`) card.classList.add('active');
+            card.onclick = () => selectDemoCardAndStart(`3d-${key}`);
+            card.innerHTML = `<div class="demo-icon">${preset.icon}</div><div class="demo-name">${preset.name}</div><div class="demo-desc">${preset.desc}</div>`;
+            demo3DReal.appendChild(card);
+        });
+    }
+}
+
+function selectDemoCardAndStart(presetId) {
+    selectedDemoPreset = presetId;
+    document.querySelectorAll('.demo-card').forEach(card => card.classList.remove('active'));
+    event.target.closest('.demo-card').classList.add('active');
+    
+    setTimeout(() => {
+        startSelectedDemo();
+    }, 400);
+}
+
+function selectAudioGuided() {
+    audioGuidedMode = true;
+    selectedDemoPreset = null;
+    closeDemoModal();
+    showIndicator('🎼 Modalità Audio Guidato Attivata');
+}
+
+function startSelectedDemo() {
+    if (!selectedDemoPreset && !audioGuidedMode) {
+        return;
+    }
+    closeDemoModal();
+    
+    if (selectedDemoPreset) {
+        const [dimension, presetKey] = selectedDemoPreset.split('-');
+        
+        debugLog(`🎭 Starting demo: ${dimension}-${presetKey}`);
+        
+        if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (scene3d && meshes3d) {
+            // Rimuovi solo le mesh disegnate, NON le guide mesh
+            meshes3d.forEach(mesh => {
+                // Non rimuovere le guide mesh
+                if (!guideMeshes3d.includes(mesh)) {
+                    scene3d.remove(mesh);
+                    if (mesh.geometry) mesh.geometry.dispose();
+                    if (mesh.material) mesh.material.dispose();
+                }
+            });
+            meshes3d = [];
+        }
+        
+        if (dimension === '2d') {
+            if (presets2DGeometric[presetKey]) {
+                currentPreset = presetKey;
+                updateAcousticDescription2D(presets2DGeometric);
+            } else if (presets2DReal[presetKey]) {
+                currentPreset = presetKey;
+                updateAcousticDescription2D(presets2DReal);
+            }
+        } else if (dimension === '3d') {
+            if (presets3DGeometric[presetKey]) {
+                currentPreset = presetKey;
+                updateAcousticDescription3D(presets3DGeometric);
+            } else if (presets3DReal[presetKey]) {
+                currentPreset = presetKey;
+                updateAcousticDescription3D(presets3DReal);
+            }
+            // Reset guide time per demo 3D
+            guideTime = 0;
+            // SEMPRE ricrea le guide mesh 3D per la demo (anche se guidesEnabled è false)
+            if (scene3d) {
+                debugLog('🎬 Ricreo guide mesh 3D per demo');
+                // Assicura che guidesEnabled sia true per la demo
+                if (!guidesEnabled) {
+                    debugLog('🎬 Attivo guidesEnabled per demo 3D');
+                    guidesEnabled = true;
+                }
+                initGuides3D();
+                debugLog('🎬 Guide mesh 3D create, count:', guideMeshes3d.length);
+            } else {
+                debugLog('⚠️ scene3d non disponibile!');
+            }
+        }
+
+        // Reset guide time per demo 2D
+        if (dimension === '2d') {
+            guideTime = 0;
+        }
+
+        if (!demoMode) {
+            debugLog('🎭 Attivazione demo mode...');
+            toggleDemoMode();
+        }
+        
+        const presetName = dimension === '2d' 
+            ? (presets2DGeometric[presetKey] || presets2DReal[presetKey]).name
+            : (presets3DGeometric[presetKey] || presets3DReal[presetKey]).name;
+        showIndicator(`🎭 Demo: ${presetName}`);
+    }
+}
+
+function initAudio() {
+    if (!sharedAudioContext || sharedAudioContext.state === 'closed') {
+        sharedAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+        debugLog('🔊 AudioContext creato - State:', sharedAudioContext.state);
+        
+        audioDestination = sharedAudioContext.createMediaStreamDestination();
+    }
+    if (sharedAudioContext.state === 'suspended') {
+        debugLog('🔊 AudioContext suspended in initAudio, resuming...');
+        sharedAudioContext.resume().then(() => {
+            debugLog('✅ AudioContext resumed - State:', sharedAudioContext.state);
+        });
+    }
+}
+
+function createAudio(id, y, f, h) {
+    try {
+        if (!sharedAudioContext) {
+            debugLog('⚠️ AudioContext non inizializzato');
+            initAudio();
+            setTimeout(() => createAudio(id, y, f, h), 50);
+            return;
+        }
+        
+        if (sharedAudioContext.state === 'suspended') {
+            debugLog('🔊 AudioContext suspended in createAudio, resuming...');
+            sharedAudioContext.resume().then(() => {
+                createAudio(id, y, f, h);
+            });
+            return;
+        }
+        
+        if (activeOscillators.has(id)) {
+            let a = activeOscillators.get(id);
+            let mult = audioGuidedMode ? [1, 1.25, 1.5] : [1, 1.5, 0.667];
+            let freq = 220 + (1 - y / h) * 660;
+            let fr = freq * mult[f % 3];
+            a.osc.frequency.linearRampToValueAtTime(fr, sharedAudioContext.currentTime + 0.02);
+            updateRealtimeData(f % 3, fr, a.gain.gain.value, true);
+            return;
+        }
+        
+        let osc = sharedAudioContext.createOscillator();
+        let gain = sharedAudioContext.createGain();
+        let mult = audioGuidedMode ? [1, 1.25, 1.5] : [1, 1.5, 0.667];
+        let freq = 220 + (1 - y / h) * 660;
+        let fr = freq * mult[f % 3];
+        osc.frequency.value = fr;
+        osc.type = audioGuidedMode ? 'triangle' : waveformSettings[f % 3];
+        let vol = audioGuidedMode ? 0.18 : 0.12;
+        if (osc.type === 'square') vol = audioGuidedMode ? 0.10 : 0.06;
+        if (osc.type === 'sawtooth') vol = audioGuidedMode ? 0.12 : 0.08;
+        gain.gain.setValueAtTime(0, sharedAudioContext.currentTime);
+        gain.gain.linearRampToValueAtTime(vol, sharedAudioContext.currentTime + 0.02);
+        osc.connect(gain);
+        gain.connect(sharedAudioContext.destination);
+        
+        if (audioDestination) {
+            gain.connect(audioDestination);
+        }
+        
+        osc.start();
+        activeOscillators.set(id, { osc: osc, gain: gain });
+        updateRealtimeData(f % 3, fr, vol, true);
+        
+    } catch (e) {
+        console.error('❌ Audio error:', e);
+    }
+}
+
+function stopAudio(id, f) {
+    if (activeOscillators.has(id)) {
+        let a = activeOscillators.get(id);
+        try {
+            a.gain.gain.linearRampToValueAtTime(0, sharedAudioContext.currentTime + 0.05);
+            setTimeout(() => {
+                try { a.osc.stop(); a.osc.disconnect(); a.gain.disconnect(); } catch (e) {}
+            }, 60);
+        } catch (e) {}
+        activeOscillators.delete(id);
+        updateRealtimeData(f, 0, 0, false);
+    }
+}
+
+function stopAllAudio() {
+    activeOscillators.forEach((a, id) => {
+        try { a.osc.stop(); a.osc.disconnect(); a.gain.disconnect(); } catch (e) {}
+    });
+    activeOscillators.clear();
+    for (let i = 0; i < 3; i++) updateRealtimeData(i, 0, 0, false);
+}
+
+// ==================== RECORDING FUNCTIONS ====================
+
+async function toggleRecording() {
+    if (isRecording) {
+        stopRecording();
+    } else {
+        startRecording();
+    }
+}
+
+async function startRecording() {
+    try {
+        debugLog('🎥 Avvio registrazione...');
+        
+        if (canvas) {
+            canvasStream = canvas.captureStream(30);
+        } else if (renderer3d) {
+            canvasStream = renderer3d.domElement.captureStream(30);
+        }
+        
+        if (!canvasStream) {
+            alert('❌ Impossibile catturare lo stream del canvas!');
+            return;
+        }
+        
+        if (!sharedAudioContext || sharedAudioContext.state === 'closed') {
+            initAudio();
+        }
+        if (sharedAudioContext.state === 'suspended') {
+            await sharedAudioContext.resume();
+        }
+        
+        if (!audioDestination) {
+            audioDestination = sharedAudioContext.createMediaStreamDestination();
+        }
+        audioStream = audioDestination.stream;
+        
+        const combinedStream = new MediaStream([
+            ...canvasStream.getVideoTracks(),
+            ...audioStream.getAudioTracks()
+        ]);
+        
+        const options = { mimeType: 'video/webm;codecs=vp9,opus' };
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+            options.mimeType = 'video/webm;codecs=vp8,opus';
+        }
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+            options.mimeType = 'video/webm';
+        }
+        
+        mediaRecorder = new MediaRecorder(combinedStream, options);
+        recordedChunks = [];
+        
+        mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) {
+                recordedChunks.push(e.data);
+            }
+        };
+        
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `BontempApp_${currentMode}_${Date.now()}.webm`;
+            a.click();
+            URL.revokeObjectURL(url);
+            debugLog('✅ Registrazione salvata!');
+        };
+        
+        mediaRecorder.start(100);
+        isRecording = true;
+        
+        const recordBtn = document.getElementById('recordBtn');
+        if (recordBtn) {
+            recordBtn.textContent = '⏹️ Stop Registrazione';
+            recordBtn.classList.add('recording');
+        }
+        
+        const indicator = document.createElement('div');
+        indicator.id = 'recordIndicator';
+        indicator.className = 'record-indicator';
+        indicator.textContent = '🔴 REC';
+        document.body.appendChild(indicator);
+        
+        debugLog('✅ Registrazione avviata!');
+        
+    } catch (error) {
+        console.error('❌ Errore avvio registrazione:', error);
+        alert('❌ Errore: ' + error.message);
+    }
+}
+
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        isRecording = false;
+        
+        const recordBtn = document.getElementById('recordBtn');
+        if (recordBtn) {
+            recordBtn.textContent = '🔴 Avvia Registrazione';
+            recordBtn.classList.remove('recording');
+        }
+        
+        const indicator = document.getElementById('recordIndicator');
+        if (indicator) indicator.remove();
+        
+        debugLog('⏹️ Registrazione fermata!');
+    }
+}
+
+// ==================== QUIZ CON TIMER ====================
+
+function startQuizTimer() {
+    // Ferma eventuali timer precedenti
+    stopQuizTimer();
+
+    quizTimeRemaining = 30;
+    questionStartTime = Date.now();
+
+    quizTimer = setInterval(() => {
+        quizTimeRemaining--;
+        const timerEl = document.getElementById('quizTimerDisplay');
+        if (timerEl) {
+            timerEl.textContent = `⏱️ ${quizTimeRemaining}s`;
+            
+            // Cambia colore in base al tempo rimasto
+            if (quizTimeRemaining <= 5) {
+                timerEl.style.background = 'linear-gradient(135deg, #ff6b6b, #e03131)';
+            } else if (quizTimeRemaining <= 10) {
+                timerEl.style.background = 'linear-gradient(135deg, #ffa500, #ff6b6b)';
+            }
+        }
+        
+        if (quizTimeRemaining <= 0) {
+            stopQuizTimer();
+            // Tempo scaduto: considera risposta errata
+            showQuizFeedback(false, 'Tempo scaduto!');
+            currentRound++;
+            updateScore();
+            
+            setTimeout(() => {
+                if (currentRound <= maxRounds) showQuizQuestion(currentRound - 1);
+                else showResults();
+            }, 3500);
+        }
+    }, 1000);
+}
+
+function stopQuizTimer() {
+    if (quizTimer) {
+        clearInterval(quizTimer);
+        quizTimer = null;
+    }
+}
+
+function calculateTimeBonus() {
+    // Bonus basato sul tempo rimasto: max 5 punti per risposta veloce
+    if (quizTimeRemaining >= 25) return 5;
+    if (quizTimeRemaining >= 20) return 4;
+    if (quizTimeRemaining >= 15) return 3;
+    if (quizTimeRemaining >= 10) return 2;
+    if (quizTimeRemaining >= 5) return 1;
+    return 0;
+}
+
+function startQuiz() {
+    if (currentRound > maxRounds) return showResults();
+    showQuizQuestion(currentRound - 1);
+}
+
+function showQuizQuestion(index) {
+    if (index >= currentQuestions.length) return showResults();
+    const q = currentQuestions[index];
+    const gameArea = document.getElementById('gameArea');
+
+    if (isExpertMode && q.type === 'open') {
+        gameArea.innerHTML = `
+            <div class="question">
+                <h3>Domanda ${index+1}/${maxRounds} <span class="api-required">AI</span></h3>
+                <p>${q.q}</p>
+                <p style="font-size: 0.85em; color: #666; margin-top: 10px;">💡 Prenditi il tempo necessario per rispondere in modo articolato (minimo 20 caratteri)</p>
+            </div>
+            <textarea id="openAnswer" placeholder="Scrivi risposta articolata..." style="min-height:100px"></textarea>
+            <button onclick="checkOpenAnswer(${index})">Invia Risposta</button>
+        `;
+        // Non avviare il timer per domande aperte
+        return;
+    } else {
+        // Randomizza l'ordine delle opzioni
+        const optionsWithIndex = q.o.map((opt, i) => ({text: opt, originalIndex: i}));
+        const shuffledOptions = shuffleArray([...optionsWithIndex]);
+
+        const opts = shuffledOptions.map((opt, displayIndex) => `
+            <div class="quiz-option" onclick="selectQuizOptionAndSubmit(${index}, ${displayIndex}, ${opt.originalIndex})">
+                <input type="radio" name="answer" value="${opt.originalIndex}" id="opt${displayIndex}">
+                <label for="opt${displayIndex}" style="cursor:pointer; flex:1;">${opt.text}</label>
+            </div>
+        `).join('');
+        gameArea.innerHTML = `
+            <div class="quiz-timer" id="quizTimerDisplay">⏱️ 30s</div>
+            <div class="question">
+                <h3>Domanda ${index+1}/${maxRounds}</h3>
+                <p>${q.q}</p>
+            </div>
+            <div class="quiz-options">${opts}</div>
+        `;
+
+        // Avvia timer solo per domande a scelta multipla
+        startQuizTimer();
+    }
+}
+
+function selectQuizOption(index) {
+    document.getElementById(`opt${index}`).checked = true;
+}
+
+function selectQuizOptionAndSubmit(questionIndex, displayIndex, originalIndex) {
+    // Previeni click multipli
+    const clickedOption = document.getElementById(`opt${displayIndex}`);
+    if (!clickedOption || clickedOption.disabled) return;
+
+    // Disabilita tutte le opzioni per prevenire doppi click
+    document.querySelectorAll('input[name="answer"]').forEach(input => input.disabled = true);
+
+    // Seleziona l'opzione cliccata
+    clickedOption.checked = true;
+
+    // Invia automaticamente dopo breve pausa per feedback visivo
+    setTimeout(() => {
+        checkQuizAnswer(questionIndex);
+    }, 300);
+}
+
+function checkQuizAnswer(index) {
+    // Previeni elaborazione multipla della stessa risposta
+    if (isProcessingAnswer) return;
+    isProcessingAnswer = true;
+
+    stopQuizTimer();
+
+    const q = currentQuestions[index];
+    const selected = document.querySelector('input[name="answer"]:checked');
+
+    if (!selected) {
+        showQuizFeedback(false, 'Seleziona una risposta!');
+        isProcessingAnswer = false;
+        return;
+    }
+
+    const isCorrect = parseInt(selected.value) === q.c;
+    const timeBonus = isCorrect ? calculateTimeBonus() : 0;
+
+    if (isCorrect) {
+        score += 10 + timeBonus;
+        showQuizFeedback(true, '', timeBonus);
+    } else {
+        showQuizFeedback(false, q.o[q.c]);
+    }
+
+    updateScore();
+    currentRound++;
+
+    setTimeout(() => {
+        isProcessingAnswer = false; // Reset flag
+        if (currentRound <= maxRounds) showQuizQuestion(currentRound - 1);
+        else showResults();
+    }, 3500);
+}
+
+async function checkOpenAnswer(index) {
+    stopQuizTimer();
+    
+    const userAnswer = document.getElementById('openAnswer').value.trim();
+    if (userAnswer.length < 20) {
+        showQuizFeedback(false, 'Minimo 20 caratteri!');
+        return;
+    }
+    if (!apiKey) {
+        alert('⚠️ API Key mancante!');
+        return;
+    }
+    
+    const q = currentQuestions[index];
+    document.getElementById('gameArea').innerHTML = '<div class="feedback-box"><h3>⏳ AI valuta...</h3></div>';
+    
+    const timeBonus = calculateTimeBonus();
+    
+    try {
+        const prompt = `Valuta questa risposta (0-10): DOMANDA: ${q.q}. RISPOSTA: ${userAnswer}. RIFERIMENTO: ${q.a}. Formato: PUNTEGGIO: X/10`;
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                contents: [{parts: [{text: prompt}]}],
+                generationConfig: {temperature: 0.4, maxOutputTokens: 1024}
+            })
+        });
+        const data = await response.json();
+        const text = data.candidates[0].content.parts[0].text;
+        let points = 5;
+        const scoreMatch = text.match(/PUNTEGGIO:\s*(\d+)/i);
+        if (scoreMatch) points = Math.min(parseInt(scoreMatch[1]), 10);
+        
+        score += points + timeBonus;
+        updateScore();
+        
+        document.getElementById('gameArea').innerHTML = `
+            <div class="feedback-box ${points >= 7 ? 'success' : ''}">
+                <h3>${points >= 7 ? '✅ Ottimo!' : '📚 Da rivedere'}</h3>
+                <p style="font-size:1.5em">${points}/10 ${timeBonus > 0 ? `+ ${timeBonus} bonus ⚡` : ''}</p>
+                <p style="font-size:0.85em">${text}</p>
+            </div>
+            <button onclick="nextQuestionRound()">Prossima →</button>
+        `;
+    } catch (error) {
+        score += 5 + timeBonus;
+        updateScore();
+        document.getElementById('gameArea').innerHTML = `
+            <div class="feedback-box error">
+                <h3>⚠️ Errore</h3>
+                <p>Punteggio default: ${5 + timeBonus}/10</p>
+            </div>
+            <button onclick="nextQuestionRound()">Continua</button>
+        `;
+    }
+}
+
+function nextQuestionRound() {
+    currentRound++;
+    if (currentRound <= maxRounds) showQuizQuestion(currentRound - 1);
+    else showResults();
+}
+
+// ==================== PHOTO CHALLENGE CON AUTO-SUBMIT ====================
+
+function startPhotoChallenge() {
+    const gameArea = document.getElementById('gameArea');
+    currentChallenge = challengeFotoGAS[Math.floor(Math.random() * challengeFotoGAS.length)];
+    gameArea.innerHTML = `
+        <div class="challenge-box">${currentChallenge}</div>
+        <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
+            <p style="font-size:0.9em">📷 Clicca per scattare/caricare foto</p>
+            <p style="font-size:0.75em; color:#666; margin-top:5px">⚡ Invio automatico dopo caricamento!</p>
+            <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoUpload(event)">
+            <img id="preview" class="preview-image" style="display:none">
+        </div>
+    `;
+}
+
+function handlePhotoUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        uploadedImageMimeType = file.type;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            uploadedImage = e.target.result;
+            document.getElementById('preview').src = uploadedImage;
+            document.getElementById('preview').style.display = 'block';
+            
+            // AUTO-SUBMIT: Invia automaticamente dopo 1 secondo
+            showIndicator('⚡ Invio automatico in corso...');
+            setTimeout(() => {
+                evaluatePhotoWithGemini();
+            }, 1000);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+async function evaluatePhotoWithGemini() {
+    if (!uploadedImage || !apiKey) {
+        alert('⚠️ Carica foto e verifica API Key!');
+        return;
+    }
+    
+    document.getElementById('gameArea').innerHTML = '<div class="feedback-box"><h3>⏳ L\'AI sta analizzando...</h3></div>';
+    
+    try {
+        const base64Data = uploadedImage.split(',')[1];
+        const prompt = `Sei il GRUPPO APUANO SPERIMENTALE. Il giocatore ${userName} ha fatto: "${currentChallenge}". Valuta creatività (0-100). Formato: PUNTEGGIO: XX/100`;
+        
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                contents: [{parts: [{text: prompt}, {inline_data: {mime_type: uploadedImageMimeType, data: base64Data}}]}],
+                generationConfig: {temperature: 0.7, maxOutputTokens: 1024}
+            })
+        });
+        
+        const data = await response.json();
+        const aiResponse = data.candidates[0].content.parts[0].text;
+        let points = 50;
+        const scoreMatch = aiResponse.match(/PUNTEGGIO:\s*(\d+)/i) || aiResponse.match(/(\d+)\s*\/\s*100/);
+        if (scoreMatch) points = Math.min(Math.max(parseInt(scoreMatch[1]), 0), 100);
+        
+        score += points;
+        updateScore();
+        
+        document.getElementById('gameArea').innerHTML = `
+            <div class="feedback-box ${points >= 70 ? 'success' : ''}">
+                <h3>${points >= 70 ? '🎉 Ottimo!' : '👍 Discreto!'}</h3>
+                <p style="font-size:2.5em; margin:15px 0; color:#667eea;">${points}/100</p>
+                <p style="font-size:0.85em">${aiResponse}</p>
+            </div>
+            <button onclick="nextRound()">Prossima Sfida →</button>
+        `;
+    } catch (error) {
+        score += 50;
+        updateScore();
+        document.getElementById('gameArea').innerHTML = `
+            <div class="feedback-box error">
+                <h3>⚠️ Errore AI</h3>
+                <p>Punteggio di default: 50/100</p>
+            </div>
+            <button onclick="nextRound()">Continua →</button>
+        `;
+    }
+}
+
+function startVolvoChallenge() {
+    startPhotoChallenge();
+}
+
+function nextRound() {
+    currentRound++;
+    uploadedImage = null;
+    if (currentRound > maxRounds) {
+        showResults();
+    } else {
+        updateScore();
+        if (currentMode === 'challenge') startPhotoChallenge();
+        else if (currentMode === 'volvo-challenge') startVolvoChallenge();
+    }
+}
+
+function startCuriosita() {
+    currentCuriositaIndex = Math.floor(Math.random() * curiositaGAS.length);
+    showCuriosita();
+}
+
+function showCuriosita() {
+    const c = curiositaGAS[currentCuriositaIndex];
+    if (curiositaTimer) clearInterval(curiositaTimer);
+    curiositaTimeRemaining = c.readingTime;
+    
+    document.getElementById('gameArea').innerHTML = `
+        <div class="curiosita-box">
+            <div class="curiosita-title">${c.title}</div>
+            <p>${c.text}</p>
+        </div>
+        <div style="background:#e7f5ff; padding:10px; border-radius:8px; margin:10px 0;">
+            <div style="display:flex; justify-content:space-between; font-size:0.85em">
+                <span>⏱️ Tempo:</span>
+                <span id="timerDisplay" style="font-size:1.1em; font-weight:bold; color:#667eea;">${curiositaTimeRemaining}s</span>
+            </div>
+            <div style="background:#ddd; height:6px; border-radius:3px; margin-top:8px;">
+                <div id="progressBar" style="background:#667eea; height:100%; width:100%; transition:width 1s;"></div>
+            </div>
+        </div>
+        <button onclick="nextCuriosita()">Prossima 👉</button>
+        <button onclick="pauseTimer()" id="pauseBtn" style="background:#ffc107">⏸️ Pausa</button>
+    `;
+    startCuriositaTimer();
+}
+
+function startCuriositaTimer() {
+    const totalTime = curiositaGAS[currentCuriositaIndex].readingTime;
+    curiositaTimer = setInterval(() => {
+        curiositaTimeRemaining--;
+        const timerDisplay = document.getElementById('timerDisplay');
+        const progressBar = document.getElementById('progressBar');
+        if (timerDisplay) timerDisplay.textContent = `${curiositaTimeRemaining}s`;
+        if (progressBar) progressBar.style.width = `${(curiositaTimeRemaining / totalTime) * 100}%`;
+        if (curiositaTimeRemaining <= 0) {
+            clearInterval(curiositaTimer);
+            nextCuriosita();
+        }
+    }, 1000);
+}
+
+function pauseTimer() {
+    const pauseBtn = document.getElementById('pauseBtn');
+    if (curiositaTimer) {
+        clearInterval(curiositaTimer);
+        curiositaTimer = null;
+        pauseBtn.textContent = '▶️ Riprendi';
+        pauseBtn.style.background = '#51cf66';
+    } else {
+        startCuriositaTimer();
+        pauseBtn.textContent = '⏸️ Pausa';
+        pauseBtn.style.background = '#ffc107';
+    }
+}
+
+function nextCuriosita() {
+    if (curiositaTimer) clearInterval(curiositaTimer);
+    currentCuriositaIndex = (currentCuriositaIndex + 1) % curiositaGAS.length;
+    showCuriosita();
+}
+
+function showResults() {
+    stopQuizTimer();
+    const maxScore = maxRounds * 10;
+    const percentage = (score / maxScore) * 100;
+
+    // Se punteggio perfetto, mostra animazione a tutto schermo
+    if (percentage === 100) {
+        showPerfectScoreAnimation();
+        setTimeout(() => {
+            showNormalResults(maxScore, percentage);
+        }, 3000);
+    } else {
+        showNormalResults(maxScore, percentage);
+    }
+}
+
+function showPerfectScoreAnimation() {
+    const overlay = document.createElement('div');
+    overlay.className = 'victory-overlay';
+    overlay.innerHTML = `
+        <div class="victory-stars">⭐🏆⭐</div>
+        <div class="victory-text">PUNTEGGIO PERFETTO!</div>
+        <div class="victory-score">100/100</div>
+    `;
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+        overlay.remove();
+    }, 3000);
+}
+
+function showNormalResults(maxScore, percentage) {
+    const modal = document.getElementById('resultsModal');
+    const content = document.getElementById('resultsContent');
+
+    let message = percentage >= 80 ? '🏆 Eccellente!' :
+                  percentage >= 60 ? '🌟 Molto Bene!' :
+                  percentage >= 40 ? '💪 Buon Lavoro!' : '📚 Riprova!';
+    let emoji = percentage >= 80 ? '🎉' : percentage >= 60 ? '🎖' : percentage >= 40 ? '🎓' : '📖';
+
+    content.innerHTML = `
+        <div style="text-align:center; padding:15px;">
+            <div style="font-size:4em; margin-bottom:15px;">${emoji}</div>
+            <h3 style="font-size:1.5em; margin-bottom:10px;">${message}</h3>
+            <p style="font-size:1.8em; color:#667eea; font-weight:bold; margin:15px 0;">${score}/${maxScore}</p>
+            <p style="font-size:1.3em; color:#666;">${Math.round(percentage)}%</p>
+        </div>
+    `;
+    modal.classList.add('active');
+}
+
+console.log('✅ BontempApp v3.1 ENHANCED EDITION - Pronto! 🎥🎵⏱️');
+</script>
+</body>
+</html>
