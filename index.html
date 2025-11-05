@@ -8,6 +8,13 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
     <title>BontempApp v3.1 - ENHANCED EDITION</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
         body { 
@@ -590,13 +597,297 @@
             margin-top: 20px;
             text-shadow: 0 6px 15px rgba(0,0,0,0.4);
         }
+
+        /* SALA DELLA FAMA - Modale Conferma Pubblicazione */
+        .publish-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .publish-modal.active {
+            display: flex;
+        }
+        .publish-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: slideUp 0.4s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .publish-modal-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .publish-modal-text {
+            font-size: 0.95em;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .publish-modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .publish-modal-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .publish-btn-yes {
+            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+            color: white;
+        }
+        .publish-btn-yes:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(55, 178, 77, 0.4);
+        }
+        .publish-btn-no {
+            background: #868e96;
+            color: white;
+        }
+        .publish-btn-no:hover {
+            background: #6c757d;
+            transform: translateY(-2px);
+        }
+
+        /* SALA DELLA FAMA - Griglia Pubblicazioni */
+        .hall-of-fame-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+        .fame-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .fame-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        .fame-card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .fame-card-content {
+            padding: 15px;
+        }
+        .fame-card-challenge {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .fame-card-comment {
+            font-size: 0.85em;
+            color: #495057;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        .fame-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75em;
+            color: #868e96;
+        }
+        .fame-card-user {
+            font-weight: 600;
+        }
+        .fame-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #868e96;
+        }
+        .fame-empty-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        /* AUTENTICAZIONE - Badge e UI */
+        .auth-badge {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px 15px;
+            border-radius: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10000;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }
+        .auth-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .auth-badge-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #667eea;
+        }
+        .auth-badge-name {
+            font-weight: 600;
+            color: #333;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .auth-badge-logout {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .auth-badge-logout:hover {
+            background: #c82333;
+        }
+
+        /* LOGIN MODAL */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 10001;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .login-modal.active {
+            display: flex;
+        }
+        .login-modal-content {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            text-align: center;
+            animation: slideUp 0.4s ease-out;
+        }
+        .login-modal-title {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .login-modal-subtitle {
+            font-size: 0.95em;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .login-btn {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+        .login-btn-google {
+            background: #4285f4;
+            color: white;
+            border-color: #4285f4;
+        }
+        .login-btn-google:hover {
+            background: #357ae8;
+            border-color: #357ae8;
+        }
+        .login-btn-anonymous {
+            background: #868e96;
+            color: white;
+            border-color: #868e96;
+        }
+        .login-btn-anonymous:hover {
+            background: #6c757d;
+            border-color: #6c757d;
+        }
+        .login-modal-footer {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 0.8em;
+            color: #999;
+        }
+        .login-required-notice {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 0.9em;
+            color: #856404;
+            text-align: left;
+        }
+        .login-required-notice strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div id="welcomeScreen" class="screen active">
         <h1>🎵 BontempApp v3.1</h1>
-        <p class="subtitle">✨ ENHANCED EDITION - Quiz con Timer + Auto Photo AI ✨</p>
+        <p class="subtitle">Bontempapp è un Parco Giochi Creativo-Musicale</p>
 
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; margin: 20px 0; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
             <h3 style="color: white; margin: 0 0 15px 0; font-size: 1.1em;">📖 Cos'è BontempApp?</h3>
@@ -730,6 +1021,12 @@
                 <div class="mode-title">Il Mio Profilo</div>
                 <div class="mode-desc">Statistiche e achievements</div>
             </div>
+
+            <div class="mode-card" onclick="showHallOfFame()" style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);">
+                <div class="mode-icon">🏆</div>
+                <div class="mode-title">Sala della Fama</div>
+                <div class="mode-desc">Le migliori sfide degli Audaci!</div>
+            </div>
         </div>
 
         <!-- Footer -->
@@ -821,6 +1118,14 @@
     <div id="profileScreen" class="screen">
         <button class="home-button" onclick="backToMenu()" title="Torna al menu">🏠</button>
         <div id="profileArea"></div>
+    </div>
+
+    <!-- Hall of Fame Screen -->
+    <div id="hallOfFameScreen" class="screen">
+        <button class="home-button" onclick="backToMenu()" title="Torna al menu">🏠</button>
+        <h1 style="color: #667eea; text-align: center; margin-bottom: 10px;">🏆 Sala della Fama</h1>
+        <p style="text-align: center; color: #666; font-size: 0.9em; margin-bottom: 20px;">Le migliori sfide condivise dagli Audaci di tutto il mondo!</p>
+        <div id="hallOfFameArea"></div>
     </div>
 </div>
 
@@ -1139,6 +1444,57 @@
     </div>
 </div>
 
+<!-- Modale Conferma Pubblicazione Sala della Fama -->
+<div class="publish-modal" id="publishModal">
+    <div class="publish-modal-content">
+        <div class="publish-modal-title">🏆 Capolavoro!</div>
+        <div class="publish-modal-text" id="publishModalText"></div>
+        <div class="publish-modal-buttons">
+            <button class="publish-modal-btn publish-btn-no" onclick="closePublishModal()">
+                No, tienila per me
+            </button>
+            <button class="publish-modal-btn publish-btn-yes" onclick="publishToHallOfFame()">
+                Sì, Pubblica! 🎉
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Badge Utente Autenticato (nascosto di default) -->
+<div class="auth-badge" id="authBadge" style="display: none;">
+    <img id="authAvatar" class="auth-badge-avatar" src="" alt="Avatar">
+    <span id="authName" class="auth-badge-name"></span>
+    <button class="auth-badge-logout" onclick="logoutUser()">Esci</button>
+</div>
+
+<!-- Modale Login -->
+<div class="login-modal" id="loginModal">
+    <div class="login-modal-content">
+        <div class="login-modal-title">🎵 Benvenuto!</div>
+        <div class="login-modal-subtitle">
+            Accedi per condividere le tue sfide nella <strong>Sala della Fama</strong> e interagire con la community!
+        </div>
+
+        <button class="login-btn login-btn-google" onclick="loginWithGoogle()">
+            <svg width="20" height="20" viewBox="0 0 24 24">
+                <path fill="white" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="white" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="white" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="white" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Continua con Google
+        </button>
+
+        <button class="login-btn login-btn-anonymous" onclick="loginAnonymously()">
+            👤 Continua come Ospite
+        </button>
+
+        <div class="login-modal-footer">
+            🔒 I tuoi dati sono al sicuro. Usiamo Firebase per l'autenticazione sicura.
+        </div>
+    </div>
+</div>
+
 <script>
 console.log('🎵 BontempApp v3.1 ENHANCED EDITION - Caricamento...');
 
@@ -1152,6 +1508,47 @@ let shuffledBaseChallenges = [];
 let shuffledAudaciChallenges = [];
 let baseIndex = 0;
 let audaciIndex = 0;
+
+// ==================== SALA DELLA FAMA - Firebase & Data ====================
+let db = null;
+let storage = null;
+let auth = null;
+let currentUser = null; // Utente Firebase autenticato
+let pendingPublication = {
+    imageData: null,
+    challengeTitle: null,
+    aiComment: null
+};
+
+// Inizializzazione Firebase
+const firebaseConfig = {
+    apiKey: "TUA_API_KEY_QUI",
+    authDomain: "TUO_PROJECT_ID.firebaseapp.com",
+    projectId: "TUO_PROJECT_ID",
+    storageBucket: "TUO_PROJECT_ID.appspot.com",
+    messagingSenderId: "TUO_SENDER_ID",
+    appId: "TUA_APP_ID"
+};
+
+// Inizializza Firebase (solo se non già inizializzato)
+try {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    db = firebase.firestore();
+    storage = firebase.storage();
+    auth = firebase.auth();
+    console.log('✅ Firebase inizializzato correttamente');
+
+    // Observer per lo stato di autenticazione
+    auth.onAuthStateChanged(user => {
+        currentUser = user;
+        updateAuthUI(user);
+        console.log('👤 Stato auth:', user ? `${user.displayName || 'Anonimo'} (${user.uid})` : 'Non autenticato');
+    });
+} catch (error) {
+    console.error('❌ Errore inizializzazione Firebase:', error);
+}
 
 // ==================== SISTEMA PROFILO UTENTE ====================
 let userProfile = {
@@ -4894,7 +5291,12 @@ async function evaluatePhotoWithGemini() {
         
         score += points;
         updateScore();
-        
+
+        // Salva i dati per potenziale pubblicazione nella Sala della Fama
+        pendingPublication.imageData = uploadedImage;
+        pendingPublication.challengeTitle = currentChallenge;
+        pendingPublication.aiComment = aiResponse;
+
         document.getElementById('gameArea').innerHTML = `
             <div class="feedback-box ${points >= 70 ? 'success' : ''}">
                 <h3>${points >= 70 ? '🎉 Ottimo!' : '👍 Discreto!'}</h3>
@@ -4903,6 +5305,11 @@ async function evaluatePhotoWithGemini() {
             </div>
             <button onclick="nextRound()">Prossima Sfida →</button>
         `;
+
+        // Mostra il modale di pubblicazione dopo 2 secondi
+        setTimeout(() => {
+            showPublishModal(aiResponse);
+        }, 2000);
     } catch (error) {
         score += 50;
         updateScore();
@@ -5074,6 +5481,335 @@ initRecordingsDB().then(() => {
 
 // Carica profilo utente all'avvio
 loadUserProfile();
+
+// ==================== SALA DELLA FAMA - Funzioni ====================
+
+/**
+ * Mostra il modale di conferma pubblicazione
+ */
+function showPublishModal(aiComment) {
+    const modal = document.getElementById('publishModal');
+    const modalText = document.getElementById('publishModalText');
+
+    modalText.innerHTML = `
+        <strong style="color: #667eea;">"${aiComment}"</strong>
+        <br><br>
+        Vuoi esporre questa prodezza nella <strong>'Sala della Fama'</strong> e mostrarla agli altri Audaci?
+    `;
+
+    modal.classList.add('active');
+}
+
+/**
+ * Chiude il modale di pubblicazione
+ */
+function closePublishModal() {
+    const modal = document.getElementById('publishModal');
+    modal.classList.remove('active');
+}
+
+/**
+ * Pubblica la foto nella Sala della Fama
+ */
+async function publishToHallOfFame() {
+    // Verifica autenticazione
+    if (!currentUser) {
+        closePublishModal();
+        showLoginModal();
+        return;
+    }
+
+    if (!pendingPublication.imageData || !pendingPublication.challengeTitle || !pendingPublication.aiComment) {
+        alert('⚠️ Errore: dati mancanti per la pubblicazione');
+        closePublishModal();
+        return;
+    }
+
+    if (!db || !storage) {
+        alert('⚠️ Firebase non è configurato. Contatta l\'amministratore.');
+        closePublishModal();
+        return;
+    }
+
+    try {
+        showIndicator('📤 Pubblicazione in corso...');
+
+        // 1. Carica l'immagine su Firebase Storage
+        const timestamp = Date.now();
+        const imageName = `challenge_${currentUser.uid}_${timestamp}.jpg`;
+        const storageRef = storage.ref(`hall-of-fame/${imageName}`);
+
+        // Converti base64 in blob
+        const response = await fetch(pendingPublication.imageData);
+        const blob = await response.blob();
+
+        // Upload
+        const snapshot = await storageRef.put(blob);
+        const imageUrl = await snapshot.ref.getDownloadURL();
+
+        // 2. Salva i dati su Firestore
+        await db.collection('pubblicazioni').add({
+            imageUrl: imageUrl,
+            sfidaTitolo: pendingPublication.challengeTitle,
+            aiCommento: pendingPublication.aiComment,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            createdAt: new Date().toISOString(),
+            // Dati utente
+            userId: currentUser.uid,
+            userDisplayName: currentUser.displayName || (currentUser.isAnonymous ? 'Ospite' : 'Utente'),
+            userPhotoURL: currentUser.photoURL || null,
+            userIsAnonymous: currentUser.isAnonymous || false,
+            // Contatori per future features
+            likes: 0,
+            flags: 0,
+            views: 0
+        });
+
+        showIndicator('✅ Pubblicato nella Sala della Fama!');
+        closePublishModal();
+
+        // Reset pending publication
+        pendingPublication = {
+            imageData: null,
+            challengeTitle: null,
+            aiComment: null
+        };
+
+    } catch (error) {
+        console.error('Errore pubblicazione:', error);
+        alert('⚠️ Errore durante la pubblicazione. Riprova più tardi.');
+        closePublishModal();
+    }
+}
+
+/**
+ * Mostra la schermata Sala della Fama
+ */
+function showHallOfFame() {
+    switchScreen('hallOfFameScreen');
+    loadHallOfFame();
+}
+
+/**
+ * Carica e mostra tutte le pubblicazioni dalla Sala della Fama
+ */
+async function loadHallOfFame() {
+    const area = document.getElementById('hallOfFameArea');
+
+    if (!db) {
+        area.innerHTML = `
+            <div class="fame-empty">
+                <div class="fame-empty-icon">⚠️</div>
+                <h3>Firebase non configurato</h3>
+                <p>La Sala della Fama richiede la configurazione di Firebase.<br>Contatta l'amministratore.</p>
+            </div>
+        `;
+        return;
+    }
+
+    try {
+        area.innerHTML = '<div style="text-align:center; padding:40px;"><h3>🔄 Caricamento...</h3></div>';
+
+        // Leggi tutte le pubblicazioni ordinate per timestamp (più recenti prima)
+        const snapshot = await db.collection('pubblicazioni')
+            .orderBy('timestamp', 'desc')
+            .limit(50)
+            .get();
+
+        if (snapshot.empty) {
+            area.innerHTML = `
+                <div class="fame-empty">
+                    <div class="fame-empty-icon">🏆</div>
+                    <h3>Nessuna sfida pubblicata ancora</h3>
+                    <p>Sii il primo Audace a condividere la tua prodezza!</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Costruisci la griglia di card
+        let html = '<div class="hall-of-fame-grid">';
+
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const date = data.timestamp ? data.timestamp.toDate() : new Date(data.createdAt);
+            const dateStr = date.toLocaleDateString('it-IT', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+
+            // Nome utente con fallback
+            const displayName = data.userDisplayName || data.userId || 'Anonimo';
+
+            // Avatar utente (se disponibile)
+            const avatarHtml = data.userPhotoURL
+                ? `<img src="${data.userPhotoURL}" style="width: 20px; height: 20px; border-radius: 50%; vertical-align: middle; margin-right: 5px;" onerror="this.style.display='none'">`
+                : '';
+
+            html += `
+                <div class="fame-card">
+                    <img src="${data.imageUrl}" alt="Sfida" class="fame-card-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E📸%3C/text%3E%3C/svg%3E'">
+                    <div class="fame-card-content">
+                        <div class="fame-card-challenge">📸 ${data.sfidaTitolo}</div>
+                        <div class="fame-card-comment">"${data.aiCommento}"</div>
+                        <div class="fame-card-meta">
+                            <span class="fame-card-user">${avatarHtml}${displayName}</span>
+                            <span>📅 ${dateStr}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+        area.innerHTML = html;
+
+    } catch (error) {
+        console.error('Errore caricamento Sala della Fama:', error);
+        area.innerHTML = `
+            <div class="fame-empty">
+                <div class="fame-empty-icon">⚠️</div>
+                <h3>Errore di caricamento</h3>
+                <p>${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+// ==================== AUTENTICAZIONE - Funzioni ====================
+
+/**
+ * Aggiorna l'UI del badge utente in base allo stato di autenticazione
+ */
+function updateAuthUI(user) {
+    const authBadge = document.getElementById('authBadge');
+    const authAvatar = document.getElementById('authAvatar');
+    const authName = document.getElementById('authName');
+
+    if (user) {
+        // Utente autenticato - mostra badge
+        authBadge.style.display = 'flex';
+
+        if (user.isAnonymous) {
+            authAvatar.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E👤%3C/text%3E%3C/svg%3E';
+            authName.textContent = 'Ospite';
+        } else {
+            authAvatar.src = user.photoURL || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E👤%3C/text%3E%3C/svg%3E';
+            authName.textContent = user.displayName || user.email || 'Utente';
+        }
+    } else {
+        // Utente non autenticato - nascondi badge
+        authBadge.style.display = 'none';
+    }
+}
+
+/**
+ * Mostra il modale di login
+ */
+function showLoginModal() {
+    const modal = document.getElementById('loginModal');
+    modal.classList.add('active');
+}
+
+/**
+ * Chiude il modale di login
+ */
+function closeLoginModal() {
+    const modal = document.getElementById('loginModal');
+    modal.classList.remove('active');
+}
+
+/**
+ * Login con Google
+ */
+async function loginWithGoogle() {
+    if (!auth) {
+        alert('⚠️ Firebase Auth non configurato');
+        return;
+    }
+
+    try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope('profile');
+        provider.addScope('email');
+
+        const result = await auth.signInWithPopup(provider);
+        const user = result.user;
+
+        console.log('✅ Login Google riuscito:', user.displayName);
+        showIndicator('✅ Login effettuato!');
+        closeLoginModal();
+
+    } catch (error) {
+        console.error('❌ Errore login Google:', error);
+
+        if (error.code === 'auth/popup-closed-by-user') {
+            showIndicator('⚠️ Login annullato');
+        } else if (error.code === 'auth/popup-blocked') {
+            alert('⚠️ Il popup di login è stato bloccato. Abilita i popup per questo sito.');
+        } else {
+            alert(`⚠️ Errore durante il login: ${error.message}`);
+        }
+    }
+}
+
+/**
+ * Login anonimo
+ */
+async function loginAnonymously() {
+    if (!auth) {
+        alert('⚠️ Firebase Auth non configurato');
+        return;
+    }
+
+    try {
+        const result = await auth.signInAnonymously();
+        console.log('✅ Login anonimo riuscito:', result.user.uid);
+        showIndicator('✅ Accesso come ospite!');
+        closeLoginModal();
+
+    } catch (error) {
+        console.error('❌ Errore login anonimo:', error);
+        alert(`⚠️ Errore durante il login: ${error.message}`);
+    }
+}
+
+/**
+ * Logout utente
+ */
+async function logoutUser() {
+    if (!auth) return;
+
+    const confirmLogout = confirm('Vuoi davvero uscire?');
+    if (!confirmLogout) return;
+
+    try {
+        await auth.signOut();
+        console.log('✅ Logout effettuato');
+        showIndicator('👋 Logout effettuato');
+
+        // Torna al menu principale
+        backToMenu();
+
+    } catch (error) {
+        console.error('❌ Errore logout:', error);
+        alert(`⚠️ Errore durante il logout: ${error.message}`);
+    }
+}
+
+/**
+ * Controlla se l'utente è autenticato prima di un'azione
+ * Se non lo è, mostra il modale di login
+ */
+function requireAuth(callback) {
+    if (!currentUser) {
+        showLoginModal();
+        return false;
+    }
+    if (callback) callback();
+    return true;
+}
 
 console.log('✅ BontempApp v3.1 ENHANCED EDITION - Pronto! 🎥🎵⏱️📹🎹');
 </script>
