@@ -763,6 +763,15 @@
             cursor: not-allowed;
             opacity: 0.6;
         }
+        .fame-card-btn-delete {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+        .fame-card-btn-delete:hover {
+            background: #dc3545;
+            color: white;
+            transform: translateY(-2px);
+        }
         .fame-empty {
             text-align: center;
             padding: 60px 20px;
@@ -5713,11 +5722,32 @@ async function loadHallOfFame() {
                 hasFlag = flagDoc.exists;
             }
 
-            // Pulsante segnala
+            // Verifica se l'utente corrente è il proprietario
+            const isOwner = currentUser && currentUser.uid === data.userId;
+
+            // Pulsante segnala (solo se NON sei il proprietario)
             const flagBtnClass = hasFlag ? 'fame-card-btn-flag flagged' : 'fame-card-btn-flag';
             const flagBtnText = hasFlag ? '🚩 Segnalato' : '🚩 Segnala';
             const flagBtnDisabled = hasFlag ? 'disabled' : '';
             const flagBtnOnclick = hasFlag ? '' : `onclick="flagPost('${postId}')"`;
+
+            // Costruisci i pulsanti actions
+            let actionsHtml = '';
+            if (isOwner) {
+                // Se sei il proprietario: mostra solo "Elimina"
+                actionsHtml = `
+                    <button class="fame-card-btn fame-card-btn-delete" onclick="deletePost('${postId}', '${data.imageUrl}')">
+                        🗑️ Elimina
+                    </button>
+                `;
+            } else {
+                // Se NON sei il proprietario: mostra "Segnala"
+                actionsHtml = `
+                    <button class="fame-card-btn ${flagBtnClass}" ${flagBtnDisabled} ${flagBtnOnclick}>
+                        ${flagBtnText}
+                    </button>
+                `;
+            }
 
             html += `
                 <div class="fame-card">
@@ -5730,9 +5760,7 @@ async function loadHallOfFame() {
                             <span>📅 ${dateStr}</span>
                         </div>
                         <div class="fame-card-actions">
-                            <button class="fame-card-btn ${flagBtnClass}" ${flagBtnDisabled} ${flagBtnOnclick}>
-                                ${flagBtnText}
-                            </button>
+                            ${actionsHtml}
                         </div>
                     </div>
                 </div>
@@ -5944,6 +5972,56 @@ async function flagPost(postId) {
     } catch (error) {
         console.error('❌ Errore segnalazione:', error);
         alert(`⚠️ Errore durante la segnalazione: ${error.message}`);
+    }
+}
+
+/**
+ * Elimina una pubblicazione dalla Sala della Fama
+ * @param {string} postId - ID del documento Firestore
+ * @param {string} imageUrl - URL dell'immagine su Storage
+ */
+async function deletePost(postId, imageUrl) {
+    // Verifica autenticazione
+    if (!currentUser) {
+        showLoginModal();
+        return;
+    }
+
+    if (!db || !storage) {
+        alert('⚠️ Firebase non configurato');
+        return;
+    }
+
+    const confirmDelete = confirm('Vuoi davvero eliminare questa pubblicazione?\n\nQuesta azione è irreversibile!');
+    if (!confirmDelete) return;
+
+    try {
+        showIndicator('🗑️ Eliminazione in corso...');
+
+        // 1. Elimina l'immagine da Firebase Storage
+        try {
+            const storageRef = storage.refFromURL(imageUrl);
+            await storageRef.delete();
+            console.log('✅ Immagine eliminata da Storage');
+        } catch (storageError) {
+            console.warn('⚠️ Errore eliminazione Storage (forse già cancellata):', storageError);
+            // Continua comunque con l'eliminazione del documento
+        }
+
+        // 2. Elimina il documento da Firestore
+        await db.collection('pubblicazioni').doc(postId).delete();
+        console.log('✅ Documento eliminato da Firestore');
+
+        showIndicator('✅ Pubblicazione eliminata!');
+
+        // 3. Ricarica la Sala della Fama
+        setTimeout(() => {
+            loadHallOfFame();
+        }, 1000);
+
+    } catch (error) {
+        console.error('❌ Errore eliminazione:', error);
+        alert(`⚠️ Errore durante l'eliminazione: ${error.message}`);
     }
 }
 
