@@ -5625,7 +5625,14 @@ async function publishToHallOfFame() {
  * Mostra la schermata Sala della Fama
  */
 function showHallOfFame() {
-    switchScreen('hallOfFameScreen');
+    // Nascondi tutte le altre schermate
+    document.getElementById('welcomeScreen').classList.remove('active');
+    document.getElementById('modeScreen').classList.remove('active');
+    document.getElementById('gameScreen').classList.remove('active');
+    document.getElementById('profileScreen').classList.remove('active');
+    // Mostra Sala della Fama
+    document.getElementById('hallOfFameScreen').classList.add('active');
+
     loadHallOfFame();
 }
 
