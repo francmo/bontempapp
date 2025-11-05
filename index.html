@@ -721,6 +721,43 @@
         .fame-card-user {
             font-weight: 600;
         }
+        .fame-card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        .fame-card-btn {
+            flex: 1;
+            background: white;
+            border: 2px solid #dee2e6;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .fame-card-btn-flag {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+        .fame-card-btn-flag:hover {
+            background: #dc3545;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .fame-card-btn-flag.flagged {
+            background: #dc3545;
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
         .fame-empty {
             text-align: center;
             padding: 60px 20px;
@@ -5612,7 +5649,10 @@ async function loadHallOfFame() {
         area.innerHTML = '<div style="text-align:center; padding:40px;"><h3>🔄 Caricamento...</h3></div>';
 
         // Leggi tutte le pubblicazioni ordinate per timestamp (più recenti prima)
+        // Filtro: flags < 3 (soglia di moderazione)
         const snapshot = await db.collection('pubblicazioni')
+            .where('flags', '<', 3)
+            .orderBy('flags', 'asc')
             .orderBy('timestamp', 'desc')
             .limit(50)
             .get();
@@ -5631,8 +5671,10 @@ async function loadHallOfFame() {
         // Costruisci la griglia di card
         let html = '<div class="hall-of-fame-grid">';
 
-        snapshot.forEach(doc => {
+        // Per ogni pubblicazione, verifica se l'utente corrente l'ha già flaggata
+        for (const doc of snapshot.docs) {
             const data = doc.data();
+            const postId = doc.id;
             const date = data.timestamp ? data.timestamp.toDate() : new Date(data.createdAt);
             const dateStr = date.toLocaleDateString('it-IT', {
                 day: '2-digit',
@@ -5648,6 +5690,20 @@ async function loadHallOfFame() {
                 ? `<img src="${data.userPhotoURL}" style="width: 20px; height: 20px; border-radius: 50%; vertical-align: middle; margin-right: 5px;" onerror="this.style.display='none'">`
                 : '';
 
+            // Controlla se l'utente corrente ha già flaggato questo post
+            let hasFlag = false;
+            if (currentUser) {
+                const flagDoc = await db.collection('pubblicazioni').doc(postId)
+                    .collection('flags').doc(currentUser.uid).get();
+                hasFlag = flagDoc.exists;
+            }
+
+            // Pulsante segnala
+            const flagBtnClass = hasFlag ? 'fame-card-btn-flag flagged' : 'fame-card-btn-flag';
+            const flagBtnText = hasFlag ? '🚩 Segnalato' : '🚩 Segnala';
+            const flagBtnDisabled = hasFlag ? 'disabled' : '';
+            const flagBtnOnclick = hasFlag ? '' : `onclick="flagPost('${postId}')"`;
+
             html += `
                 <div class="fame-card">
                     <img src="${data.imageUrl}" alt="Sfida" class="fame-card-image" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E📸%3C/text%3E%3C/svg%3E'">
@@ -5658,10 +5714,15 @@ async function loadHallOfFame() {
                             <span class="fame-card-user">${avatarHtml}${displayName}</span>
                             <span>📅 ${dateStr}</span>
                         </div>
+                        <div class="fame-card-actions">
+                            <button class="fame-card-btn ${flagBtnClass}" ${flagBtnDisabled} ${flagBtnOnclick}>
+                                ${flagBtnText}
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
-        });
+        }
 
         html += '</div>';
         area.innerHTML = html;
@@ -5810,6 +5871,65 @@ function requireAuth(callback) {
     }
     if (callback) callback();
     return true;
+}
+
+// ==================== MODERAZIONE - Flag/Segnalazioni ====================
+
+/**
+ * Segnala una pubblicazione inappropriata
+ * @param {string} postId - ID della pubblicazione da segnalare
+ */
+async function flagPost(postId) {
+    // Verifica autenticazione
+    if (!currentUser) {
+        showLoginModal();
+        return;
+    }
+
+    if (!db) {
+        alert('⚠️ Firebase non configurato');
+        return;
+    }
+
+    const confirmFlag = confirm('Vuoi davvero segnalare questa pubblicazione come inappropriata?\n\nLe segnalazioni vengono revisionate e le pubblicazioni con troppe segnalazioni vengono automaticamente nascoste.');
+    if (!confirmFlag) return;
+
+    try {
+        showIndicator('🚩 Segnalazione in corso...');
+
+        const postRef = db.collection('pubblicazioni').doc(postId);
+
+        // 1. Verifica se l'utente ha già segnalato (double-check)
+        const flagDoc = await postRef.collection('flags').doc(currentUser.uid).get();
+        if (flagDoc.exists) {
+            showIndicator('⚠️ Hai già segnalato questo post');
+            return;
+        }
+
+        // 2. Salva il flag nella subcollection
+        await postRef.collection('flags').doc(currentUser.uid).set({
+            userId: currentUser.uid,
+            userDisplayName: currentUser.displayName || 'Anonimo',
+            flaggedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            reason: 'user_reported'
+        });
+
+        // 3. Incrementa il contatore di flags sul documento principale
+        await postRef.update({
+            flags: firebase.firestore.FieldValue.increment(1)
+        });
+
+        showIndicator('✅ Segnalazione inviata');
+
+        // 4. Ricarica la Sala della Fama per aggiornare la UI
+        setTimeout(() => {
+            loadHallOfFame();
+        }, 1000);
+
+    } catch (error) {
+        console.error('❌ Errore segnalazione:', error);
+        alert(`⚠️ Errore durante la segnalazione: ${error.message}`);
+    }
 }
 
 // ==================== COMPRESSIONE IMMAGINI ====================
