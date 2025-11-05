@@ -45,7 +45,7 @@
             font-size: 1.3em;
             font-weight: 700;
             cursor: pointer;
-            z-index: 9999;
+            z-index: 10001;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
             box-shadow: 0 3px 10px rgba(0,0,0,0.4);
@@ -118,6 +118,10 @@
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
             border-color: #667eea;
+        }
+        .difficulty-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         .mode-icon { font-size: 1.8em; margin-bottom: 4px; }
         .mode-title { font-size: 0.8em; font-weight: bold; color: #333; }
@@ -598,7 +602,7 @@
             <h3 style="color: white; margin: 0 0 15px 0; font-size: 1.1em;">📖 Cos'è BontempApp?</h3>
             <p style="color: rgba(255,255,255,0.95); font-size: 0.9em; line-height: 1.6; margin: 0 0 15px 0;">
                 Un'app interattiva per esplorare la musica attraverso il disegno audio, quiz musicali e sfide creative.
-                Creata dal Gruppo Apuano Sperimentale per rendere l'apprendimento musicale coinvolgente e divertente!
+                Rendere l'apprendimento musicale coinvolgente e divertente!
             </p>
 
             <h4 style="color: white; margin: 15px 0 10px 0; font-size: 1em;">🎯 Modalità disponibili:</h4>
@@ -607,7 +611,7 @@
                 <li><strong>Modalità Guidata:</strong> 10 preset musicali con demo interattive</li>
                 <li><strong>Quiz Musicali:</strong> Testa le tue conoscenze su musica classica, jazz e '900</li>
                 <li><strong>Photo Challenge:</strong> Sfide creative valutate dall'intelligenza artificiale</li>
-                <li><strong>Curiosità GAS:</strong> Scopri fatti interessanti sul mondo musicale</li>
+                <li><strong>Curiosità:</strong> Scopri fatti interessanti sul mondo musicale</li>
             </ul>
 
             <p style="color: rgba(255,255,255,0.9); font-size: 0.8em; margin: 15px 0 0 0; font-style: italic;">
@@ -621,10 +625,46 @@
         </div>
 
         <button onclick="iniziaGioco()">🚀 Inizia l'Avventura!</button>
-        
-        <div style="margin-top: 15px; text-align: center; font-size: 0.7em; color: #999;">
-            <p>v3.1 ENHANCED - Timer Quiz + Auto Photo Submit + Compact UI</p>
-            <p>by Gruppo Apuano Sperimentale Rebecca Guerra</p>
+
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button onclick="showAbout()" style="background: #17a2b8; flex: 1;">ℹ️ About</button>
+            <button onclick="showGuida()" style="background: #28a745; flex: 1;">📖 Guida Completa</button>
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px; border-top: 3px solid #667eea;">
+            <div style="margin-bottom: 15px;">
+                <p style="font-size: 0.85em; font-weight: 600; color: #495057; margin-bottom: 10px;">📱 Condividi l'app:</p>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 10px;">
+                    <button onclick="condividiWhatsApp()" style="background: #25D366; padding: 8px 15px; font-size: 0.8em; width: auto;">
+                        📱 WhatsApp
+                    </button>
+                    <button onclick="condividiFacebook()" style="background: #1877F2; padding: 8px 15px; font-size: 0.8em; width: auto;">
+                        📘 Facebook
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px; padding: 10px; background: #e7f3ff; border-radius: 5px;">
+                <p style="font-size: 0.85em; font-weight: 600; color: #004085; margin-bottom: 8px;">💬 Lascia il tuo feedback</p>
+                <button onclick="inviaFeedback()"
+                        style="background: #667eea; padding: 8px 20px; font-size: 0.8em; width: auto;">
+                    ✉️ Invia Commento
+                </button>
+            </div>
+
+            <div style="margin-bottom: 15px; padding: 10px; background: #fff3cd; border-radius: 5px;">
+                <p style="font-size: 0.85em; font-weight: 600; color: #856404; margin-bottom: 8px;">💝 Sostieni il progetto</p>
+                <button onclick="window.open('https://www.paypal.com/paypalme/francescomariano', '_blank')"
+                        style="background: #0070ba; padding: 8px 20px; font-size: 0.8em; width: auto;">
+                    💳 Dona con PayPal
+                </button>
+            </div>
+
+            <div style="text-align: center; font-size: 0.75em; color: #6c757d; line-height: 1.6;">
+                <p style="margin: 5px 0;">✨ Ideato e sviluppato da <strong>Creative Studio Lab</strong> di <strong>Francesco Mariano</strong></p>
+                <p style="margin: 5px 0;">P.IVA 01489840452</p>
+                <p style="margin: 5px 0; color: #999;">v3.1 ENHANCED EDITION</p>
+            </div>
         </div>
     </div>
 
@@ -674,34 +714,113 @@
             </div>
             
             <div class="mode-card" onclick="selectMode('challenge')">
-                <span class="api-required">API</span>
                 <div class="mode-icon">📸</div>
                 <div class="mode-title">Photo Challenge</div>
-                <div class="mode-desc">Sfide creative GAS!</div>
+                <div class="mode-desc">200 sfide creative!</div>
             </div>
-            <div class="mode-card" onclick="selectMode('volvo-challenge')">
-                <span class="api-required">API</span>
-                <div class="mode-icon">🚗</div>
-                <div class="mode-title">Volvo Challenge</div>
-                <div class="mode-desc">Trova una Volvo!</div>
-            </div>
-            
+
             <div class="mode-card" onclick="selectMode('curiosita')">
                 <div class="mode-icon">🧠</div>
-                <div class="mode-title">Curiosità GAS</div>
+                <div class="mode-title">Curiosità</div>
                 <div class="mode-desc">Scopri curiosità</div>
+            </div>
+
+            <div class="mode-card" onclick="showProfile()" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="mode-icon">📊</div>
+                <div class="mode-title">Il Mio Profilo</div>
+                <div class="mode-desc">Statistiche e achievements</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px; border-top: 3px solid #667eea;">
+            <div style="margin-bottom: 15px;">
+                <p style="font-size: 0.85em; font-weight: 600; color: #495057; margin-bottom: 10px;">📱 Condividi l'app:</p>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 10px;">
+                    <button onclick="condividiWhatsApp()" style="background: #25D366; padding: 8px 15px; font-size: 0.8em; width: auto;">
+                        📱 WhatsApp
+                    </button>
+                    <button onclick="condividiFacebook()" style="background: #1877F2; padding: 8px 15px; font-size: 0.8em; width: auto;">
+                        📘 Facebook
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px; padding: 10px; background: #e7f3ff; border-radius: 5px;">
+                <p style="font-size: 0.85em; font-weight: 600; color: #004085; margin-bottom: 8px;">💬 Lascia il tuo feedback</p>
+                <button onclick="inviaFeedback()"
+                        style="background: #667eea; padding: 8px 20px; font-size: 0.8em; width: auto;">
+                    ✉️ Invia Commento
+                </button>
+            </div>
+
+            <div style="margin-bottom: 15px; padding: 10px; background: #fff3cd; border-radius: 5px;">
+                <p style="font-size: 0.85em; font-weight: 600; color: #856404; margin-bottom: 8px;">💝 Sostieni il progetto</p>
+                <button onclick="window.open('https://www.paypal.com/paypalme/francescomariano', '_blank')"
+                        style="background: #0070ba; padding: 8px 20px; font-size: 0.8em; width: auto;">
+                    💳 Dona con PayPal
+                </button>
+            </div>
+
+            <div style="text-align: center; font-size: 0.75em; color: #6c757d; line-height: 1.6;">
+                <p style="margin: 5px 0;">✨ Ideato e sviluppato da <strong>Creative Studio Lab</strong> di <strong>Francesco Mariano</strong></p>
+                <p style="margin: 5px 0;">P.IVA 01489840452</p>
+                <p style="margin: 5px 0; color: #999;">v3.1 ENHANCED EDITION</p>
             </div>
         </div>
     </div>
 
     <div id="gameScreen" class="screen">
         <button class="home-button" onclick="backToModes()" title="Torna alle modalità">🏠</button>
-        
+
         <div id="scoreContainer" class="score-display" style="display:none;">
             Punteggio: <span id="scoreValue">0</span> | Round: <span id="roundValue">1</span>/<span id="maxRounds">5</span>
         </div>
-        
+
         <div id="gameArea"></div>
+
+        <!-- Footer -->
+        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px; border-top: 3px solid #667eea;">
+            <div style="margin-bottom: 15px;">
+                <p style="font-size: 0.85em; font-weight: 600; color: #495057; margin-bottom: 10px;">📱 Condividi l'app:</p>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 10px;">
+                    <button onclick="condividiWhatsApp()" style="background: #25D366; padding: 8px 15px; font-size: 0.8em; width: auto;">
+                        📱 WhatsApp
+                    </button>
+                    <button onclick="condividiFacebook()" style="background: #1877F2; padding: 8px 15px; font-size: 0.8em; width: auto;">
+                        📘 Facebook
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px; padding: 10px; background: #e7f3ff; border-radius: 5px;">
+                <p style="font-size: 0.85em; font-weight: 600; color: #004085; margin-bottom: 8px;">💬 Lascia il tuo feedback</p>
+                <button onclick="inviaFeedback()"
+                        style="background: #667eea; padding: 8px 20px; font-size: 0.8em; width: auto;">
+                    ✉️ Invia Commento
+                </button>
+            </div>
+
+            <div style="margin-bottom: 15px; padding: 10px; background: #fff3cd; border-radius: 5px;">
+                <p style="font-size: 0.85em; font-weight: 600; color: #856404; margin-bottom: 8px;">💝 Sostieni il progetto</p>
+                <button onclick="window.open('https://www.paypal.com/paypalme/francescomariano', '_blank')"
+                        style="background: #0070ba; padding: 8px 20px; font-size: 0.8em; width: auto;">
+                    💳 Dona con PayPal
+                </button>
+            </div>
+
+            <div style="text-align: center; font-size: 0.75em; color: #6c757d; line-height: 1.6;">
+                <p style="margin: 5px 0;">✨ Ideato e sviluppato da <strong>Creative Studio Lab</strong> di <strong>Francesco Mariano</strong></p>
+                <p style="margin: 5px 0;">P.IVA 01489840452</p>
+                <p style="margin: 5px 0; color: #999;">v3.1 ENHANCED EDITION</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Screen -->
+    <div id="profileScreen" class="screen">
+        <button class="home-button" onclick="backToMenu()" title="Torna al menu">🏠</button>
+        <div id="profileArea"></div>
     </div>
 </div>
 
@@ -728,18 +847,67 @@
     </div>
 </div>
 
+<div class="modal" id="scaleModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeScaleModal()">×</button>
+        <h2>🎵 Scegli la Scala Musicale</h2>
+
+        <div class="demo-category">🌍 Scale Occidentali</div>
+        <div class="demo-grid" id="scaleWestern"></div>
+
+        <div class="demo-category">🕌 Scale Mediorientali</div>
+        <div class="demo-grid" id="scaleMiddleEast"></div>
+
+        <div class="demo-category">🇮🇳 Scale Indiane (Raga)</div>
+        <div class="demo-grid" id="scaleIndian"></div>
+
+        <div class="demo-category">🇯🇵 Scale Giapponesi</div>
+        <div class="demo-grid" id="scaleJapanese"></div>
+
+        <div class="demo-category">🌍 Scale Africane</div>
+        <div class="demo-grid" id="scaleAfrican"></div>
+
+        <div class="demo-category">✨ Scale Esotiche/Moderne</div>
+        <div class="demo-grid" id="scaleExotic"></div>
+
+        <div style="margin-top: 15px; display: flex; gap: 8px; align-items: center;">
+            <div style="flex: 1; padding: 8px; background: #f1f3f5; border-radius: 5px; font-size: 0.85em;">
+                Scala attuale: <strong id="currentScaleName">🎎 Pentatonica</strong>
+            </div>
+            <button onclick="closeScaleModal()" style="background: #868e96;">Chiudi</button>
+        </div>
+    </div>
+</div>
+
 <div id="apiGuideModal" class="modal">
     <div class="modal-content">
         <button class="modal-close" onclick="closeApiGuide()">×</button>
-        <h2>🔑 Come Ottenere API Key Gratuita</h2>
-        <p style="margin-bottom: 15px; font-size: 0.9em;">Per le modalità con AI, serve una <strong>chiave API gratuita di Google Gemini</strong>:</p>
-        <ol style="margin-left: 20px; line-height: 1.8; font-size: 0.9em;">
-            <li>Vai su <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
-            <li>Accedi con account Google</li>
-            <li>Clicca "Get API Key"</li>
-            <li>Copia la chiave (es: AIzaSyD...)</li>
+        <h2>🔑 Come Ottenere e Usare API Key</h2>
+
+        <div style="background: #e7f5ff; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85em;">
+            <strong>📌 Importante:</strong> La chiave API è <strong>100% gratuita</strong> e serve per far funzionare l'intelligenza artificiale che valuta le tue foto!
+        </div>
+
+        <h3 style="font-size: 1.1em; margin-top: 15px; color: #667eea;">1️⃣ Ottieni la chiave (1 minuto):</h3>
+        <ol style="margin-left: 20px; line-height: 1.8; font-size: 0.9em; margin-bottom: 15px;">
+            <li>Vai su <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #667eea; font-weight: bold;">Google AI Studio</a></li>
+            <li>Accedi con il tuo account Google</li>
+            <li>Clicca "Get API Key" o "Create API Key"</li>
+            <li>Copia la chiave (inizia con <code style="background: #f1f3f5; padding: 2px 6px; border-radius: 3px;">AIza...</code>)</li>
         </ol>
-        <button onclick="closeApiGuide()">Ho capito, inserisco la chiave!</button>
+
+        <h3 style="font-size: 1.1em; margin-top: 15px; color: #667eea;">2️⃣ Inserisci la chiave:</h3>
+        <p style="font-size: 0.9em; margin-left: 20px; line-height: 1.6;">
+            • Quando chiudi questa finestra, apparirà un popup<br>
+            • Incolla la chiave nel campo<br>
+            • Verrà salvata automaticamente nel browser
+        </p>
+
+        <div style="background: #fff3cd; padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 0.85em;">
+            <strong>🔒 Privacy:</strong> La chiave resta solo sul tuo dispositivo, non la condividiamo con nessuno!
+        </div>
+
+        <button onclick="closeApiGuide()" style="margin-top: 15px;">Ho capito, inserisco la chiave!</button>
     </div>
 </div>
 
@@ -760,23 +928,397 @@
     </div>
 </div>
 
+<div class="modal" id="keyModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeKeyModal()">×</button>
+        <h2>🎹 Scegli la Tonalità</h2>
+        <div class="demo-grid" id="keyGrid"></div>
+        <div style="margin-top: 15px; display: flex; gap: 8px; align-items: center;">
+            <div style="flex: 1; padding: 8px; background: #f1f3f5; border-radius: 5px; font-size: 0.85em;">
+                Tonalità attuale: <strong id="currentKeyName">C</strong>
+            </div>
+            <button onclick="closeKeyModal()" style="background: #868e96;">Chiudi</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="timbreModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeTimbreModal()">×</button>
+        <h2>🎸 Scegli lo Strumento</h2>
+        <div class="demo-grid">
+            <button class="demo-button" onclick="selectTimbre('piano')">🎹 Piano</button>
+            <button class="demo-button" onclick="selectTimbre('strings')">🎻 Archi</button>
+            <button class="demo-button" onclick="selectTimbre('flute')">🎺 Flauto</button>
+            <button class="demo-button" onclick="selectTimbre('synth')">🎛️ Synth</button>
+        </div>
+        <div style="margin-top: 15px; display: flex; gap: 8px; align-items: center;">
+            <div style="flex: 1; padding: 8px; background: #f1f3f5; border-radius: 5px; font-size: 0.85em;">
+                Strumento attuale: <strong id="currentTimbreName">🎹 Piano</strong>
+            </div>
+            <button onclick="closeTimbreModal()" style="background: #868e96;">Chiudi</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="galleryModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeGalleryModal()">×</button>
+        <h2>📹 Galleria Registrazioni</h2>
+        <div id="galleryContent" style="max-height: 60vh; overflow-y: auto;">
+            <p style="text-align: center; color: #666; padding: 20px;">Caricamento...</p>
+        </div>
+        <button onclick="closeGalleryModal()" style="background: #868e96; margin-top: 10px;">Chiudi</button>
+    </div>
+</div>
+
+<div class="modal" id="aboutModal">
+    <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
+        <button class="modal-close" onclick="closeAbout()">×</button>
+        <h2 style="margin-bottom: 25px; color: #667eea; text-align: center;">ℹ️ About BontempApp</h2>
+
+        <!-- Introduzione al Progetto -->
+        <div style="background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%); padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid #667eea;">
+            <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.1em;">🎯 Il Progetto</h3>
+
+            <p style="font-size: 0.9em; line-height: 1.8; color: #2c3e50; margin-bottom: 15px;">
+                <strong>BontempApp</strong> fa parte di un più ampio progetto di <strong>ricerca e sviluppo di applicazioni didattiche per artisti e musicisti</strong>,
+                ideato da <strong>Francesco Mariano</strong> per <strong>Creative Studio Lab</strong>.
+            </p>
+
+            <p style="font-size: 0.9em; line-height: 1.8; color: #2c3e50; margin-bottom: 15px;">
+                Questo progetto nasce dall'esigenza di fornire strumenti interattivi e accessibili per supportare l'apprendimento musicale
+                attraverso il gioco, la creatività e l'esperienza diretta. L'obiettivo è rendere lo studio della musica coinvolgente e divertente,
+                combinando teoria, pratica ed elementi ludici.
+            </p>
+
+            <!-- Presentazione Francesco Mariano -->
+            <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #764ba2;">
+                <h4 style="color: #667eea; margin-bottom: 12px; font-size: 1em;">👤 Francesco Mariano</h4>
+                <p style="font-size: 0.85em; line-height: 1.8; color: #2c3e50; margin-bottom: 12px;">
+                    La mia ricerca artistica si concentra sulla <strong>composizione elettroacustica</strong>, <strong>installazioni sonore interattive</strong>,
+                    <strong>soundscape composition</strong> e <strong>ambienti audio immersivi</strong> attraverso programmazione <strong>Max/MSP Jitter</strong>,
+                    <strong>TouchDesigner</strong> e sviluppo di applicazioni e software interattivo in ambito artistico.
+                </p>
+                <p style="font-size: 0.85em; line-height: 1.8; color: #2c3e50;">
+                    <strong>Docente di Processi e Tecniche dello Spettacolo Multimediale</strong> presso <strong>Accademia di Belle Arti di Macerata</strong>
+                    e <strong>Interaction Design</strong> presso <strong>Accademia di Belle Arti di Catania</strong>.
+                </p>
+            </div>
+
+            <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <h4 style="color: #667eea; margin-bottom: 12px; font-size: 1em;">🌟 Filosofia del Progetto</h4>
+                <ul style="line-height: 1.8; color: #2c3e50; font-size: 0.85em; margin-left: 15px;">
+                    <li><strong>Apprendimento Ludico</strong>: Imparare giocando e sperimentando</li>
+                    <li><strong>Accessibilità</strong>: Strumenti gratuiti accessibili per tutti</li>
+                    <li><strong>Creatività</strong>: Stimolare la creatività attraverso disegno audio e sfide</li>
+                    <li><strong>Tecnologia</strong>: Uso di AI, Web Audio API, e tecnologie moderne</li>
+                    <li><strong>Interattività</strong>: Feedback immediato e valutazioni intelligenti</li>
+                </ul>
+            </div>
+
+            <div style="background: #fffbe6; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #f4a261;">
+                <h4 style="color: #667eea; margin-bottom: 12px; font-size: 1em;">🚀 Altre App del Progetto</h4>
+                <p style="color: #2c3e50; line-height: 1.8; font-size: 0.85em;">
+                    <strong>BontempApp</strong> è parte di una suite di applicazioni didattiche sviluppate da Creative Studio Lab:
+                </p>
+                <div style="margin-top: 12px;">
+                    <a href="https://www.soundscapestudio.app" target="_blank" style="display: flex; align-items: center; padding: 10px; background: white; border-radius: 6px; text-decoration: none; margin-bottom: 10px; border-left: 3px solid #2d5f4f; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" onmouseover="this.style.transform='translateX(5px)'; this.style.boxShadow='0 4px 8px rgba(45,95,79,0.2)';" onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';" ontouchstart="this.style.transform='translateX(5px)'" ontouchend="this.style.transform='translateX(0)'">
+                        <span style="font-size: 1.8em; margin-right: 12px;">🎧</span>
+                        <div>
+                            <strong style="color: #2d5f4f; font-size: 0.9em;">Soundscape Studio</strong>
+                            <p style="margin: 2px 0 0 0; color: #666; font-size: 0.75em;">Field recording e composizione con paesaggi sonori</p>
+                        </div>
+                    </a>
+                    <div style="padding: 10px; background: white; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid #764ba2;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="font-size: 1.8em; margin-right: 12px;">🎨</span>
+                            <div>
+                                <strong style="color: #764ba2; font-size: 0.9em;">Graphic Score Generator</strong>
+                                <p style="margin: 2px 0 0 0; color: #666; font-size: 0.75em;">Creazione di partiture grafiche interattive (in sviluppo)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 10px; background: white; border-radius: 6px; border-left: 3px solid #17a2b8;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="font-size: 1.8em; margin-right: 12px;">🧘</span>
+                            <div>
+                                <strong style="color: #17a2b8; font-size: 0.9em;">Artist Mental Health</strong>
+                                <p style="margin: 2px 0 0 0; color: #666; font-size: 0.75em;">Mindfulness e benessere per artisti (in sviluppo)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="closeAbout()" style="width: 100%;">Chiudi</button>
+    </div>
+</div>
+
+<div class="modal" id="guidaModal">
+    <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
+        <button class="modal-close" onclick="closeGuida()">×</button>
+        <h2 style="margin-bottom: 25px; color: #667eea; text-align: center;">📖 Guida Completa BontempApp</h2>
+
+        <!-- Modalità Disegno Audio -->
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #667eea;">
+            <h3 style="color: #667eea; margin-bottom: 12px; font-size: 1.05em;">🎨 Modalità Disegno Audio (2D/3D)</h3>
+
+            <div style="margin-bottom: 15px;">
+                <h4 style="color: #495057; font-size: 0.95em; margin-bottom: 8px;">🎯 Modalità Libera</h4>
+                <p style="font-size: 0.85em; line-height: 1.6; color: #2c3e50;">
+                    Disegna liberamente sullo schermo (2D) o nello spazio (3D) e crea suoni in tempo reale.
+                    Ogni tocco genera una frequenza basata sulla posizione Y, con audio spaziale in 3D.
+                </p>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <h4 style="color: #495057; font-size: 0.95em; margin-bottom: 8px;">✨ Modalità Guidata</h4>
+                <p style="font-size: 0.85em; line-height: 1.6; color: #2c3e50;">
+                    Esplora <strong>20 preset musicali</strong> (10 per 2D + 10 per 3D) con demo automatiche animate.
+                    Ogni preset include informazioni acustiche e pattern musicali professionali.
+                </p>
+                <ul style="font-size: 0.8em; margin: 8px 0 0 15px; line-height: 1.6;">
+                    <li><strong>Preset 2D</strong>: Armonico, Onda, Spirale, Pulsante, Orbite, Volto, Albero, etc.</li>
+                    <li><strong>Preset 3D</strong>: Elica, Sfera, Cubo, Lissajous, Vortice, Casa 3D, Farfalla, etc.</li>
+                </ul>
+            </div>
+
+            <div style="background: #e7f5ff; padding: 10px; border-radius: 5px; font-size: 0.8em;">
+                <strong>💡 Tip:</strong> Puoi registrare le tue performance e salvarle nella galleria!
+            </div>
+        </div>
+
+        <!-- Quiz Musicali -->
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #28a745;">
+            <h3 style="color: #28a745; margin-bottom: 12px; font-size: 1.05em;">🎯 Quiz Musicali</h3>
+
+            <p style="font-size: 0.85em; line-height: 1.6; color: #2c3e50; margin-bottom: 12px;">
+                Testa le tue conoscenze musicali con quiz a tempo su tre aree tematiche:
+            </p>
+
+            <ul style="font-size: 0.85em; margin: 0 0 12px 15px; line-height: 1.8; color: #2c3e50;">
+                <li><strong>🎼 Quiz '900</strong>: Musica colta del Novecento (3 livelli di difficoltà)</li>
+                <li><strong>🎷 Quiz Jazz</strong>: Storia, armonia e stili jazz (3 livelli)</li>
+                <li><strong>🎻 Quiz Classica</strong>: Teoria musicale e armonia (3 livelli)</li>
+            </ul>
+
+            <div style="background: #fff3cd; padding: 10px; border-radius: 5px; font-size: 0.8em;">
+                <strong>⏱️ Timer</strong>: Hai 30 secondi per rispondere. Più veloce rispondi, più punti ottieni! (Bonus fino a +20 punti)
+            </div>
+        </div>
+
+        <!-- Challenge Fotografiche -->
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #17a2b8;">
+            <h3 style="color: #17a2b8; margin-bottom: 12px; font-size: 1.05em;">📸 Photo Challenge</h3>
+
+            <p style="font-size: 0.85em; line-height: 1.6; color: #2c3e50; margin-bottom: 12px;">
+                <strong>200 sfide fotografiche</strong> divise in due livelli di difficoltà:
+            </p>
+
+            <ul style="font-size: 0.85em; line-height: 1.8; color: #2c3e50; margin-left: 20px; margin-bottom: 12px;">
+                <li><strong>BASE</strong> (100 sfide): Concettuali, ironiche, da eseguire comodamente. Osservazione e creatività!</li>
+                <li><strong>AUDACI</strong> (100 sfide): Performance pubbliche, coinvolgono altre persone, situazioni imbarazzanti e teatrali!</li>
+            </ul>
+
+            <div style="background: #d4edda; padding: 10px; border-radius: 5px; font-size: 0.8em;">
+                <strong>⏭️ Puoi saltare</strong>: Non ti piace una challenge? Clicca "Salta" per caricarne una nuova senza penalità!
+            </div>
+        </div>
+
+        <!-- Curiosità -->
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #6f42c1;">
+            <h3 style="color: #6f42c1; margin-bottom: 12px; font-size: 1.05em;">🧠 Curiosità Musicali</h3>
+            <p style="font-size: 0.85em; line-height: 1.6; color: #2c3e50;">
+                Scopri fatti interessanti, aneddoti e informazioni sulla storia della musica. Ogni curiosità ha un timer di lettura ottimale.
+            </p>
+        </div>
+
+        <button onclick="closeGuida()" style="width: 100%;">Chiudi</button>
+    </div>
+</div>
+
 <script>
 console.log('🎵 BontempApp v3.1 ENHANCED EDITION - Caricamento...');
 
 let userName = '';
 let currentMode = '';
 let apiKey = localStorage.getItem('geminiApiKey') || '';
+let challengeDifficulty = 'simple'; // 'simple' or 'audace'
+
+// Sistema a "mazzo" per sfide senza ripetizioni
+let shuffledBaseChallenges = [];
+let shuffledAudaciChallenges = [];
+let baseIndex = 0;
+let audaciIndex = 0;
+
+// ==================== SISTEMA PROFILO UTENTE ====================
+let userProfile = {
+    name: '',
+    firstAccess: null,
+    lastAccess: null,
+    quizHistory: [],
+    challengeHistory: [],
+    stats: {
+        totalQuizzes: 0,
+        totalChallenges: 0,
+        quizBestScore: 0,
+        challengeBestScore: 0,
+        quizAverage: 0,
+        challengeAverage: 0,
+        streak: 0,
+        lastPlayDate: null
+    }
+};
 
 let canvas, ctx, activeTouches = new Map();
 let touchColors = ['#667eea', '#f5576c', '#51cf66'];
 let sharedAudioContext = null;
 let activeOscillators = new Map();
 let waveformSettings = { 0: 'sine', 1: 'square', 2: 'sawtooth' };
-let realtimeData = { 
+let realtimeData = {
     0: { frequency: 0, amplitude: 0, active: false },
     1: { frequency: 0, amplitude: 0, active: false },
     2: { frequency: 0, amplitude: 0, active: false }
 };
+
+// ==================== ENHANCED SYNTHESIS SYSTEM ====================
+// Scale musicali (occidentali, orientali, esotiche)
+const SCALES = {
+    // Scale Occidentali
+    chromatic: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], // Tutti i semitoni
+    major: [0, 2, 4, 5, 7, 9, 11], // Scala maggiore (Do Re Mi Fa Sol La Si)
+    minor: [0, 2, 3, 5, 7, 8, 10], // Scala minore naturale
+    pentatonic: [0, 2, 4, 7, 9], // Pentatonica maggiore (Cina, Giappone)
+    blues: [0, 3, 5, 6, 7, 10], // Scala blues (note blue)
+    harmonic_minor: [0, 2, 3, 5, 7, 8, 11], // Minore armonica (suono drammatico)
+
+    // Scale Mediorientali/Arabe
+    arabic: [0, 1, 4, 5, 7, 8, 11], // Maqam Hijaz (musica araba)
+    persian: [0, 1, 4, 5, 6, 8, 11], // Dastgah (musica persiana)
+    hijaz: [0, 1, 4, 5, 7, 8, 10], // Scala Hijaz
+
+    // Scale Indiane
+    raga_bhairav: [0, 1, 4, 5, 7, 8, 11], // Raga Bhairav (alba)
+    raga_todi: [0, 1, 3, 6, 7, 8, 11], // Raga Todi (mezzogiorno)
+    raga_yaman: [0, 2, 4, 6, 7, 9, 11], // Raga Yaman (sera)
+
+    // Scale Giapponesi
+    japanese_in: [0, 1, 5, 7, 8], // Scala In (misteriosa)
+    japanese_yo: [0, 2, 5, 7, 9], // Scala Yo (allegra)
+    japanese_hirajoshi: [0, 2, 3, 7, 8], // Hirajōshi (tradizionale)
+
+    // Scale Africane
+    african_1: [0, 2, 3, 5, 7, 9, 10], // Scala africana comune
+    african_2: [0, 3, 5, 7, 10], // Pentatonica africana
+
+    // Scale Esotiche/Moderne
+    whole_tone: [0, 2, 4, 6, 8, 10], // Scala per toni interi (Debussy)
+    diminished: [0, 2, 3, 5, 6, 8, 9, 11], // Scala diminuita (jazz)
+    augmented: [0, 3, 4, 7, 8, 11], // Scala aumentata
+    phrygian: [0, 1, 3, 5, 7, 8, 10], // Modo frigio (flamenco)
+    lydian: [0, 2, 4, 6, 7, 9, 11], // Modo lidio (sognante)
+    spanish: [0, 1, 3, 4, 5, 6, 8, 10] // Scala spagnola (flamenco)
+};
+
+const SCALE_NAMES = {
+    chromatic: '🎹 Cromatica',
+    major: '😊 Maggiore',
+    minor: '😔 Minore',
+    pentatonic: '🎎 Pentatonica',
+    blues: '🎺 Blues',
+    harmonic_minor: '🎻 Minore Armonica',
+    arabic: '🕌 Araba (Hijaz)',
+    persian: '🏺 Persiana',
+    hijaz: '🌙 Hijaz',
+    raga_bhairav: '🇮🇳 Raga Bhairav',
+    raga_todi: '🇮🇳 Raga Todi',
+    raga_yaman: '🇮🇳 Raga Yaman',
+    japanese_in: '🇯🇵 In',
+    japanese_yo: '🇯🇵 Yo',
+    japanese_hirajoshi: '🇯🇵 Hirajōshi',
+    african_1: '🌍 Africana 1',
+    african_2: '🌍 Africana 2',
+    whole_tone: '🌊 Toni Interi',
+    diminished: '🎷 Diminuita',
+    augmented: '✨ Aumentata',
+    phrygian: '💃 Frigia',
+    lydian: '☁️ Lidia',
+    spanish: '🎸 Spagnola'
+};
+
+let currentScale = 'pentatonic'; // Scala di default
+
+// Preset timbri con armonici (sintesi additiva)
+const TIMBRE_PRESETS = {
+    piano: {
+        harmonics: [
+            { mult: 1, amp: 1.0, type: 'sine' },
+            { mult: 2, amp: 0.5, type: 'sine' },
+            { mult: 3, amp: 0.3, type: 'sine' },
+            { mult: 4, amp: 0.2, type: 'sine' }
+        ],
+        attack: 0.01,
+        decay: 0.1,
+        sustain: 0.7,
+        release: 0.3,
+        baseVolume: 0.15
+    },
+    strings: {
+        harmonics: [
+            { mult: 1, amp: 1.0, type: 'sawtooth' },
+            { mult: 2, amp: 0.6, type: 'sine' },
+            { mult: 3, amp: 0.4, type: 'sine' }
+        ],
+        attack: 0.3,
+        decay: 0.1,
+        sustain: 0.9,
+        release: 0.5,
+        baseVolume: 0.12
+    },
+    flute: {
+        harmonics: [
+            { mult: 1, amp: 1.0, type: 'sine' },
+            { mult: 2, amp: 0.3, type: 'sine' },
+            { mult: 3, amp: 0.15, type: 'sine' }
+        ],
+        attack: 0.08,
+        decay: 0.05,
+        sustain: 0.8,
+        release: 0.2,
+        baseVolume: 0.18
+    },
+    synth: {
+        harmonics: [
+            { mult: 1, amp: 1.0, type: 'square' },
+            { mult: 1.5, amp: 0.7, type: 'sawtooth' },
+            { mult: 2, amp: 0.5, type: 'triangle' },
+            { mult: 3, amp: 0.3, type: 'sine' }
+        ],
+        attack: 0.02,
+        decay: 0.1,
+        sustain: 0.8,
+        release: 0.2,
+        baseVolume: 0.10
+    }
+};
+
+// Le 12 tonalità musicali (semitoni da C)
+const KEYS = {
+    'C': 0, 'C#': 1, 'D': 2, 'D#': 3,
+    'E': 4, 'F': 5, 'F#': 6, 'G': 7,
+    'G#': 8, 'A': 9, 'A#': 10, 'B': 11
+};
+
+const KEY_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+let currentKey = 'C'; // Tonalità di default
+let currentTimbre = 'piano'; // Timbro di default
+let fingerTimbreMap = { 0: 'piano', 1: 'strings', 2: 'flute' }; // Un timbro per dito
+
+// IndexedDB per le registrazioni
+let recordingsDB = null;
 
 let guidesEnabled = false;
 let guideSpeed = 1.0;
@@ -794,6 +1336,8 @@ let guideMeshes3d = [];
 let touchIdToFingerIndex = new Map();
 let nextFingerIndex = 0;
 let animationLoopId = null;
+let audioListener3d = null; // Listener per audio 3D spaziale
+let activeTouchCount = 0; // Numero di dita attive per calcolare profondità
 
 let score = 0;
 let currentRound = 1;
@@ -1728,11 +2272,208 @@ const curiositaGAS = [
     {title: "Stravinsky e Dushkin", text: "Il 'Concerto per violino' di Stravinsky fu scritto per Samuel Dushkin, che aiutò il compositore a superare le difficoltà tecniche dello strumento.", readingTime: 30}
 ];
 
-const challengeFotoGAS = [
-    "📸 Selfie con cuffie alle 3 di notte",
-    "📸 Mani che mimano chitarra in cucina",
-    "📸 Strumento musicale in posto insolito",
-    "📸 Dirigi un'orchestra immaginaria"
+// 100 SFIDE BASE - Spirito Osservatore (concettuali, ironiche, comode)
+const photoChallengesBase = [
+    "📸 Fotografa le tue mani che mimano la direzione di un'orchestra barocca mentre ascolti Vivaldi",
+    "📸 Il tuo strumento in un luogo inaspettato della casa (la vasca da bagno, il frigorifero, sotto il letto)",
+    "📸 Un oggetto quotidiano che assomiglia a una nota musicale o a una chiave di violino",
+    "📸 Fotografa la sezione archi di un'orchestra (anche giocattolo, disegnata o improvvisata con verdure)",
+    "📸 Crea un'ombra misteriosa del tuo strumento su un muro bianco al tramonto",
+    "📸 Trova tre oggetti rossi e disponili come se fossero una triade musicale",
+    "📸 Il tuo spartito preferito riflesso in uno specchio o in una pozzanghera",
+    "📸 Una foto del tuo archetto che punta verso qualcosa di assurdo (un piccione, una pizza, una fontana)",
+    "📸 Fotografa la tua collezione di plettri, bacchette o accessori musicali disposti come un mandala",
+    "📸 Il tuo strumento abbracciato da una pianta o da fiori del tuo giardino",
+    "📸 Crea una natura morta barocca con spartiti, candele e frutta (anche solo due elementi!)",
+    "📸 Fotografa le corde del tuo strumento in primo piano come se fossero un'opera d'arte astratta",
+    "📸 Il tuo leggio in una posa drammatica, come se recitasse in un'opera tragica",
+    "📸 Trova un graffiti o street art che ricordi uno strumento musicale",
+    "📸 Fotografa la tua ombra mentre fai il gesto del direttore d'orchestra",
+    "📸 Crea un selfie con tre oggetti che rappresentano tre epoche musicali diverse",
+    "📸 Il tuo strumento che guarda fuori dalla finestra come in un film melanconico",
+    "📸 Fotografa qualcosa di blu mentre ascolti un brano jazz malinconico",
+    "📸 Disponi i tuoi vecchi biglietti dei concerti come un collage e fotografali",
+    "📸 Il tuo metronomo in azione con una lunga esposizione (effetto mosso artistico)",
+    "📸 Fotografa le tue scarpe da concerto in un contesto surreale",
+    "📸 Crea una composizione con cinque oggetti che iniziano con le lettere D-O-R-E-M-I",
+    "📸 Il tuo strumento riflesso in una superficie lucida inaspettata (pentola, specchietto dell'auto, telefono)",
+    "📸 Fotografa la tua mano che indica una nota su uno spartito come se fosse un momento drammatico",
+    "📸 Un calzino infilato nella campana di uno strumento a fiato (o equivalente assurdo per altri strumenti)",
+    "📸 Fotografa la tua tazza da caffè accanto allo spartito più difficile che possiedi",
+    "📸 Il tuo strumento seduto su una sedia come se stesse aspettando qualcuno",
+    "📸 Crea un pattern geometrico con i tuoi spartiti visti dall'alto",
+    "📸 Fotografa qualcosa di dorato mentre ascolti musica barocca",
+    "📸 Il tuo accordatore elettronico in un posto dove non dovrebbe stare (giardino, libreria, cucina)",
+    "📸 Fotografa tre texture diverse che rappresentano tre generi musicali (liscio=classica, ruvido=rock, etc.)",
+    "📸 Il tuo strumento con un cappello buffo (berretto, cappello di paglia, corona di carta)",
+    "📸 Crea una timeline fotografica: passato-presente-futuro con oggetti musicali",
+    "📸 Fotografa le chiavi del tuo pianoforte/strumento con una luce laterale drammatica",
+    "📸 Un oggetto quotidiano suonato come se fosse uno strumento (cucchiaio-violino, bottiglia-tromba)",
+    "📸 Il tuo diapason accanto a qualcosa che vibra (ventilatore, lavatrice, telefono)",
+    "📸 Fotografa il tuo strumento da un'angolazione che nessuno userebbe mai",
+    "📸 Crea una copertina di album immaginario con te e il tuo strumento",
+    "📸 Fotografa cinque oggetti della tua casa disposti secondo l'intervallo di quinta giusta",
+    "📸 Il tuo bocchino/ancia/archetto in primo piano come se fosse un gioiello prezioso",
+    "📸 Fotografa la tua custodia dello strumento in un contesto poetico",
+    "📸 Crea una foto prima e dopo il concerto con te/il tuo strumento",
+    "📸 Fotografa qualcosa di circolare mentre ascolti un canone musicale",
+    "📸 Il tuo strumento decorato con elementi naturali (foglie, fiori, conchiglie)",
+    "📸 Fotografa la tua espressione mentre fai una faccia da musicista esageratamente concentrata",
+    "📸 Disponi i tuoi libri di teoria musicale come una scala cromatica (dal piccolo al grande)",
+    "📸 Fotografa il riflesso del tuo strumento in una bolla di sapone (o provateci!)",
+    "📸 Il tuo strumento in vacanza su una poltrona con occhiali da sole e un cocktail finto",
+    "📸 Crea un dittico fotografico: silenzio vs suono (oggetti che rappresentano entrambi)",
+    "📸 Fotografa la tua ombra e quella del tuo strumento che creano una forma inaspettata",
+    "📸 Fotografa le tue mani che dirigono un'orchestra di calzini spaiati",
+    "📸 Il tuo strumento musicale (o le tue cuffie) che si gode un bagno rilassante (vuoto, mi raccomando!)",
+    "📸 Un primo piano drammatico dei tasti bianchi e neri di un pianoforte, visti come un paesaggio urbano",
+    "📸 La sezione archi di un'orchestra di utensili da cucina (fruste, mestoli, spatole)",
+    "📸 L'ombra del tuo strumento proiettata sul muro, ingigantita e minacciosa",
+    "📸 Fotografa un Silenzio (una pausa musicale) visivo: uno spazio vuoto su uno scaffale affollato",
+    "📸 Il tuo gatto (o cane, o pianta) che legge uno spartito con aria molto critica",
+    "📸 Un autoritratto riflesso sulla superficie lucida del tuo strumento musicale",
+    "📸 Un oggetto che rappresenti visivamente il concetto di Staccato (es. gocce d'acqua che cadono)",
+    "📸 La texture usurata di un vecchio spartito o di un tasto del pianoforte",
+    "📸 Musica liquida: il riflesso colorato di una copertina di un CD in un bicchiere d'acqua",
+    "📸 Un angolo della tua casa che, con la giusta luce, sembra un palcoscenico pronto per un concerto",
+    "📸 Le tue scarpe posizionate come se stessero ballando un valzer appassionato",
+    "📸 Un cavo delle cuffie ingarbugliato che sembra un pentagramma impazzito",
+    "📸 Un ritratto di un compositore famoso (anche su un libro) che dialoga con un oggetto moderno (uno smartphone)",
+    "📸 Fotografa un Crescendo usando solo oggetti della scrivania (da una graffetta a un libro pesante)",
+    "📸 Il tuo strumento preferito messo a dormire sotto le coperte nel tuo letto",
+    "📸 Un dettaglio macro della corda di una chitarra o del legno di un violino",
+    "📸 Sinfonia di Colazione: come il cibo nel tuo piatto crea un ritmo visivo",
+    "📸 Un libro di musica usato come base per un panino. L'arte nutre, no?",
+    "📸 La tua tazza di caffè del mattino, con il vapore che sale come una melodia leggera",
+    "📸 Fotografa le tue dita che mimano un accordo complicato... sulla spalla di un amico",
+    "📸 Un oggetto rosso che urla un acuto (un peperoncino, un rossetto)",
+    "📸 Il caos ordinato dei pedali di una chitarra o di una batteria",
+    "📸 Musica Muta: un vecchio stereo o giradischi impolverato in soffitta",
+    "📸 Una forchetta e un coltello posizionati come se fossero le bacchette di un direttore d'orchestra",
+    "📸 La geometria perfetta di un vinile sul piatto",
+    "📸 Un autoritratto mentre fai finta di suonare uno strumento che non sai assolutamente suonare",
+    "📸 Fotografa una Fuga (alla Bach): le tue scarpe vicino alla porta, pronte a scappare",
+    "📸 La prospettiva vista dal leggio: cosa vede il musicista mentre suona?",
+    "📸 Un fiore che sboccia dalla campana di uno strumento a fiato",
+    "📸 L'interno di un pianoforte (se puoi!): un mondo meccanico e affascinante",
+    "📸 Un ritratto del tuo orecchio, il destinatario finale di tutta la musica",
+    "📸 Oggetti in cucina impilati per creare una scala musicale visiva",
+    "📸 Il tuo strumento che guarda malinconicamente fuori dalla finestra",
+    "📸 Un primo piano estremo della puntina di un giradischi sul solco del vinile",
+    "📸 Blues in cucina: solo oggetti blu trovati nel tuo frigorifero",
+    "📸 La spirale di una scala a chiocciola che ricorda il solco di un disco",
+    "📸 Una vecchia musicassetta o un CD usato come sottobicchiere (sacrilegio!)",
+    "📸 Armonia domestica: due oggetti completamente diversi che stanno benissimo vicini",
+    "📸 La calligrafia di uno spartito scritto a mano",
+    "📸 Il tuo cuscino che ascolta la musica dalle tue cuffie",
+    "📸 Un Assolo visivo: un singolo oggetto illuminato da un fascio di luce in una stanza buia",
+    "📸 Note musicali disegnate col ketchup sulle patatine fritte",
+    "📸 Le venature del legno di un parquet che sembrano righe di un pentagramma",
+    "📸 Uno strumento giocattolo trattato con la serietà di uno Stradivari",
+    "📸 Il tuo riflesso distorto nella campana di una tromba o in un piatto della batteria",
+    "📸 Il momento esatto in cui accendi l'amplificatore (la lucina rossa!)",
+    "📸 La tua libreria musicale (CD, vinili, file) ripresa come se fosse l'archivio di un alchimista"
+];
+
+// 100 SFIDE AUDACI - Spirito Performativo (performance, coinvolgono persone, imbarazzanti)
+const photoChallengesAudaci = [
+    "📸 Svegliati all'alba e fotografa il tuo strumento baciato dalla prima luce dorata del giorno sul balcone",
+    "📸 Crea una scultura con vecchi spartiti e fotografala in un luogo insolito: bunker, garage, bar, negozio di scarpe",
+    "📸 Vai in una biblioteca affollata alle 15, dirigi un'orchestra invisibile per 2 minuti con gesti teatrali, fotografa almeno 3 facce stranite",
+    "📸 Entra in un supermercato alle 18 con uno spartito gigante fatto in casa, chiedi a un commesso di tenerlo mentre leggi concentrato, fotografa la sua espressione",
+    "📸 Con un amico, create una performance statuaria con spartiti in un parco pubblico alle 17, state fermi 5 minuti, fotografate chi si ferma perplesso",
+    "📸 Porta il tuo strumento in un bar affollato alle 12, fingiti ispirato dal rumore e componi ad alta voce per 2 minuti, fotografa 3 reazioni dei clienti",
+    "📸 Entra in una farmacia con spartiti sotto il braccio, chiedi al farmacista se vende 'vitamine per la creatività musicale', fotografa la sua reazione",
+    "📸 Alle 7 di mattina, porta il tuo strumento in un parco pubblico, suona per 10 minuti guardando i joggers, fotografa almeno 3 reazioni perplesse",
+    "📸 Con due amici, andate in un centro commerciale alle 16, uno dirige un'orchestra invisibile per 3 minuti mentre gli altri fingono di suonare, fotografate la gente",
+    "📸 Entra in una tabaccheria con uno spartito enorme, chiedi al tabaccaio di tenerlo aperto mentre fingi di leggere una partitura difficilissima, fotografa la sua espressione",
+    "📸 Vai in una cartoleria con un amico, chiedi se hanno 'fogli pentagrammati magici per comporre sinfonie immediate' facendo gesti misteriosi, fotografa il commesso",
+    "📸 Alle 13, vai in una pizzeria affollata con il tuo strumento, suona 'O Sole Mio' per 30 secondi guardando i clienti, fotografa almeno 3 facce sorprese",
+    "📸 Con un amico, andate al mercato alle 10, suonate insieme 'Lascia ch'io pianga' per 10 minuti fingendo di piangere, selfie con gente intorno",
+    "📸 Entra in un negozio di scarpe col tuo strumento, chiedi di provare scarpe mentre suoni, fotografa la reazione confusa del commesso",
+    "📸 Con un amico in un bar affollato alle 18, canta un'aria d'opera a squarciagola per 45 secondi, lui fotografa le facce imbarazzate dei clienti",
+    "📸 Alle 19, vai in un supermercato con il tuo strumento, suona nel reparto ortofrutta per 3 minuti guardando le persone, fotografa almeno 3 reazioni",
+    "📸 Entra in una biblioteca con un amico alle 14, inizia a suonare sottovoce aumentando il volume per 2 minuti, lui fotografa le facce scandalizzate",
+    "📸 Vai in un ufficio postale alle 11, mentre fai la coda canticchia un'opera sempre più forte, chiedi a un amico di fotografare le reazioni",
+    "📸 Con due amici, entrate in un negozio di abbigliamento, uno suona mentre canti e il terzo fotografa il commesso e i clienti increduli",
+    "📸 Alle 8, vai in un bar con un amico, ordinate cappuccini e improvvisamente canta la Traviata per 40 secondi, lui fotografa camerieri e clienti",
+    "📸 Porta il tuo strumento in una stazione ferroviaria alle 17, suona per 15 minuti vicino ai binari, fotografa almeno 5 viaggiatori che si fermano ad ascoltare",
+    "📸 Con un amico, create uno spettacolo di mimo musicale in piazza alle 16, lui fotografa i passanti che buttano monetine credendovi artisti di strada",
+    "📸 Entra in una libreria affollata alle 15 con spartiti enormi, chiedi al libraio dove sono i 'romanzi scritti in note musicali', fotografa la sua confusione",
+    "📸 Vai in un parco giochi alle 11, chiedi ai bambini di cantare con te una canzone inventata sul momento, fotografa i genitori perplessi e i bimbi divertiti",
+    "📸 Con due amici, andate in un museo alle 14, create una 'installazione sonora vivente' canticchiando in armonia davanti a un quadro, fotografate le reazioni",
+    "📸 Entra in un ristorante alle 13 con il tuo strumento, chiedi al cameriere se puoi suonare per i clienti durante il pranzo, fotografa la sua reazione",
+    "📸 Alle 9, vai in un ufficio (può essere il tuo o di un amico), inizia a cantare durante una riunione fingendo sia normalissimo, fotografa le facce",
+    "📸 Con un amico, andate in una palestra alle 18, iniziate a fare esercizi cantando arie d'opera a squarciagola, lui fotografa gli sportivi sconvolti",
+    "📸 Porta il tuo strumento in un taxi, chiedi al tassista se puoi suonare durante la corsa, fotografa la sua reazione allo specchietto retrovisore",
+    "📸 Entra in una banca alle 10 con spartiti giganti, chiedi all'impiegato se accettano 'pagamenti in note musicali', fotografa la sua espressione",
+    "📸 Con un amico, create una 'orchestra da colazione' alle 8 in un bar, usate cucchiaini e tazzine come strumenti, fotografate i clienti assonnati",
+    "📸 Vai in una farmacia alle 16, chiedi al farmacista consigli per curare 'l'orecchio assoluto', spiega sintomi assurdi, fotografa la sua faccia confusa",
+    "📸 Alle 14, vai in un supermercato, prendi un carrello e spingerlo canticchiando la Cavalcata delle Valchirie per 5 minuti, fotografa le reazioni",
+    "📸 Con due amici, andate in una chiesa vuota alle 11, create un concerto a cappella di 3 minuti, fotografate l'eco e eventuali fedeli sorpresi",
+    "📸 Entra in un negozio di elettronica alle 15, chiedi se hanno 'cavi per collegare l'anima alla musica', fai gesti mistici, fotografa il commesso",
+    "📸 Porta il tuo strumento su un autobus alle 17, chiedi ai passeggeri se vogliono un concerto durante il viaggio, fotografa almeno 5 reazioni diverse",
+    "📸 Con un amico, andate in un centro estetico alle 10, chiedi se fanno 'trattamenti per le mani dei musicisti', lui fotografa l'estetista perplessa",
+    "📸 Alle 12, vai in una mensa universitaria, sali su un tavolo (con permesso) e recita un monologo operistico per 2 minuti, fotografa gli studenti",
+    "📸 Entra in una gioielleria alle 16 con spartiti, chiedi se vendono 'collane con note musicali magiche che migliorano l'intonazione', fotografa la commessa",
+    "📸 Con un amico, andate in un cinema prima dello spettacolo alle 20, lui ti intervista come se fossi una star mondiale della musica, fotografate gli altri spettatori",
+    "📸 Vai in una lavanderia a gettoni alle 15, canta accompagnandoti col ritmo delle lavatrici in funzione per 3 minuti, fotografa chi fa il bucato",
+    "📸 Alle 9, vai in una rosticceria, chiedi al rosticciere se può riscaldare il tuo 'pentagramma freddo', mostragli uno spartito, fotografa la sua reazione",
+    "📸 Con due amici, create una 'parata musicale spontanea' per strada alle 17, marcia cantando con strumenti improvvisati, fotografate i passanti stupiti",
+    "📸 Entra in un negozio di scarpe alle 14, prova stivali mentre canti la marcia turca di Mozart, fotografa i commessi e altri clienti imbarazzati",
+    "📸 Vai in un parrucchiere alle 11, mentre ti tagliano i capelli canticchia arie d'opera sempre più forte, fotografa il parrucchiere e clienti nello specchio",
+    "📸 Con un amico, andate in una profumeria alle 16, annusate profumi cantando note corrispondenti all'intensità olfattiva, fotografate le commesse perplesse",
+    "📸 Alle 13, vai in una gastronomia affollata, ordina cantando in stile operistico ogni singolo prodotto che vuoi, fotografa il gastronomiere e clienti in fila",
+    "📸 Porta il tuo strumento in una sala d'attesa medica alle 10, suona per intrattenere i pazienti per 10 minuti, fotografa almeno 5 reazioni diverse",
+    "📸 Con un amico, andate in un supermercato bio alle 18, create una 'sinfonia delle verdure' cantando davanti al reparto ortofrutta, fotografate le reazioni",
+    "📸 Entra in un negozio di animali alle 15, canta per i pappagalli cercando di farli cantare con te, fotografa i volatili e il negoziante sorpreso",
+    "📸 Alle 17, vai in una cartoleria, compra quaderni pentagrammati e chiedi se li vendono 'già compilati con sinfonie', fotografa l'espressione del commesso",
+    "📸 Con due amici, andate in una piazza alle 12, uno dirige, gli altri suonano strumenti invisibili, performance di 5 minuti, fotografate i curiosi",
+    "📸 Vai in un negozio di abbigliamento alle 14, prova vestiti canticchiando la descrizione di ogni capo in stile operistico, fotografa i commessi confusi",
+    "📸 Alle 19, entra in una pizzeria, ordina la pizza cantando tutti gli ingredienti come se fosse un'aria barocca, fotografa il pizzaiolo e clienti",
+    "📸 Con un amico, andate in una ferramenta alle 10, chiedi martelli che 'suonano in DO' e cacciaviti 'intonati in LA', lui fotografa il ferramenta perplesso",
+    "📸 Vai in una tabaccheria alle 16, compra un biglietto della lotteria cantando i numeri che vuoi come fossero note, fotografa il tabaccaio",
+    "📸 Alle 11, con un amico andate in un bar, ordinate bevande e improvvisate un brindisi operistico a squarciagola, fotografate camerieri e altri clienti",
+    "📸 Porta il tuo strumento in una palestra alle 18, proponi di suonare durante le lezioni di aerobica, fotografa l'istruttore e gli sportivi sorpresi",
+    "📸 Con due amici, andate in un negozio di giocattoli alle 15, suonate strumenti giocattolo facendo un concerto serio, fotografate bambini e genitori",
+    "📸 Entra in una farmacia alle 10, chiedi una 'pomata per le labbra screpolate dal solfeggio intenso', spiega sintomi assurdi, fotografa il farmacista",
+    "📸 Alle 14, vai in un bar con wifi, siediti e canta mentre lavori al computer come fosse normalissimo, fotografa gli altri avventori al lavoro",
+    "📸 Con un amico, andate in un cinema durante una pausa tra film alle 16, lui ti intervista sul palco come musicista famoso, fotografate il pubblico",
+    "📸 Vai in un negozio di cornici alle 11, chiedi di incorniciare il tuo spartito più bello 'come fosse la Gioconda', fotografa il commesso e la sua reazione",
+    "📸 Alle 17, con un amico andate in una fioreria, cantate serenate ai fiori per 3 minuti, fotografate la fioraia e clienti che vi guardano straniti",
+    "📸 Entra in un'edicola alle 9, compra un giornale cantando il titolo di prima pagina in stile lirico, fotografa l'edicolante sorpreso",
+    "📸 Con due amici, andate in una piazza alle 16, create una 'flash mob musicale' con strumenti invisibili per 5 minuti, fotografate i passanti",
+    "📸 Vai in un bar alle 8, ordina un cappuccino e cantane gli ingredienti al barista come fosse un'aria barocca, fotografa la sua reazione mattutina",
+    "📸 Alle 13, con un amico andate in una trattoria, chiedete il menu e cantate ogni piatto valutando quale 'suona meglio', fotografate il cameriere",
+    "📸 Porta il tuo strumento in metropolitana alle 18 (ora di punta), suona per 10 minuti durante il viaggio, fotografa almeno 7 reazioni di pendolari",
+    "📸 Con un amico, andate in una libreria alle 14, leggete ad alta voce brani di libri musicandoli come fossero libretti d'opera, fotografate i clienti",
+    "📸 Entra in un negozio di scarpe sportive alle 16, chiedi se hanno 'scarpe che migliorano il tempo in semiminime al chilometro', fotografa il commesso",
+    "📸 Alle 10, vai in un ufficio postale, compila bollettini canticchiando i numeri come note musicali, fotografa gli impiegati e gente in coda",
+    "📸 Con due amici, andate in una gelateria alle 15, ordinate gusti cantandoli in stile lirico facendo prove di intonazione, fotografate il gelatiere",
+    "📸 Vai in un supermercato alle 19, sali (con permesso) su una cassetta e canta per 2 minuti ringraziando i lavoratori, fotografa cassieri e clienti",
+    "📸 Alle 12, con un amico andate in una mensa, cantate la vostra ordinazione come fosse un duetto operistico, fotografate addetti e altri commensali",
+    "📸 Entra in una profumeria alle 11, chiedi un profumo che 'sappia di note musicali' e annusa ogni fragranza cantando, fotografa la commessa confusa",
+    "📸 Con un amico, andate in un parco alle 17, create un 'concerto per uccelli' fischiando melodie per 5 minuti, fotografate uccelli e persone",
+    "📸 Vai in un negozio di elettronica alle 14, chiedi se vendono 'hard disk per memorizzare sinfonie mentali', fai gesti mistici, fotografa il commesso",
+    "📸 Alle 16, con due amici andate in un bar, uno suona cucchiaini, uno canta, uno fotografa: mini concerto di 3 minuti, catturate i clienti",
+    "📸 Porta il tuo strumento in un taxi alle 20, proponi al tassista un concerto privato durante la corsa, fotografa la sua reazione dallo specchietto",
+    "📸 Con un amico, andate in una stazione ferroviaria alle 18, cantate annunci di treni inventati in stile operistico per 3 minuti, fotografate i viaggiatori",
+    "📸 Entra in una panetteria alle 8, ordina pane e dolci cantando ogni singolo prodotto come fosse una romanza, fotografa il panettiere e clienti in fila",
+    "📸 Alle 15, vai in una cartoleria, chiedi 'gomme per cancellare note stonate' e spiegane l'utilizzo con serietà assoluta, fotografa il commesso perplesso",
+    "📸 Con un amico, andate in un centro commerciale alle 17, create una 'guida turistica cantata' dei negozi per 5 minuti, fotografate la gente",
+    "📸 Vai in una farmacia alle 11, chiedi al farmacista se vende 'integratori per migliorare l'orecchio assoluto', descrivi sintomi buffi, fotografa la reazione",
+    "📸 Alle 13, con due amici andate in una pizzeria, ordinate cantando a tre voci ogni ingrediente come un coretto, fotografate il pizzaiolo sorpreso",
+    "📸 Porta il tuo strumento in un ascensore affollato di un centro commerciale alle 16, suona per 30 secondi durante la salita, fotografa le facce imbarazzate",
+    "📸 Con un amico, andate in una biblioteca alle 10, sussurrate cantando una conversazione operistica per 3 minuti tra gli scaffali, fotografate i lettori",
+    "📸 Entra in un negozio di telefonia alle 14, chiedi se hanno 'smartphone che suonano automaticamente in base all'umore', fotografa il commesso confuso",
+    "📸 Alle 18, vai in un bar con amici, proponi un 'karaoke classico' cantando arie d'opera a squarciagola per 2 minuti, fotografa clienti e baristi",
+    "📸 Con un amico, andate in una gioielleria alle 11, chiedete gioielli che 'risuonano in frequenze armoniche benefiche', fotografate la commessa perplessa",
+    "📸 Vai in un supermercato biologico alle 17, canta i nomi delle verdure come fossero personaggi d'opera mentre le scegli, fotografa clienti e cassiere",
+    "📸 Alle 9, con un amico andate in un bar di mattina, ordinate colazione cantando tutto in falsetto come controtenori barocchi, fotografate il barista",
+    "📸 Porta il tuo strumento in un parco giochi alle 16, proponi ai bambini di cantare insieme canzoni inventate, fotografa genitori e bimbi divertiti",
+    "📸 Con due amici, andate in una piazza turistica alle 15, fingete di essere una famosa band in tour, firmate autografi immaginari, fotografate i turisti",
+    "📸 Entra in un'agenzia di viaggi alle 10, chiedi pacchetti turistici 'per terre dove si parla solo in note musicali', fotografa l'agente confuso",
+    "📸 Alle 19, vai in un ristorante etnico, chiedi al cameriere di tradurre il menu in 'linguaggio musicale', canta i piatti, fotografa la sua reazione"
 ];
 
 function shuffleArray(array) {
@@ -1741,6 +2482,298 @@ function shuffleArray(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
+}
+
+// ==================== FUNZIONI PROFILO UTENTE ====================
+
+function loadUserProfile() {
+    const saved = localStorage.getItem('bontempUserProfile');
+    if (saved) {
+        userProfile = JSON.parse(saved);
+        console.log('📊 Profilo caricato:', userProfile.name);
+        // Pre-compila il campo nome se esiste
+        const nameInput = document.getElementById('userName');
+        if (nameInput && userProfile.name) {
+            nameInput.value = userProfile.name;
+        }
+    } else {
+        console.log('📊 Nuovo utente');
+    }
+}
+
+function saveUserProfile() {
+    localStorage.setItem('bontempUserProfile', JSON.stringify(userProfile));
+    console.log('💾 Profilo salvato');
+}
+
+function updateStreak() {
+    const today = new Date().toDateString();
+    const lastPlay = userProfile.stats.lastPlayDate;
+
+    if (!lastPlay) {
+        userProfile.stats.streak = 1;
+    } else {
+        const lastDate = new Date(lastPlay);
+        const diffDays = Math.floor((new Date(today) - new Date(lastDate.toDateString())) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) {
+            // Stesso giorno, mantieni streak
+        } else if (diffDays === 1) {
+            // Giorno consecutivo
+            userProfile.stats.streak++;
+        } else {
+            // Streak interrotto
+            userProfile.stats.streak = 1;
+        }
+    }
+
+    userProfile.stats.lastPlayDate = today;
+}
+
+function saveQuizResult(quizMode, score, correctAnswers, totalQuestions) {
+    const result = {
+        date: new Date().toISOString(),
+        mode: quizMode,
+        score: score,
+        correct: correctAnswers,
+        total: totalQuestions
+    };
+
+    userProfile.quizHistory.push(result);
+    userProfile.stats.totalQuizzes++;
+
+    // Aggiorna best score
+    if (score > userProfile.stats.quizBestScore) {
+        userProfile.stats.quizBestScore = score;
+    }
+
+    // Calcola media
+    const total = userProfile.quizHistory.reduce((sum, q) => sum + q.score, 0);
+    userProfile.stats.quizAverage = Math.round(total / userProfile.quizHistory.length);
+
+    updateStreak();
+    saveUserProfile();
+    console.log('✅ Quiz salvato:', quizMode, score);
+}
+
+function saveChallengeResult(difficulty, score, completed, skipped) {
+    const result = {
+        date: new Date().toISOString(),
+        difficulty: difficulty,
+        score: score,
+        completed: completed,
+        skipped: skipped
+    };
+
+    userProfile.challengeHistory.push(result);
+    userProfile.stats.totalChallenges++;
+
+    // Aggiorna best score
+    if (score > userProfile.stats.challengeBestScore) {
+        userProfile.stats.challengeBestScore = score;
+    }
+
+    // Calcola media
+    const total = userProfile.challengeHistory.reduce((sum, c) => sum + c.score, 0);
+    userProfile.stats.challengeAverage = Math.round(total / userProfile.challengeHistory.length);
+
+    updateStreak();
+    saveUserProfile();
+    console.log('✅ Challenge salvata:', difficulty, score);
+}
+
+function getAchievements() {
+    const achievements = [];
+
+    // Achievement Quiz
+    if (userProfile.stats.totalQuizzes >= 1) achievements.push({ icon: '🎵', name: 'Primo Quiz', desc: 'Hai completato il tuo primo quiz!' });
+    if (userProfile.stats.totalQuizzes >= 10) achievements.push({ icon: '🎸', name: 'Quiz Esperto', desc: '10 quiz completati!' });
+    if (userProfile.stats.totalQuizzes >= 50) achievements.push({ icon: '🏆', name: 'Maestro Quiz', desc: '50 quiz completati!' });
+    if (userProfile.stats.quizBestScore >= 90) achievements.push({ icon: '⭐', name: 'Quasi Perfetto', desc: 'Score 90+ in un quiz!' });
+    if (userProfile.stats.quizBestScore === 100) achievements.push({ icon: '💯', name: 'Perfezione', desc: 'Score perfetto 100/100!' });
+
+    // Achievement Challenge
+    if (userProfile.stats.totalChallenges >= 1) achievements.push({ icon: '📸', name: 'Prima Sfida', desc: 'Hai completato la tua prima sfida!' });
+    if (userProfile.stats.totalChallenges >= 25) achievements.push({ icon: '🎯', name: 'Fotografo Esperto', desc: '25 sfide completate!' });
+    if (userProfile.stats.totalChallenges >= 100) achievements.push({ icon: '🌟', name: 'Centurione', desc: '100 sfide completate!' });
+
+    // Achievement AUDACI
+    const audaciCount = userProfile.challengeHistory.filter(c => c.difficulty === 'audace').length;
+    if (audaciCount >= 10) achievements.push({ icon: '🔥', name: 'Spirito Audace', desc: '10 sfide AUDACI!' });
+    if (audaciCount >= 50) achievements.push({ icon: '💪', name: 'Senza Paura', desc: '50 sfide AUDACI!' });
+
+    // Achievement Streak
+    if (userProfile.stats.streak >= 3) achievements.push({ icon: '🔥', name: 'In Serie', desc: '3 giorni consecutivi!' });
+    if (userProfile.stats.streak >= 7) achievements.push({ icon: '🚀', name: 'Settimana Perfetta', desc: '7 giorni consecutivi!' });
+    if (userProfile.stats.streak >= 30) achievements.push({ icon: '👑', name: 'Leggenda', desc: '30 giorni consecutivi!' });
+
+    return achievements;
+}
+
+function clearUserProfile() {
+    if (confirm('⚠️ Sei sicuro di voler cancellare TUTTI i tuoi dati?\n\nQuesta azione è irreversibile!')) {
+        localStorage.removeItem('bontempUserProfile');
+        userProfile = {
+            name: '',
+            firstAccess: null,
+            lastAccess: null,
+            quizHistory: [],
+            challengeHistory: [],
+            stats: {
+                totalQuizzes: 0,
+                totalChallenges: 0,
+                quizBestScore: 0,
+                challengeBestScore: 0,
+                quizAverage: 0,
+                challengeAverage: 0,
+                streak: 0,
+                lastPlayDate: null
+            }
+        };
+        alert('✅ Dati cancellati. Ricarica la pagina.');
+        location.reload();
+    }
+}
+
+function showProfile() {
+    // Nascondi altri schermi
+    document.getElementById('welcomeScreen').classList.remove('active');
+    document.getElementById('modeScreen').classList.remove('active');
+    document.getElementById('gameScreen').classList.remove('active');
+    document.getElementById('profileScreen').classList.add('active');
+
+    const achievements = getAchievements();
+    const baseCount = userProfile.challengeHistory.filter(c => c.difficulty === 'simple').length;
+    const audaciCount = userProfile.challengeHistory.filter(c => c.difficulty === 'audace').length;
+
+    // Formatta data primo accesso
+    const firstAccessDate = userProfile.firstAccess
+        ? new Date(userProfile.firstAccess).toLocaleDateString('it-IT')
+        : 'Mai';
+
+    // Ultimi 5 quiz
+    const recentQuizzes = userProfile.quizHistory.slice(-5).reverse();
+    const quizHistoryHTML = recentQuizzes.length > 0
+        ? recentQuizzes.map(q => {
+            const date = new Date(q.date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+            return `<div style="background: white; padding: 8px; border-radius: 5px; margin: 5px 0; font-size: 0.85em;">
+                        <strong>${q.mode}</strong> - ${q.score}/100 (${q.correct}/${q.total}) - ${date}
+                    </div>`;
+          }).join('')
+        : '<p style="color: #999; font-size: 0.85em;">Nessun quiz ancora completato</p>';
+
+    // Ultimi 5 challenge
+    const recentChallenges = userProfile.challengeHistory.slice(-5).reverse();
+    const challengeHistoryHTML = recentChallenges.length > 0
+        ? recentChallenges.map(c => {
+            const date = new Date(c.date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+            const diff = c.difficulty === 'audace' ? '🔥 AUDACI' : '✨ BASE';
+            return `<div style="background: white; padding: 8px; border-radius: 5px; margin: 5px 0; font-size: 0.85em;">
+                        <strong>${diff}</strong> - ${c.score} punti (${c.completed} completate, ${c.skipped} saltate) - ${date}
+                    </div>`;
+          }).join('')
+        : '<p style="color: #999; font-size: 0.85em;">Nessuna sfida ancora completata</p>';
+
+    // Achievements HTML
+    const achievementsHTML = achievements.length > 0
+        ? achievements.map(a => `
+            <div style="background: white; padding: 10px; border-radius: 8px; margin: 8px 0; border-left: 4px solid #51cf66;">
+                <div style="font-size: 1.2em;">${a.icon} <strong>${a.name}</strong></div>
+                <div style="font-size: 0.85em; color: #666;">${a.desc}</div>
+            </div>
+          `).join('')
+        : '<p style="color: #999; font-size: 0.85em;">Completa quiz e sfide per sbloccare achievements!</p>';
+
+    document.getElementById('profileArea').innerHTML = `
+        <div style="padding: 20px;">
+            <h2 style="text-align: center; margin-bottom: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                📊 IL MIO PROFILO
+            </h2>
+
+            <!-- Info Utente -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; color: white; margin-bottom: 20px;">
+                <h3 style="margin: 0 0 10px 0; font-size: 1.5em;">👤 ${userProfile.name || 'Studente'}</h3>
+                <p style="margin: 5px 0; font-size: 0.9em;">🎮 Membro dal: ${firstAccessDate}</p>
+                <p style="margin: 5px 0; font-size: 0.9em;">🔥 Streak: ${userProfile.stats.streak} giorni consecutivi</p>
+            </div>
+
+            <!-- Statistiche Quiz -->
+            <div style="background: #e7f5ff; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #1c7ed6;">
+                <h3 style="color: #1c7ed6; margin-bottom: 12px; font-size: 1.1em;">🎵 QUIZ MUSICALI</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 0.8em; color: #666;">Partite</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #1c7ed6;">${userProfile.stats.totalQuizzes}</div>
+                    </div>
+                    <div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 0.8em; color: #666;">Best Score</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #1c7ed6;">${userProfile.stats.quizBestScore}/100</div>
+                    </div>
+                </div>
+                <div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 0.8em; color: #666;">Media</div>
+                    <div style="font-size: 1.5em; font-weight: bold; color: #1c7ed6;">${userProfile.stats.quizAverage}/100</div>
+                </div>
+            </div>
+
+            <!-- Statistiche Challenge -->
+            <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #f5576c;">
+                <h3 style="color: #f5576c; margin-bottom: 12px; font-size: 1.1em;">📸 PHOTO CHALLENGE</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 0.8em; color: #666;">Totali</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #f5576c;">${userProfile.stats.totalChallenges}</div>
+                    </div>
+                    <div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 0.8em; color: #666;">BASE</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #51cf66;">${baseCount}</div>
+                    </div>
+                    <div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 0.8em; color: #666;">AUDACI</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #f76707;">${audaciCount}</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 0.8em; color: #666;">Best Score</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #f5576c;">${userProfile.stats.challengeBestScore}</div>
+                    </div>
+                    <div style="background: white; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 0.8em; color: #666;">Media</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: #f5576c;">${userProfile.stats.challengeAverage}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #ffd43b;">
+                <h3 style="color: #ffd43b; margin-bottom: 12px; font-size: 1.1em; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">🏆 ACHIEVEMENTS (${achievements.length})</h3>
+                ${achievementsHTML}
+            </div>
+
+            <!-- Storico Quiz -->
+            <details style="background: #e7f5ff; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #1c7ed6;">
+                <summary style="cursor: pointer; font-weight: bold; color: #1c7ed6; margin-bottom: 10px;">📜 Storico Quiz (ultimi 5)</summary>
+                ${quizHistoryHTML}
+            </details>
+
+            <!-- Storico Challenge -->
+            <details style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #f5576c;">
+                <summary style="cursor: pointer; font-weight: bold; color: #f5576c; margin-bottom: 10px;">📜 Storico Challenge (ultimi 5)</summary>
+                ${challengeHistoryHTML}
+            </details>
+
+            <!-- Pulsante Cancella Dati -->
+            <button onclick="clearUserProfile()" style="background: #dc3545; width: 100%; margin-top: 20px;">
+                🗑️ Cancella Tutti i Dati
+            </button>
+        </div>
+    `;
+}
+
+function backToMenu() {
+    document.getElementById('profileScreen').classList.remove('active');
+    document.getElementById('modeScreen').classList.add('active');
 }
 
 function updateScore() {
@@ -1864,12 +2897,52 @@ function showQuizFeedback(isCorrect, correctAnswer = '', timeBonus = 0) {
     }, 3000);
 }
 
+// ==================== CONDIVISIONE SOCIAL ====================
+function condividiWhatsApp() {
+    const text = encodeURIComponent('🎵 Scopri BontempApp - L\'app musicale interattiva!\n\n🎨 Disegna e crea suoni in 2D e 3D\n🎯 Quiz su Jazz, Classica e Musica del \'900\n📸 Sfide fotografiche creative\n🧠 Curiosità musicali\n\nGratis e installabile su qualsiasi dispositivo!\n\n👉 https://bontempapp.soundscapestudio.org');
+    const url = `https://wa.me/?text=${text}`;
+    window.open(url, '_blank');
+}
+
+function condividiFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+    window.open(fbUrl, '_blank', 'width=600,height=400');
+}
+
+// ==================== FEEDBACK ====================
+function inviaFeedback() {
+    const messaggio = prompt('💬 Lascia il tuo feedback o commento:\n(Sarà inviato via email)');
+
+    if (messaggio && messaggio.trim() !== '') {
+        const subject = encodeURIComponent('Feedback BontempApp');
+        const body = encodeURIComponent(`Feedback dall'app BontempApp:\n\n${messaggio}\n\n---\nInviato da: ${navigator.userAgent}`);
+        const mailtoLink = `mailto:artistmentalhealth@gmail.com?subject=${subject}&body=${body}`;
+
+        window.location.href = mailtoLink;
+
+        setTimeout(() => {
+            showIndicator('✅ Grazie per il tuo feedback!');
+        }, 500);
+    } else if (messaggio !== null) {
+        showIndicator('⚠️ Il messaggio non può essere vuoto');
+    }
+}
+
 function iniziaGioco() {
     userName = document.getElementById('userName').value.trim() || 'Studente';
     document.getElementById('playerName').textContent = userName;
-    
+
+    // Salva nome e aggiorna date accesso
+    userProfile.name = userName;
+    if (!userProfile.firstAccess) {
+        userProfile.firstAccess = new Date().toISOString();
+    }
+    userProfile.lastAccess = new Date().toISOString();
+    saveUserProfile();
+
     initAudio();
-    
+
     document.getElementById('welcomeScreen').classList.remove('active');
     document.getElementById('modeScreen').classList.add('active');
 }
@@ -1887,14 +2960,83 @@ function selectMode(mode) {
     currentMode = mode;
     score = 0;
     currentRound = 1;
-    
-    const needsAPI = mode === 'challenge' || mode === 'volvo-challenge';
-    
-    if (needsAPI && !apiKey) {
-        showApiGuide();
+
+    // For challenge mode, show difficulty selection first
+    if (mode === 'challenge') {
+        showDifficultySelection();
         return;
     }
-    
+
+    showInstructions();
+}
+
+function showDifficultySelection() {
+    const gameArea = document.getElementById('gameArea');
+    document.getElementById('modeScreen').classList.remove('active');
+    document.getElementById('gameScreen').classList.add('active');
+
+    const modeTitle = '📸 Photo Challenge';
+
+    gameArea.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+            <h2 style="margin-bottom: 20px;">${modeTitle}</h2>
+            <p style="font-size: 0.9em; color: #666; margin-bottom: 30px;">
+                Scegli il livello di difficoltà delle sfide:
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto;">
+                <div class="difficulty-card" onclick="selectDifficulty('simple')" style="background: linear-gradient(135deg, #51cf66, #37b24d); color: white; padding: 25px; border-radius: 15px; cursor: pointer; transition: transform 0.2s;">
+                    <div style="font-size: 2.5em; margin-bottom: 10px;">😊</div>
+                    <h3 style="margin: 10px 0;">BASE</h3>
+                    <p style="font-size: 0.85em; margin: 10px 0; opacity: 0.9;">
+                        100 sfide concettuali e ironiche<br>
+                        <strong>Spirito Osservatore</strong>
+                    </p>
+                    <p style="font-size: 0.75em; margin-top: 10px; opacity: 0.8;">
+                        Comode e creative!
+                    </p>
+                </div>
+
+                <div class="difficulty-card" onclick="selectDifficulty('audace')" style="background: linear-gradient(135deg, #ff6b6b, #e03131); color: white; padding: 25px; border-radius: 15px; cursor: pointer; transition: transform 0.2s;">
+                    <div style="font-size: 2.5em; margin-bottom: 10px;">🔥</div>
+                    <h3 style="margin: 10px 0;">AUDACI</h3>
+                    <p style="font-size: 0.85em; margin: 10px 0; opacity: 0.9;">
+                        100 sfide performative e imbarazzanti<br>
+                        <strong>Spirito Performativo</strong>
+                    </p>
+                    <p style="font-size: 0.75em; margin-top: 10px; opacity: 0.8;">
+                        Coinvolgi altre persone!
+                    </p>
+                </div>
+            </div>
+
+            <button onclick="backToModes()" style="margin-top: 30px; background: #868e96;">
+                ◀ Indietro
+            </button>
+        </div>
+    `;
+}
+
+function selectDifficulty(difficulty) {
+    challengeDifficulty = difficulty;
+
+    // Inizializza/resetta il mazzo shuffled per la difficoltà selezionata
+    if (difficulty === 'audace') {
+        // Se il mazzo AUDACI è vuoto o finito, ricrea e mescola
+        if (shuffledAudaciChallenges.length === 0 || audaciIndex >= shuffledAudaciChallenges.length) {
+            shuffledAudaciChallenges = shuffleArray([...photoChallengesAudaci]);
+            audaciIndex = 0;
+            console.log('🔀 Mazzo AUDACI mescolato:', shuffledAudaciChallenges.length, 'sfide');
+        }
+    } else {
+        // Se il mazzo BASE è vuoto o finito, ricrea e mescola
+        if (shuffledBaseChallenges.length === 0 || baseIndex >= shuffledBaseChallenges.length) {
+            shuffledBaseChallenges = shuffleArray([...photoChallengesBase]);
+            baseIndex = 0;
+            console.log('🔀 Mazzo BASE mescolato:', shuffledBaseChallenges.length, 'sfide');
+        }
+    }
+
     showInstructions();
 }
 
@@ -1928,9 +3070,8 @@ function showInstructions() {
     else if (currentMode === '2d-guided') instructions = '<h3>🎯 Disegno 2D Guidato</h3><p style="font-size:0.9em">Scegli preset dal menu Demo e segui le guide animate con audio! Registra le performance!</p>';
     else if (currentMode === '3d') instructions = '<h3>🌍 Disegno 3D Libero</h3><p style="font-size:0.9em">Disegna nello spazio tridimensionale con audio spaziale! Registra le creazioni!</p>';
     else if (currentMode === '3d-guided') instructions = '<h3>✨ Disegno 3D Guidato</h3><p style="font-size:0.9em">Esplora 10 preset 3D con demo automatiche e audio! Registra tutto!</p>';
-    else if (currentMode === 'challenge') instructions = '<h3>📸 Photo Challenge</h3><p style="font-size:0.9em">Ricevi sfide creative, scatta foto, AI valuta AUTOMATICAMENTE!</p>';
-    else if (currentMode === 'volvo-challenge') instructions = '<h3>🚗 Volvo Challenge</h3><p style="font-size:0.9em">Trova una Volvo e scatta foto creativa! Invio automatico!</p>';
-    else if (currentMode === 'curiosita') instructions = '<h3>🧠 Curiosità GAS</h3><p style="font-size:0.9em">Leggi curiosità musicali ...</p>';
+    else if (currentMode === 'challenge') instructions = `<h3>📸 Photo Challenge</h3><p style="font-size:0.9em">Ricevi una sfida ${challengeDifficulty === 'simple' ? 'BASE' : 'AUDACE'} tra le 200 disponibili, scatta foto e completa la sfida!</p>`;
+    else if (currentMode === 'curiosita') instructions = '<h3>🧠 Curiosità</h3><p style="font-size:0.9em">Leggi curiosità musicali ...</p>';
     else if (currentMode.startsWith('quiz-')) instructions = '<h3>🎵 Quiz Musicale</h3><p style="font-size:0.9em">Scegli difficoltà e rispondi alle domande! <strong>Più veloce = più punti!</strong> Timer: 30 secondi per domanda.</p>';
 
     content.innerHTML = instructions;
@@ -1968,6 +3109,9 @@ function showDifficultySelector() {
                 <h3 style="font-size: 1em;">🧠 Avanzato</h3><p style="font-size: 0.8em;">Risposte libere + AI!</p>
             </div>
         </div>
+        <button onclick="backToModes()" style="margin-top: 20px; background: #868e96; width: 100%;">
+            ◀ Indietro
+        </button>
     `;
     document.getElementById('modeScreen').classList.remove('active');
     document.getElementById('gameScreen').classList.add('active');
@@ -2010,7 +3154,6 @@ function startGame() {
     else if (currentMode === '3d') startDrawing3D(false);
     else if (currentMode === '3d-guided') startDrawing3D(true);
     else if (currentMode === 'challenge') startPhotoChallenge();
-    else if (currentMode === 'volvo-challenge') startVolvoChallenge();
     else if (currentMode === 'curiosita') startCuriosita();
     else if (currentMode.startsWith('quiz-')) startQuiz();
 }
@@ -2057,6 +3200,11 @@ function backToModes() {
     document.getElementById('modeScreen').classList.add('active');
 }
 
+// Alias per compatibilità
+function goHome() {
+    backToModes();
+}
+
 function startDrawing2D(withGuides) {
     guidesEnabled = withGuides;
     currentPreset = 'harmonic';
@@ -2069,6 +3217,10 @@ function startDrawing2D(withGuides) {
         </div>
         <div class="compact-controls">
             <div class="control-group">
+                <button onclick="openScaleModal()" style="background: #9775fa; padding: 4px 10px; font-size: 0.75em; margin: 0;">🎵 Scale</button>
+                <button onclick="openKeyModal()" style="background: #e67700; padding: 4px 10px; font-size: 0.75em; margin: 0;">🎹 Tonalità</button>
+                <button onclick="openTimbreModal()" style="background: #fd7e14; padding: 4px 10px; font-size: 0.75em; margin: 0;">🎸 Strumento</button>
+                <button onclick="openGalleryModal()" style="background: #0ca678; padding: 4px 10px; font-size: 0.75em; margin: 0;">📹 Galleria</button>
                 ${withGuides ? `
                 <button onclick="openDemoModal()" id="demoBtn" style="background: #28a745; padding: 4px 10px; font-size: 0.75em; margin: 0;">🎭 Menu Demo</button>
                 <div class="speed-control"><label>⚡</label><input type="range" id="speedSlider" min="0.3" max="2" step="0.1" value="1" onchange="guideSpeed=parseFloat(this.value)"></div>
@@ -2282,6 +3434,10 @@ function startDrawing3D(withGuides) {
         </div>
         <div class="compact-controls">
             <div class="control-group">
+                <button onclick="openScaleModal()" style="background: #9775fa; padding: 4px 10px; font-size: 0.75em; margin: 0;">🎵 Scale</button>
+                <button onclick="openKeyModal()" style="background: #e67700; padding: 4px 10px; font-size: 0.75em; margin: 0;">🎹 Tonalità</button>
+                <button onclick="openTimbreModal()" style="background: #fd7e14; padding: 4px 10px; font-size: 0.75em; margin: 0;">🎸 Strumento</button>
+                <button onclick="openGalleryModal()" style="background: #0ca678; padding: 4px 10px; font-size: 0.75em; margin: 0;">📹 Galleria</button>
                 ${withGuides ? `
                 <button onclick="openDemoModal()" id="demoBtn3D" style="background: #28a745; padding: 4px 10px; font-size: 0.75em; margin: 0;">🎭 Menu Demo</button>
                 <div class="speed-control"><label>⚡</label><input type="range" id="speedSlider3D" min="0.3" max="2" step="0.1" value="1" onchange="guideSpeed=parseFloat(this.value)"></div>
@@ -2328,6 +3484,7 @@ function init3DScene(withGuides) {
     
     renderer3d.domElement.addEventListener('touchstart', e => {
         e.preventDefault();
+        activeTouchCount = e.touches.length; // Aggiorna conteggio tocchi
         if (sharedAudioContext && sharedAudioContext.state === 'suspended') {
             debugLog('🔊 Resuming AudioContext on 3D touch');
             sharedAudioContext.resume();
@@ -2346,7 +3503,12 @@ function init3DScene(withGuides) {
     renderer3d.domElement.addEventListener('touchmove', e => {
         if (demoMode) return;
         e.preventDefault();
+        activeTouchCount = e.touches.length; // Aggiorna conteggio tocchi
         let r = renderer3d.domElement.getBoundingClientRect();
+
+        // Calcola profondità Z basata sul numero di dita (1 dito = vicino, 3 dita = lontano)
+        let zDepth = -5 + (activeTouchCount - 1) * 5; // 1 dito: -5, 2 dita: 0, 3 dita: +5
+
         for (let i = 0; i < e.touches.length; i++) {
             let t = e.touches[i];
             let id = t.identifier;
@@ -2355,17 +3517,23 @@ function init3DScene(withGuides) {
             let tk = 't3d-' + id;
             let x = ((t.clientX - r.left) / r.width) * 2 - 1;
             let y = -((t.clientY - r.top) / r.height) * 2 + 1;
-            let pos = new THREE.Vector3(x * 10, y * 5, y * 5);
+
+            // VERO 3D: X, Y, Z indipendenti!
+            let pos = new THREE.Vector3(x * 10, y * 5, zDepth);
+
             drawIn3D(f, pos, lastPos[f]);
             lastPos[f] = pos.clone();
             let yPos = t.clientY - r.top;
             let freqY = r.height * (1 - yPos / r.height);
-            createAudio(tk, freqY, f, r.height);
+
+            // Passa posizione 3D completa all'audio
+            createAudio(tk, freqY, f, r.height, pos);
         }
     }, { passive: false });
     
     renderer3d.domElement.addEventListener('touchend', e => {
         e.preventDefault();
+        activeTouchCount = e.touches.length; // Aggiorna conteggio tocchi rimasti
         for (let i = 0; i < e.changedTouches.length; i++) {
             let id = e.changedTouches[i].identifier;
             if (!touchIdToFingerIndex.has(id)) continue;
@@ -2507,6 +3675,293 @@ function openDemoModal() {
 
 function closeDemoModal() {
     document.getElementById('demoModal').classList.remove('active');
+}
+
+// ==================== SCALE MODAL FUNCTIONS ====================
+function openScaleModal() {
+    populateScaleModal();
+    document.getElementById('scaleModal').classList.add('active');
+}
+
+function closeScaleModal() {
+    document.getElementById('scaleModal').classList.remove('active');
+}
+
+function selectScale(scaleName) {
+    currentScale = scaleName;
+    document.getElementById('currentScaleName').textContent = SCALE_NAMES[scaleName];
+    showIndicator(`🎵 ${SCALE_NAMES[scaleName]}`);
+    closeScaleModal();
+}
+
+function populateScaleModal() {
+    const western = ['chromatic', 'major', 'minor', 'pentatonic', 'blues', 'harmonic_minor'];
+    const middleEast = ['arabic', 'persian', 'hijaz'];
+    const indian = ['raga_bhairav', 'raga_todi', 'raga_yaman'];
+    const japanese = ['japanese_in', 'japanese_yo', 'japanese_hirajoshi'];
+    const african = ['african_1', 'african_2'];
+    const exotic = ['whole_tone', 'diminished', 'augmented', 'phrygian', 'lydian', 'spanish'];
+
+    const renderScales = (scales, containerId) => {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        scales.forEach(scale => {
+            const btn = document.createElement('button');
+            btn.textContent = SCALE_NAMES[scale];
+            btn.className = 'demo-preset-btn';
+            if (scale === currentScale) {
+                btn.style.background = '#51cf66';
+                btn.style.border = '2px solid #2b8a3e';
+            }
+            btn.onclick = () => selectScale(scale);
+            container.appendChild(btn);
+        });
+    };
+
+    renderScales(western, 'scaleWestern');
+    renderScales(middleEast, 'scaleMiddleEast');
+    renderScales(indian, 'scaleIndian');
+    renderScales(japanese, 'scaleJapanese');
+    renderScales(african, 'scaleAfrican');
+    renderScales(exotic, 'scaleExotic');
+}
+
+// ==================== KEY (TONALITÀ) MODAL ====================
+function openKeyModal() {
+    populateKeyModal();
+    document.getElementById('keyModal').classList.add('active');
+}
+
+function closeKeyModal() {
+    document.getElementById('keyModal').classList.remove('active');
+}
+
+function selectKey(keyName) {
+    currentKey = keyName;
+    document.getElementById('currentKeyName').textContent = keyName;
+    showIndicator(`🎹 Tonalità: ${keyName}`);
+    closeKeyModal();
+}
+
+function populateKeyModal() {
+    const container = document.getElementById('keyGrid');
+    container.innerHTML = '';
+    KEY_NAMES.forEach(key => {
+        const btn = document.createElement('button');
+        btn.textContent = `🎹 ${key}`;
+        btn.className = 'demo-preset-btn';
+        if (key === currentKey) {
+            btn.style.background = '#51cf66';
+            btn.style.border = '2px solid #2b8a3e';
+        }
+        btn.onclick = () => selectKey(key);
+        container.appendChild(btn);
+    });
+}
+
+// ==================== TIMBRE (STRUMENTO) MODAL ====================
+const TIMBRE_NAMES = {
+    'piano': '🎹 Piano',
+    'strings': '🎻 Archi',
+    'flute': '🎺 Flauto',
+    'synth': '🎛️ Synth'
+};
+
+function openTimbreModal() {
+    document.getElementById('timbreModal').classList.add('active');
+}
+
+function closeTimbreModal() {
+    document.getElementById('timbreModal').classList.remove('active');
+}
+
+function selectTimbre(timbreName) {
+    currentTimbre = timbreName;
+    // Aggiorna tutti e 3 i finger con lo stesso timbro
+    fingerTimbreMap = { 0: timbreName, 1: timbreName, 2: timbreName };
+    document.getElementById('currentTimbreName').textContent = TIMBRE_NAMES[timbreName];
+    showIndicator(`${TIMBRE_NAMES[timbreName]}`);
+    closeTimbreModal();
+}
+
+// ==================== GALLERY & INDEXEDDB ====================
+function initRecordingsDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('BontempAppRecordings', 1);
+
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            recordingsDB = request.result;
+            resolve(recordingsDB);
+        };
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('recordings')) {
+                const store = db.createObjectStore('recordings', { keyPath: 'id', autoIncrement: true });
+                store.createIndex('timestamp', 'timestamp', { unique: false });
+                store.createIndex('mode', 'mode', { unique: false });
+            }
+        };
+    });
+}
+
+async function saveRecordingToIndexedDB(blob, mode) {
+    if (!recordingsDB) {
+        await initRecordingsDB();
+    }
+
+    return new Promise((resolve, reject) => {
+        const transaction = recordingsDB.transaction(['recordings'], 'readwrite');
+        const store = transaction.objectStore('recordings');
+
+        const recording = {
+            blob: blob,
+            timestamp: Date.now(),
+            mode: mode,
+            name: `${mode}_${new Date().toLocaleString('it-IT')}`
+        };
+
+        const request = store.add(recording);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function loadRecordingsFromIndexedDB() {
+    if (!recordingsDB) {
+        await initRecordingsDB();
+    }
+
+    return new Promise((resolve, reject) => {
+        const transaction = recordingsDB.transaction(['recordings'], 'readonly');
+        const store = transaction.objectStore('recordings');
+        const request = store.getAll();
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function deleteRecordingFromIndexedDB(id) {
+    if (!recordingsDB) {
+        await initRecordingsDB();
+    }
+
+    return new Promise((resolve, reject) => {
+        const transaction = recordingsDB.transaction(['recordings'], 'readwrite');
+        const store = transaction.objectStore('recordings');
+        const request = store.delete(id);
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function openGalleryModal() {
+    document.getElementById('galleryModal').classList.add('active');
+    await loadGallery();
+}
+
+function closeGalleryModal() {
+    document.getElementById('galleryModal').classList.remove('active');
+}
+
+function showAbout() {
+    document.getElementById('aboutModal').classList.add('active');
+}
+
+function closeAbout() {
+    document.getElementById('aboutModal').classList.remove('active');
+}
+
+function showGuida() {
+    document.getElementById('guidaModal').classList.add('active');
+}
+
+function closeGuida() {
+    document.getElementById('guidaModal').classList.remove('active');
+}
+
+async function loadGallery() {
+    const container = document.getElementById('galleryContent');
+    container.innerHTML = '<p style="text-align: center; padding: 20px;">Caricamento...</p>';
+
+    try {
+        const recordings = await loadRecordingsFromIndexedDB();
+
+        if (recordings.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">📹 Nessuna registrazione salvata</p>';
+            return;
+        }
+
+        // Ordina per timestamp decrescente (più recenti prima)
+        recordings.sort((a, b) => b.timestamp - a.timestamp);
+
+        container.innerHTML = '';
+        recordings.forEach(rec => {
+            const videoDiv = document.createElement('div');
+            videoDiv.style.marginBottom = '20px';
+            videoDiv.style.borderBottom = '1px solid #ddd';
+            videoDiv.style.paddingBottom = '15px';
+
+            const title = document.createElement('div');
+            title.style.fontWeight = '600';
+            title.style.marginBottom = '8px';
+            title.style.fontSize = '0.9em';
+            title.textContent = `${rec.name}`;
+            videoDiv.appendChild(title);
+
+            const video = document.createElement('video');
+            video.controls = true;
+            video.style.width = '100%';
+            video.style.borderRadius = '8px';
+            video.style.marginBottom = '10px';
+            video.src = URL.createObjectURL(rec.blob);
+            videoDiv.appendChild(video);
+
+            const btnContainer = document.createElement('div');
+            btnContainer.style.display = 'flex';
+            btnContainer.style.gap = '8px';
+
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = '⬇️ Scarica';
+            downloadBtn.style.flex = '1';
+            downloadBtn.style.background = '#0ca678';
+            downloadBtn.onclick = () => downloadRecording(rec);
+            btnContainer.appendChild(downloadBtn);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = '🗑️ Elimina';
+            deleteBtn.style.flex = '1';
+            deleteBtn.style.background = '#e03131';
+            deleteBtn.onclick = async () => {
+                if (confirm('Eliminare questa registrazione?')) {
+                    await deleteRecordingFromIndexedDB(rec.id);
+                    await loadGallery();
+                    showIndicator('🗑️ Registrazione eliminata');
+                }
+            };
+            btnContainer.appendChild(deleteBtn);
+
+            videoDiv.appendChild(btnContainer);
+            container.appendChild(videoDiv);
+        });
+
+    } catch (error) {
+        console.error('Errore caricamento galleria:', error);
+        container.innerHTML = '<p style="text-align: center; color: #e03131; padding: 20px;">❌ Errore caricamento galleria</p>';
+    }
+}
+
+function downloadRecording(rec) {
+    const url = URL.createObjectURL(rec.blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${rec.name}.webm`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showIndicator('⬇️ Download avviato!');
 }
 
 function populateDemoModal() {
@@ -2665,11 +4120,46 @@ function startSelectedDemo() {
     }
 }
 
+// ==================== QUANTIZZAZIONE SCALE MUSICALI ====================
+function quantizeToScale(frequency, scale = currentScale, key = currentKey) {
+    // Converte frequenza in MIDI note number
+    const midiNote = 12 * Math.log2(frequency / 440) + 69;
+
+    // Scala disponibile
+    const scaleNotes = SCALES[scale];
+
+    // Offset della tonalità (transpone la scala)
+    const keyOffset = KEYS[key];
+
+    // Trova la nota base (C più vicina)
+    const octave = Math.floor(midiNote / 12);
+    const noteInOctave = midiNote % 12;
+
+    // Trova la nota più vicina nella scala (trasposta nella tonalità)
+    let closestNote = (scaleNotes[0] + keyOffset) % 12;
+    let minDistance = Math.abs(noteInOctave - closestNote);
+
+    for (let note of scaleNotes) {
+        const transposedNote = (note + keyOffset) % 12;
+        const distance = Math.abs(noteInOctave - transposedNote);
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestNote = transposedNote;
+        }
+    }
+
+    // Riconverti in frequenza
+    const quantizedMidi = octave * 12 + closestNote;
+    const quantizedFreq = 440 * Math.pow(2, (quantizedMidi - 69) / 12);
+
+    return quantizedFreq;
+}
+
 function initAudio() {
     if (!sharedAudioContext || sharedAudioContext.state === 'closed') {
         sharedAudioContext = new (window.AudioContext || window.webkitAudioContext)();
         debugLog('🔊 AudioContext creato - State:', sharedAudioContext.state);
-        
+
         audioDestination = sharedAudioContext.createMediaStreamDestination();
     }
     if (sharedAudioContext.state === 'suspended') {
@@ -2680,56 +4170,142 @@ function initAudio() {
     }
 }
 
-function createAudio(id, y, f, h) {
+function createAudio(id, y, f, h, pos3d = null) {
     try {
         if (!sharedAudioContext) {
             debugLog('⚠️ AudioContext non inizializzato');
             initAudio();
-            setTimeout(() => createAudio(id, y, f, h), 50);
+            setTimeout(() => createAudio(id, y, f, h, pos3d), 50);
             return;
         }
-        
+
         if (sharedAudioContext.state === 'suspended') {
             debugLog('🔊 AudioContext suspended in createAudio, resuming...');
             sharedAudioContext.resume().then(() => {
-                createAudio(id, y, f, h);
+                createAudio(id, y, f, h, pos3d);
             });
             return;
         }
-        
+
+        // Calcola frequenza base (220-880 Hz, 2 ottave)
+        let baseFreq = 220 + (1 - y / h) * 660;
+
+        // Quantizza alla scala musicale
+        baseFreq = quantizeToScale(baseFreq);
+
+        // Seleziona timbro per questo dito
+        const timbre = fingerTimbreMap[f % 3] || 'piano';
+        const preset = TIMBRE_PRESETS[timbre];
+
         if (activeOscillators.has(id)) {
-            let a = activeOscillators.get(id);
-            let mult = audioGuidedMode ? [1, 1.25, 1.5] : [1, 1.5, 0.667];
-            let freq = 220 + (1 - y / h) * 660;
-            let fr = freq * mult[f % 3];
-            a.osc.frequency.linearRampToValueAtTime(fr, sharedAudioContext.currentTime + 0.02);
-            updateRealtimeData(f % 3, fr, a.gain.gain.value, true);
+            // Aggiorna frequenza oscillatori esistenti
+            let audioData = activeOscillators.get(id);
+            audioData.oscillators.forEach((oscData, idx) => {
+                const harmonic = preset.harmonics[idx];
+                const targetFreq = baseFreq * harmonic.mult;
+                oscData.osc.frequency.linearRampToValueAtTime(
+                    targetFreq,
+                    sharedAudioContext.currentTime + 0.05
+                );
+            });
+
+            // Aggiorna posizione 3D se presente
+            if (pos3d && audioData.pannerNode) {
+                if (audioData.pannerNode.positionX) {
+                    audioData.pannerNode.positionX.value = pos3d.x;
+                    audioData.pannerNode.positionY.value = pos3d.y;
+                    audioData.pannerNode.positionZ.value = pos3d.z;
+                } else {
+                    audioData.pannerNode.setPosition(pos3d.x, pos3d.y, pos3d.z);
+                }
+                audioData.pos3d = pos3d;
+            }
+
+            updateRealtimeData(f % 3, baseFreq, audioData.masterGain.gain.value, true);
             return;
         }
-        
-        let osc = sharedAudioContext.createOscillator();
-        let gain = sharedAudioContext.createGain();
-        let mult = audioGuidedMode ? [1, 1.25, 1.5] : [1, 1.5, 0.667];
-        let freq = 220 + (1 - y / h) * 660;
-        let fr = freq * mult[f % 3];
-        osc.frequency.value = fr;
-        osc.type = audioGuidedMode ? 'triangle' : waveformSettings[f % 3];
-        let vol = audioGuidedMode ? 0.18 : 0.12;
-        if (osc.type === 'square') vol = audioGuidedMode ? 0.10 : 0.06;
-        if (osc.type === 'sawtooth') vol = audioGuidedMode ? 0.12 : 0.08;
-        gain.gain.setValueAtTime(0, sharedAudioContext.currentTime);
-        gain.gain.linearRampToValueAtTime(vol, sharedAudioContext.currentTime + 0.02);
-        osc.connect(gain);
-        gain.connect(sharedAudioContext.destination);
-        
-        if (audioDestination) {
-            gain.connect(audioDestination);
+
+        // Crea nuovo suono con armonici multipli
+        const now = sharedAudioContext.currentTime;
+        const masterGain = sharedAudioContext.createGain();
+        const oscillators = [];
+
+        // Crea oscillatori per ogni armonico
+        preset.harmonics.forEach(harmonic => {
+            const osc = sharedAudioContext.createOscillator();
+            const gain = sharedAudioContext.createGain();
+
+            // Frequenza dell'armonico
+            osc.frequency.value = baseFreq * harmonic.mult;
+            osc.type = harmonic.type;
+
+            // Volume relativo dell'armonico
+            gain.gain.value = harmonic.amp;
+
+            // Connetti oscillatore -> gain armonico -> master gain
+            osc.connect(gain);
+            gain.connect(masterGain);
+
+            osc.start();
+            oscillators.push({ osc, gain });
+        });
+
+        // ADSR Envelope sul master gain
+        const peakVolume = preset.baseVolume;
+        const sustainVolume = peakVolume * preset.sustain;
+
+        masterGain.gain.setValueAtTime(0, now);
+        masterGain.gain.linearRampToValueAtTime(peakVolume, now + preset.attack);
+        masterGain.gain.linearRampToValueAtTime(sustainVolume, now + preset.attack + preset.decay);
+
+        // Audio spaziale 3D se pos3d è presente
+        let pannerNode = null;
+        if (pos3d) {
+            pannerNode = sharedAudioContext.createPanner();
+            pannerNode.panningModel = 'HRTF'; // Modello realistico 3D
+            pannerNode.distanceModel = 'inverse';
+            pannerNode.refDistance = 1;
+            pannerNode.maxDistance = 20;
+            pannerNode.rolloffFactor = 1;
+            pannerNode.coneInnerAngle = 360;
+            pannerNode.coneOuterAngle = 0;
+            pannerNode.coneOuterGain = 0;
+
+            // Posiziona il suono nello spazio 3D
+            if (pannerNode.positionX) {
+                pannerNode.positionX.value = pos3d.x;
+                pannerNode.positionY.value = pos3d.y;
+                pannerNode.positionZ.value = pos3d.z;
+            } else {
+                pannerNode.setPosition(pos3d.x, pos3d.y, pos3d.z);
+            }
+
+            // Collega: masterGain -> pannerNode -> destination
+            masterGain.connect(pannerNode);
+            pannerNode.connect(sharedAudioContext.destination);
+            if (audioDestination) {
+                pannerNode.connect(audioDestination);
+            }
+        } else {
+            // Audio 2D normale
+            masterGain.connect(sharedAudioContext.destination);
+            if (audioDestination) {
+                masterGain.connect(audioDestination);
+            }
         }
-        
-        osc.start();
-        activeOscillators.set(id, { osc: osc, gain: gain });
-        updateRealtimeData(f % 3, fr, vol, true);
-        
+
+        // Salva riferimenti
+        activeOscillators.set(id, {
+            oscillators,
+            masterGain,
+            pannerNode,
+            preset,
+            baseFreq,
+            pos3d
+        });
+
+        updateRealtimeData(f % 3, baseFreq, sustainVolume, true);
+
     } catch (e) {
         console.error('❌ Audio error:', e);
     }
@@ -2737,12 +4313,27 @@ function createAudio(id, y, f, h) {
 
 function stopAudio(id, f) {
     if (activeOscillators.has(id)) {
-        let a = activeOscillators.get(id);
+        let audioData = activeOscillators.get(id);
         try {
-            a.gain.gain.linearRampToValueAtTime(0, sharedAudioContext.currentTime + 0.05);
+            const now = sharedAudioContext.currentTime;
+            const releaseTime = audioData.preset ? audioData.preset.release : 0.2;
+
+            // Applica release envelope
+            audioData.masterGain.gain.cancelScheduledValues(now);
+            audioData.masterGain.gain.setValueAtTime(audioData.masterGain.gain.value, now);
+            audioData.masterGain.gain.linearRampToValueAtTime(0, now + releaseTime);
+
+            // Ferma e disconnetti tutti gli oscillatori dopo il release
             setTimeout(() => {
-                try { a.osc.stop(); a.osc.disconnect(); a.gain.disconnect(); } catch (e) {}
-            }, 60);
+                try {
+                    audioData.oscillators.forEach(oscData => {
+                        oscData.osc.stop();
+                        oscData.osc.disconnect();
+                        oscData.gain.disconnect();
+                    });
+                    audioData.masterGain.disconnect();
+                } catch (e) {}
+            }, releaseTime * 1000 + 50);
         } catch (e) {}
         activeOscillators.delete(id);
         updateRealtimeData(f, 0, 0, false);
@@ -2750,8 +4341,15 @@ function stopAudio(id, f) {
 }
 
 function stopAllAudio() {
-    activeOscillators.forEach((a, id) => {
-        try { a.osc.stop(); a.osc.disconnect(); a.gain.disconnect(); } catch (e) {}
+    activeOscillators.forEach((audioData, id) => {
+        try {
+            audioData.oscillators.forEach(oscData => {
+                oscData.osc.stop();
+                oscData.osc.disconnect();
+                oscData.gain.disconnect();
+            });
+            audioData.masterGain.disconnect();
+        } catch (e) {}
     });
     activeOscillators.clear();
     for (let i = 0; i < 3; i++) updateRealtimeData(i, 0, 0, false);
@@ -2816,15 +4414,23 @@ async function startRecording() {
             }
         };
         
-        mediaRecorder.onstop = () => {
+        mediaRecorder.onstop = async () => {
             const blob = new Blob(recordedChunks, { type: 'video/webm' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `BontempApp_${currentMode}_${Date.now()}.webm`;
-            a.click();
-            URL.revokeObjectURL(url);
-            debugLog('✅ Registrazione salvata!');
+            try {
+                await saveRecordingToIndexedDB(blob, currentMode);
+                debugLog('✅ Registrazione salvata nella Galleria!');
+                showIndicator('✅ Registrazione salvata! Vai in 📹 Galleria');
+            } catch (error) {
+                console.error('Errore salvataggio:', error);
+                // Fallback: scarica se salvataggio fallisce
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `BontempApp_${currentMode}_${Date.now()}.webm`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showIndicator('⚠️ Salvato in download');
+            }
         };
         
         mediaRecorder.start(100);
@@ -2942,6 +4548,7 @@ function showQuizQuestion(index) {
             </div>
             <textarea id="openAnswer" placeholder="Scrivi risposta articolata..." style="min-height:100px"></textarea>
             <button onclick="checkOpenAnswer(${index})">Invia Risposta</button>
+            <button onclick="backToModes()" style="background:#868e96; margin-top:10px;">◀ Indietro</button>
         `;
         // Non avviare il timer per domande aperte
         return;
@@ -2963,6 +4570,7 @@ function showQuizQuestion(index) {
                 <p>${q.q}</p>
             </div>
             <div class="quiz-options">${opts}</div>
+            <button onclick="backToModes()" style="background:#868e96; margin-top:15px; width:100%;">◀ Esci dal Quiz</button>
         `;
 
         // Avvia timer solo per domande a scelta multipla
@@ -3091,11 +4699,32 @@ function nextQuestionRound() {
     else showResults();
 }
 
-// ==================== PHOTO CHALLENGE CON AUTO-SUBMIT ====================
+// ==================== PHOTO CHALLENGE ====================
 
 function startPhotoChallenge() {
     const gameArea = document.getElementById('gameArea');
-    currentChallenge = challengeFotoGAS[Math.floor(Math.random() * challengeFotoGAS.length)];
+
+    // Pesca sfida dal mazzo shuffled (senza ripetizioni)
+    if (challengeDifficulty === 'audace') {
+        // Se il mazzo AUDACI è finito, rimescola automaticamente
+        if (audaciIndex >= shuffledAudaciChallenges.length) {
+            shuffledAudaciChallenges = shuffleArray([...photoChallengesAudaci]);
+            audaciIndex = 0;
+            console.log('🔄 Mazzo AUDACI terminato e rimescolato!');
+        }
+        currentChallenge = shuffledAudaciChallenges[audaciIndex];
+        audaciIndex++;
+    } else {
+        // Se il mazzo BASE è finito, rimescola automaticamente
+        if (baseIndex >= shuffledBaseChallenges.length) {
+            shuffledBaseChallenges = shuffleArray([...photoChallengesBase]);
+            baseIndex = 0;
+            console.log('🔄 Mazzo BASE terminato e rimescolato!');
+        }
+        currentChallenge = shuffledBaseChallenges[baseIndex];
+        baseIndex++;
+    }
+
     gameArea.innerHTML = `
         <div class="challenge-box">${currentChallenge}</div>
         <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
@@ -3104,6 +4733,13 @@ function startPhotoChallenge() {
             <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none" onchange="handlePhotoUpload(event)">
             <img id="preview" class="preview-image" style="display:none">
         </div>
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button onclick="skipChallenge()" style="background: #868e96; flex: 1;">⏭️ Salta</button>
+            <button onclick="showApiGuide()" style="background: #17a2b8; flex: 1;">❓ Guida API</button>
+        </div>
+        <button onclick="backToModes()" style="background: #dc3545; margin-top: 10px; width: 100%;">
+            ◀ Esci dalla Sfida
+        </button>
     `;
 }
 
@@ -3137,7 +4773,7 @@ async function evaluatePhotoWithGemini() {
     
     try {
         const base64Data = uploadedImage.split(',')[1];
-        const prompt = `Sei il GRUPPO APUANO SPERIMENTALE. Il giocatore ${userName} ha fatto: "${currentChallenge}". Valuta creatività (0-100). Formato: PUNTEGGIO: XX/100`;
+        const prompt = `Sei un musicologo, musicista, artista e compositore con un buon senso dell'ironia. Il giocatore ${userName} ha completato la sfida: "${currentChallenge}". Valuta creatività e originalità (0-100). Formato: PUNTEGGIO: XX/100`;
         
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
@@ -3178,8 +4814,11 @@ async function evaluatePhotoWithGemini() {
     }
 }
 
-function startVolvoChallenge() {
-    startPhotoChallenge();
+function skipChallenge() {
+    showIndicator('⏭️ Challenge saltata, caricamento nuova...');
+    setTimeout(() => {
+        startPhotoChallenge();
+    }, 800);
 }
 
 function nextRound() {
@@ -3189,8 +4828,7 @@ function nextRound() {
         showResults();
     } else {
         updateScore();
-        if (currentMode === 'challenge') startPhotoChallenge();
-        else if (currentMode === 'volvo-challenge') startVolvoChallenge();
+        startPhotoChallenge();
     }
 }
 
@@ -3220,6 +4858,7 @@ function showCuriosita() {
         </div>
         <button onclick="nextCuriosita()">Prossima 👉</button>
         <button onclick="pauseTimer()" id="pauseBtn" style="background:#ffc107">⏸️ Pausa</button>
+        <button onclick="backToModes()" style="background:#868e96; margin-top:10px;">◀ Indietro</button>
     `;
     startCuriositaTimer();
 }
@@ -3263,6 +4902,20 @@ function showResults() {
     stopQuizTimer();
     const maxScore = maxRounds * 10;
     const percentage = (score / maxScore) * 100;
+
+    // Salva risultati quiz nel profilo
+    if (currentMode.startsWith('quiz-')) {
+        const quizMode = currentMode.replace('quiz-', '');
+        const correctAnswers = Math.round(score / 10); // Ogni domanda vale 10 punti
+        saveQuizResult(quizMode, score, correctAnswers, maxRounds);
+    }
+
+    // Salva risultati challenge nel profilo
+    if (currentMode === 'challenge') {
+        const completed = maxRounds; // Per ora considero tutte completate
+        const skipped = 0;
+        saveChallengeResult(challengeDifficulty, score, completed, skipped);
+    }
 
     // Se punteggio perfetto, mostra animazione a tutto schermo
     if (percentage === 100) {
@@ -3310,7 +4963,17 @@ function showNormalResults(maxScore, percentage) {
     modal.classList.add('active');
 }
 
-console.log('✅ BontempApp v3.1 ENHANCED EDITION - Pronto! 🎥🎵⏱️');
+// Inizializza IndexedDB all'avvio
+initRecordingsDB().then(() => {
+    console.log('✅ IndexedDB inizializzato per registrazioni');
+}).catch(err => {
+    console.error('⚠️ Errore inizializzazione IndexedDB:', err);
+});
+
+// Carica profilo utente all'avvio
+loadUserProfile();
+
+console.log('✅ BontempApp v3.1 ENHANCED EDITION - Pronto! 🎥🎵⏱️📹🎹');
 </script>
 </body>
 </html>
