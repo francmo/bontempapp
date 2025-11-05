@@ -3098,13 +3098,13 @@ function showDifficultySelector() {
     gameArea.innerHTML = `
         <h2 style="text-align: center; color: #667eea; margin-bottom: 10px; font-size: 1.1em;">Scegli difficoltà</h2>
         <div class="difficulty-selector">
-            <div class="difficulty-btn" onclick="selectDifficulty('facile')">
+            <div class="difficulty-btn" onclick="selectQuizDifficulty('facile')">
                 <h3 style="font-size: 1em;">😊 Facile</h3><p style="font-size: 0.8em;">Domande base</p>
             </div>
-            <div class="difficulty-btn" onclick="selectDifficulty('medio')">
+            <div class="difficulty-btn" onclick="selectQuizDifficulty('medio')">
                 <h3 style="font-size: 1em;">🤔 Medio</h3><p style="font-size: 0.8em;">Più impegnative</p>
             </div>
-            <div class="difficulty-btn" onclick="selectDifficulty('avanzato')">
+            <div class="difficulty-btn" onclick="selectQuizDifficulty('avanzato')">
                 <span class="api-required">API</span>
                 <h3 style="font-size: 1em;">🧠 Avanzato</h3><p style="font-size: 0.8em;">Risposte libere + AI!</p>
             </div>
@@ -3117,7 +3117,7 @@ function showDifficultySelector() {
     document.getElementById('gameScreen').classList.add('active');
 }
 
-function selectDifficulty(level) {
+function selectQuizDifficulty(level) {
     currentDifficulty = level;
     isExpertMode = (level === 'avanzato');
     
