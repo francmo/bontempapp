@@ -4713,6 +4713,7 @@ function startPhotoChallenge() {
             console.log('🔄 Mazzo AUDACI terminato e rimescolato!');
         }
         currentChallenge = shuffledAudaciChallenges[audaciIndex];
+        console.log("🔥 AUDACI - Indice:", audaciIndex, "- Sfida:", currentChallenge);
         audaciIndex++;
     } else {
         // Se il mazzo BASE è finito, rimescola automaticamente
@@ -4722,6 +4723,7 @@ function startPhotoChallenge() {
             console.log('🔄 Mazzo BASE terminato e rimescolato!');
         }
         currentChallenge = shuffledBaseChallenges[baseIndex];
+        console.log("✨ BASE - Indice:", baseIndex, "- Sfida:", currentChallenge);
         baseIndex++;
     }
 
