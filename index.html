@@ -517,9 +517,6 @@
             margin: 15px 0;
             line-height: 1.5;
             font-size: 0.9em;
-            max-height: 60vh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
         }
         .feedback-box.success { background: #d3f9d8; border-color: #51cf66; }
         .feedback-box.error { background: #ffe0e0; border-color: #ff6b6b; }
@@ -5342,7 +5339,9 @@ async function evaluatePhotoWithGemini() {
             <div class="feedback-box ${points >= 70 ? 'success' : ''}">
                 <h3>${points >= 70 ? '🎉 Ottimo!' : '👍 Discreto!'}</h3>
                 <p style="font-size:2.5em; margin:15px 0; color:#667eea;">${points}/100</p>
-                <p style="font-size:0.85em">${aiResponse}</p>
+                <div style="max-height: 200px; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 5px;">
+                    <p style="font-size:0.85em; margin: 0;">${aiResponse}</p>
+                </div>
             </div>
             <button onclick="nextRound()">Prossima Sfida →</button>
         `;
