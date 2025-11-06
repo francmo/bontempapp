@@ -1124,6 +1124,22 @@
         .comment-cancel:hover {
             background: #6c757d;
         }
+        .comment-delete-btn {
+            background: transparent;
+            border: none;
+            color: #dc3545;
+            font-size: 1em;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            margin-left: auto;
+        }
+        .comment-delete-btn:hover {
+            background: #dc3545;
+            color: white;
+            transform: scale(1.1);
+        }
 
         .fame-empty {
             text-align: center;
@@ -6898,12 +6914,26 @@ async function loadComments(postId) {
                 ? `<img src="${comment.userImage}" class="comment-user-avatar" onerror="this.style.display='none'">`
                 : '<div class="comment-user-avatar" style="background: #667eea; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7em;">👤</div>';
 
+            // Verifica permessi eliminazione (autore O moderatore)
+            const MODERATOR_UID = 'a3n2RtORHYc2olmdVmmPE7zDqt42'; // Stesso UID della Cloud Function
+            const canDelete = currentUser && (
+                currentUser.uid === comment.userId ||  // Autore
+                currentUser.uid === MODERATOR_UID       // Moderatore
+            );
+
+            const deleteButtonHtml = canDelete ? `
+                <button class="comment-delete-btn" onclick="handleCommentDelete('${postId}', '${doc.id}')">
+                    🗑️
+                </button>
+            ` : '';
+
             html += `
                 <div class="comment-item">
                     <div class="comment-header">
                         ${avatarHtml}
                         <span class="comment-user-name">${comment.userName || 'Utente'}</span>
                         <span class="comment-timestamp">${timeStr}</span>
+                        ${deleteButtonHtml}
                     </div>
                     <div class="comment-body">${comment.text}</div>
                 </div>
@@ -7003,6 +7033,60 @@ async function handleCommentSubmit(postId) {
     } finally {
         // Riabilita input
         inputElement.disabled = false;
+    }
+}
+
+/**
+ * Gestisce l'eliminazione di un commento
+ * @param {string} postId - ID del post
+ * @param {string} commentId - ID del commento da eliminare
+ */
+async function handleCommentDelete(postId, commentId) {
+    // Conferma prima di eliminare
+    if (!confirm('Vuoi davvero eliminare questo commento?')) {
+        return;
+    }
+
+    // Verifica autenticazione
+    if (!currentUser) {
+        alert('⚠️ Devi essere autenticato per eliminare commenti.');
+        return;
+    }
+
+    try {
+        showIndicator('🗑️ Eliminazione commento...');
+
+        // Chiama la Cloud Function deleteComment
+        const deleteCommentFunction = firebase.functions().httpsCallable('deleteComment');
+        const result = await deleteCommentFunction({
+            pubId: postId,
+            commentId: commentId
+        });
+
+        if (result.data.success) {
+            console.log('✅ Commento eliminato con successo');
+            showIndicator('✅ Commento eliminato!');
+
+            // Ricarica i commenti
+            setTimeout(() => {
+                loadComments(postId);
+            }, 500);
+
+        } else {
+            throw new Error('Risposta non valida dalla Cloud Function');
+        }
+
+    } catch (error) {
+        console.error('❌ Errore eliminazione commento:', error);
+
+        // Gestisci errori specifici
+        if (error.code === 'permission-denied') {
+            alert('⚠️ Non hai i permessi per eliminare questo commento.');
+        } else if (error.code === 'not-found') {
+            alert('⚠️ Commento non trovato.');
+        } else {
+            alert(`⚠️ Errore durante l'eliminazione: ${error.message || 'Riprova più tardi.'}`);
+        }
     }
 }
 

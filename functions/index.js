@@ -26,6 +26,9 @@ const db = admin.firestore();
 // Inizializza Gemini AI (la chiave API verrà configurata come variabile d'ambiente)
 const genAI = new GoogleGenerativeAI(functions.config().gemini?.api_key || process.env.GEMINI_API_KEY);
 
+// ID del moderatore (può eliminare qualsiasi commento)
+const MODERATOR_UID = 'a3n2RtORHYc2olmdVmmPE7zDqt42'; // SOSTITUISCI CON IL TUO UID
+
 /**
  * Trigger: Quando un like viene creato o eliminato nella subcollection
  * Azione: Conta tutti i like nella subcollection e aggiorna il campo 'likes' del post
@@ -271,6 +274,96 @@ exports.postComment = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError(
         'internal',
         'Errore durante l\'invio del commento. Riprova.'
+    );
+  }
+});
+
+/**
+ * Cloud Function CALLABLE: deleteComment
+ * Permette di eliminare un commento se:
+ * 1. Sei l'autore del commento, OPPURE
+ * 2. Sei il moderatore (MODERATOR_UID)
+ *
+ * Input: { pubId: string, commentId: string }
+ * Output: { success: true } oppure errore
+ */
+exports.deleteComment = functions.https.onCall(async (data, context) => {
+  // ========== 1. VERIFICA AUTENTICAZIONE ==========
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+        'unauthenticated',
+        'Devi essere autenticato per eliminare commenti.'
+    );
+  }
+
+  // ========== 2. VALIDAZIONE INPUT ==========
+  const {pubId, commentId} = data;
+
+  if (!pubId || typeof pubId !== 'string') {
+    throw new functions.https.HttpsError(
+        'invalid-argument',
+        'pubId mancante o non valido.'
+    );
+  }
+
+  if (!commentId || typeof commentId !== 'string') {
+    throw new functions.https.HttpsError(
+        'invalid-argument',
+        'commentId mancante o non valido.'
+    );
+  }
+
+  try {
+    console.log(`🗑️ Richiesta eliminazione commento ${commentId} da utente ${context.auth.uid}`);
+
+    // ========== 3. VERIFICA PERMESSI ==========
+    const commentRef = db.collection('pubblicazioni')
+        .doc(pubId)
+        .collection('comments')
+        .doc(commentId);
+
+    const commentDoc = await commentRef.get();
+
+    if (!commentDoc.exists) {
+      throw new functions.https.HttpsError(
+          'not-found',
+          'Commento non trovato.'
+      );
+    }
+
+    const commentData = commentDoc.data();
+    const isModerator = context.auth.uid === MODERATOR_UID;
+    const isAuthor = context.auth.uid === commentData.userId;
+
+    console.log(`🔍 Check permessi: isModerator=${isModerator}, isAuthor=${isAuthor}`);
+
+    // Verifica: deve essere l'autore O il moderatore
+    if (!isAuthor && !isModerator) {
+      throw new functions.https.HttpsError(
+          'permission-denied',
+          'Non hai i permessi per eliminare questo commento.'
+      );
+    }
+
+    // ========== 4. ELIMINA IL COMMENTO ==========
+    await commentRef.delete();
+
+    const role = isModerator ? 'MODERATORE' : 'AUTORE';
+    console.log(`✅ Commento ${commentId} eliminato da ${context.auth.token.name} (${role})`);
+
+    return {success: true};
+
+  } catch (error) {
+    // Se l'errore è già un HttpsError, rilancia
+    if (error instanceof functions.https.HttpsError) {
+      throw error;
+    }
+
+    // Altrimenti logga e lancia un errore generico
+    console.error('❌ Errore in deleteComment:', error);
+    throw new functions.https.HttpsError(
+        'internal',
+        'Errore durante l\'eliminazione del commento. Riprova.'
     );
   }
 });
