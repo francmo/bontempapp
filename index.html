@@ -1256,51 +1256,36 @@
         /* AUTENTICAZIONE - Badge e UI */
         .auth-badge {
             position: fixed;
-            top: 15px;
-            left: 15px;
-            background: rgba(255, 255, 255, 0.95);
+            top: 10px;
+            left: 10px;
+            background: rgba(102, 126, 234, 0.95);
             backdrop-filter: blur(10px);
-            padding: 10px 15px;
-            border-radius: 25px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
             z-index: 10000;
-            font-size: 0.85em;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
         .auth-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: scale(1.1);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.3);
         }
         .auth-badge-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #667eea;
+            display: none;
         }
         .auth-badge-name {
-            font-weight: 600;
-            color: #333;
-            max-width: 120px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            font-weight: 700;
+            color: white;
+            font-size: 16px;
+            text-transform: uppercase;
         }
         .auth-badge-logout {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .auth-badge-logout:hover {
-            background: #c82333;
+            display: none;
         }
 
         /* LOGIN MODAL */
@@ -1440,7 +1425,7 @@
                     <div class="featured-challenge-content">
                         <p id="featuredChallengeName" class="featured-challenge-name"></p>
                         <p id="featuredChallengeComment" class="featured-challenge-comment"></p>
-                        <div class="featured-challenge-cta">👉 Vedi la Sala della Fama →</div>
+                        <div class="featured-challenge-cta">👉 Vedi la Sala degli Audaci →</div>
                     </div>
                 </div>
             </div>
@@ -1464,19 +1449,14 @@
                 </div>
             </div>
 
-            <div style="margin-bottom: 15px; padding: 10px; background: #e7f3ff; border-radius: 5px;">
-                <p style="font-size: 0.85em; font-weight: 600; color: #004085; margin-bottom: 8px;">💬 Lascia il tuo feedback</p>
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
                 <button onclick="inviaFeedback()"
-                        style="background: #667eea; padding: 8px 20px; font-size: 0.8em; width: auto;">
-                    ✉️ Invia Commento
+                        style="background: #667eea; padding: 6px 12px; font-size: 0.75em; flex: 1; border-radius: 5px;">
+                    💬 Feedback
                 </button>
-            </div>
-
-            <div style="margin-bottom: 15px; padding: 10px; background: #fff3cd; border-radius: 5px;">
-                <p style="font-size: 0.85em; font-weight: 600; color: #856404; margin-bottom: 8px;">💝 Sostieni il progetto</p>
                 <button onclick="window.open('https://www.paypal.com/paypalme/francescomariano', '_blank')"
-                        style="background: #0070ba; padding: 8px 20px; font-size: 0.8em; width: auto;">
-                    💳 Dona con PayPal
+                        style="background: #0070ba; padding: 6px 12px; font-size: 0.75em; flex: 1; border-radius: 5px;">
+                    💳 PayPal
                 </button>
             </div>
 
@@ -1496,6 +1476,20 @@
         </h2>
 
         <div class="mode-selector">
+            <!-- PULSANTI PRINCIPALI - PIÙ GRANDI -->
+            <div class="mode-card" onclick="selectMode('challenge')" style="grid-column: span 2; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); transform: scale(1.05);">
+                <div class="mode-icon" style="font-size: 3em;">📸</div>
+                <div class="mode-title" style="font-size: 1.3em;">Photo Challenge</div>
+                <div class="mode-desc" style="font-size: 1.1em;">200 sfide creative!</div>
+            </div>
+
+            <div class="mode-card" onclick="showHallOfFame()" style="grid-column: span 2; background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); transform: scale(1.05);">
+                <div class="mode-icon" style="font-size: 3em;">🏆</div>
+                <div class="mode-title" style="font-size: 1.3em;">Sala degli Audaci</div>
+                <div class="mode-desc" style="font-size: 1.1em;">Le migliori sfide!</div>
+            </div>
+
+            <!-- ALTRI PULSANTI -->
             <div class="mode-card" onclick="selectMode('2d')">
                 <div class="mode-icon">🎨</div>
                 <div class="mode-title">2D Libero</div>
@@ -1516,7 +1510,7 @@
                 <div class="mode-title">3D Guidato</div>
                 <div class="mode-desc">10 preset 3D + demo</div>
             </div>
-            
+
             <div class="mode-card" onclick="selectMode('quiz-novecento')">
                 <div class="mode-icon">🎼</div>
                 <div class="mode-title">Quiz '900</div>
@@ -1532,12 +1526,6 @@
                 <div class="mode-title">Quiz Classica</div>
                 <div class="mode-desc">Armonia - 3 livelli</div>
             </div>
-            
-            <div class="mode-card" onclick="selectMode('challenge')">
-                <div class="mode-icon">📸</div>
-                <div class="mode-title">Photo Challenge</div>
-                <div class="mode-desc">200 sfide creative!</div>
-            </div>
 
             <div class="mode-card" onclick="selectMode('curiosita')">
                 <div class="mode-icon">🧠</div>
@@ -1549,12 +1537,6 @@
                 <div class="mode-icon">📊</div>
                 <div class="mode-title">Il Mio Profilo</div>
                 <div class="mode-desc">Statistiche e achievements</div>
-            </div>
-
-            <div class="mode-card" onclick="showHallOfFame()" style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);">
-                <div class="mode-icon">🏆</div>
-                <div class="mode-title">Sala della Fama</div>
-                <div class="mode-desc">Le migliori sfide degli Audaci!</div>
             </div>
         </div>
 
@@ -1572,19 +1554,14 @@
                 </div>
             </div>
 
-            <div style="margin-bottom: 15px; padding: 10px; background: #e7f3ff; border-radius: 5px;">
-                <p style="font-size: 0.85em; font-weight: 600; color: #004085; margin-bottom: 8px;">💬 Lascia il tuo feedback</p>
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
                 <button onclick="inviaFeedback()"
-                        style="background: #667eea; padding: 8px 20px; font-size: 0.8em; width: auto;">
-                    ✉️ Invia Commento
+                        style="background: #667eea; padding: 6px 12px; font-size: 0.75em; flex: 1; border-radius: 5px;">
+                    💬 Feedback
                 </button>
-            </div>
-
-            <div style="margin-bottom: 15px; padding: 10px; background: #fff3cd; border-radius: 5px;">
-                <p style="font-size: 0.85em; font-weight: 600; color: #856404; margin-bottom: 8px;">💝 Sostieni il progetto</p>
                 <button onclick="window.open('https://www.paypal.com/paypalme/francescomariano', '_blank')"
-                        style="background: #0070ba; padding: 8px 20px; font-size: 0.8em; width: auto;">
-                    💳 Dona con PayPal
+                        style="background: #0070ba; padding: 6px 12px; font-size: 0.75em; flex: 1; border-radius: 5px;">
+                    💳 PayPal
                 </button>
             </div>
 
@@ -1619,19 +1596,14 @@
                 </div>
             </div>
 
-            <div style="margin-bottom: 15px; padding: 10px; background: #e7f3ff; border-radius: 5px;">
-                <p style="font-size: 0.85em; font-weight: 600; color: #004085; margin-bottom: 8px;">💬 Lascia il tuo feedback</p>
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
                 <button onclick="inviaFeedback()"
-                        style="background: #667eea; padding: 8px 20px; font-size: 0.8em; width: auto;">
-                    ✉️ Invia Commento
+                        style="background: #667eea; padding: 6px 12px; font-size: 0.75em; flex: 1; border-radius: 5px;">
+                    💬 Feedback
                 </button>
-            </div>
-
-            <div style="margin-bottom: 15px; padding: 10px; background: #fff3cd; border-radius: 5px;">
-                <p style="font-size: 0.85em; font-weight: 600; color: #856404; margin-bottom: 8px;">💝 Sostieni il progetto</p>
                 <button onclick="window.open('https://www.paypal.com/paypalme/francescomariano', '_blank')"
-                        style="background: #0070ba; padding: 8px 20px; font-size: 0.8em; width: auto;">
-                    💳 Dona con PayPal
+                        style="background: #0070ba; padding: 6px 12px; font-size: 0.75em; flex: 1; border-radius: 5px;">
+                    💳 PayPal
                 </button>
             </div>
 
@@ -1652,7 +1624,7 @@
     <!-- Hall of Fame Screen -->
     <div id="hallOfFameScreen" class="screen">
         <button class="home-button" onclick="backToMenu()" title="Torna al menu">🏠</button>
-        <h1 style="color: #667eea; text-align: center; margin-bottom: 10px;">🏆 Sala della Fama</h1>
+        <h1 style="color: #667eea; text-align: center; margin-bottom: 10px;">🏆 Sala degli Audaci</h1>
         <p style="text-align: center; color: #666; font-size: 0.9em; margin-bottom: 20px;">Le migliori sfide condivise dagli Audaci di tutto il mondo!</p>
         <div id="hallOfFameArea"></div>
     </div>
@@ -2014,7 +1986,7 @@
     <div class="login-modal-content">
         <div class="login-modal-title">🎵 Benvenuto!</div>
         <div class="login-modal-subtitle">
-            Accedi per condividere le tue sfide nella <strong>Sala della Fama</strong> e interagire con la community!
+            Accedi per condividere le tue sfide nella <strong>Sala degli Audaci</strong> e interagire con la community!
         </div>
 
         <button class="login-btn login-btn-google" onclick="loginWithGoogle()">
@@ -6123,7 +6095,7 @@ function showPublishModal(aiComment) {
     modalText.innerHTML = `
         <strong style="color: #667eea;">"${aiComment}"</strong>
         <br><br>
-        Vuoi esporre questa prodezza nella <strong>'Sala della Fama'</strong> e mostrarla agli altri Audaci?
+        Vuoi esporre questa prodezza nella <strong>'Sala degli Audaci'</strong> e mostrarla agli altri Audaci?
     `;
 
     // Reset checkbox e pulsante
@@ -6479,15 +6451,14 @@ function updateAuthUI(user) {
     const authName = document.getElementById('authName');
 
     if (user) {
-        // Utente autenticato - mostra badge
+        // Utente autenticato - mostra badge con iniziale
         authBadge.style.display = 'flex';
 
         if (user.isAnonymous) {
-            authAvatar.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E👤%3C/text%3E%3C/svg%3E';
-            authName.textContent = 'Ospite';
+            authName.textContent = 'O'; // O di Ospite
         } else {
-            authAvatar.src = user.photoURL || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E👤%3C/text%3E%3C/svg%3E';
-            authName.textContent = user.displayName || user.email || 'Utente';
+            const name = user.displayName || user.email || 'U';
+            authName.textContent = name.charAt(0).toUpperCase(); // Prima lettera maiuscola
         }
     } else {
         // Utente non autenticato - nascondi badge
