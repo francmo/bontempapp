@@ -6261,72 +6261,62 @@ async function upgradeToGoogleAccount() {
         return;
     }
 
-    // 1. Crea provider Google
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('profile');
     provider.addScope('email');
 
+    let credential; // <-- DICHIARA LA VARIABILE QUI FUORI
+
     try {
-        // 2. Apri popup Google Sign-In
         const result = await auth.signInWithPopup(provider);
 
-        // 3. Ottieni le credenziali (Sintassi v8 COMPAT)
-        const credential = result.credential;
+        credential = result.credential; // <-- ASSEGNA LA CREDENZIALE QUI
         if (!credential) {
             throw new Error('Impossibile ottenere le credenziali Google');
         }
 
-        // 4. Prova a COLLEGARE le credenziali all'account anonimo
-        await currentUser.linkWithCredential(credential);
+        await currentUser.linkWithCredential(credential); // Questa linea fallirà (come previsto)
 
         // SUCCESSO (Nuovo utente)
-        console.log('✅ Account collegato con successo!', result.user.displayName);
+        console.log('✅ Account collegato con successo!');
         showIndicator('🎉 Benvenuto tra gli Audaci!');
         closeSmartWallModal();
 
     } catch (error) {
-        // 5. GESTIONE DEGLI ERRORI (Fondamentale)
         console.error('❌ Errore upgrade account:', error.code, error.message);
 
-        // CASO A: L'ACCOUNT GOOGLE ESISTE GIA' (IL NOSTRO BUG)
+        // CASO A: L'ACCOUNT GOOGLE ESISTE GIA'
         if (error.code === 'auth/provider-already-linked' || error.code === 'auth/credential-already-in-use') {
 
-            console.warn('⚠️ Account Google già in uso. Eseguo il merge (signIn) invece del link...');
+            console.warn('⚠️ Account Google già in uso. Eseguo il merge (signIn)...');
 
-            // Prendi le credenziali dall'oggetto 'error'
-            const credential = error.credential;
-
+            // Ora 'credential' è accessibile da qui!
             if (credential) {
                 try {
-                    // Esegui il Sign-In con l'account Google esistente.
-                    // Questo abbandonerà l'account anonimo.
-                    await auth.signInWithCredential(credential);
-
-                    console.log('✅ Merge riuscito. Accesso effettuato con account Google esistente.');
+                    await auth.signInWithCredential(credential); // Esegui il merge
+                    console.log('✅ Merge riuscito. Accesso effettuato.');
                     showIndicator('✅ Bentornato!');
-
                 } catch (mergeError) {
                     console.error('❌ Errore critico durante il merge/signIn:', mergeError);
                     alert(`⚠️ Errore critico: ${mergeError.message}`);
                 }
             } else {
+                // Questo fallback ora è meno probabile, ma è una sicurezza
                 alert('⚠️ Questo account Google è già registrato. Prova ad accedere normalmente.');
             }
 
-        // CASO B: L'UTENTE HA CHIUSO IL POP-UP
-        } else if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
-            showIndicator('⚠️ Operazione annullata');
-
-        // CASO C: IL BROWSER HA BLOCCATO IL POP-UP
-        } else if (error.code === 'auth/popup-blocked') {
-            alert('⚠️ Il popup è stato bloccato. Abilita i popup per questo sito.');
-
-        // CASO D: TUTTI GLI ALTRI ERRORI
+        // CASO B: ALTRI ERRORI (Popup chiuso, bloccato, ecc.)
         } else {
-            alert(`⚠️ Errore durante il collegamento: ${error.message}`);
+            if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+                showIndicator('⚠️ Operazione annullata');
+            } else if (error.code === 'auth/popup-blocked') {
+                alert('⚠️ Il popup è stato bloccato. Abilita i popup per questo sito.');
+            } else {
+                alert(`⚠️ Errore durante il collegamento: ${error.message}`);
+            }
         }
 
-        // Infine, in QUALSIASI caso di errore, chiudi il modale
+        // Chiudi il modale in TUTTI i casi di errore
         closeSmartWallModal();
     }
 }
