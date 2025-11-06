@@ -1,0 +1,21 @@
+# File di configurazione con chiavi API sensibili
+config.js
+
+# Dipendenze Node.js
+node_modules/
+
+# Log files
+npm-debug.log
+firebase-debug.log
+firebase-debug.*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
