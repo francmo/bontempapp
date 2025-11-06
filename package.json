@@ -1,0 +1,17 @@
+{
+  "name": "bontempapp",
+  "version": "3.1.0",
+  "description": "BontempApp - Creative musical challenges platform",
+  "private": true,
+  "scripts": {
+    "build": "node generate-config.js",
+    "vercel-build": "node generate-config.js"
+  },
+  "keywords": [
+    "music",
+    "creativity",
+    "challenges"
+  ],
+  "author": "BontempApp Team",
+  "license": "UNLICENSED"
+}

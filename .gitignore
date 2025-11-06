@@ -1,3 +1,6 @@
+# File di configurazione con chiavi API sensibili
+config.js
+
 # Dipendenze Node.js
 node_modules/
 
