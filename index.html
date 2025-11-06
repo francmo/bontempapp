@@ -1867,6 +1867,39 @@
         <button class="modal-close" onclick="closeGuida()">×</button>
         <h2 style="margin-bottom: 25px; color: #667eea; text-align: center;">📖 Guida Completa BontempApp</h2>
 
+        <!-- Challenge Fotografiche -->
+        <div style="background: #fff5f5; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #ff6b6b;">
+            <h3 style="color: #ff6b6b; margin-bottom: 12px; font-size: 1.05em;">📸 Photo Challenge & Sala degli Audaci</h3>
+
+            <p style="font-size: 0.85em; line-height: 1.6; color: #2c3e50; margin-bottom: 12px;">
+                <strong>200 sfide fotografiche creative</strong> divise in due livelli di difficoltà:
+            </p>
+
+            <ul style="font-size: 0.85em; line-height: 1.8; color: #2c3e50; margin-left: 20px; margin-bottom: 12px;">
+                <li><strong>BASE</strong> (100 sfide): Concettuali, ironiche, da eseguire comodamente. Osservazione e creatività!</li>
+                <li><strong>AUDACI</strong> (100 sfide): Performance pubbliche, coinvolgono altre persone, situazioni imbarazzanti e teatrali!</li>
+            </ul>
+
+            <div style="background: #ffe4e1; padding: 12px; border-radius: 5px; font-size: 0.85em; margin-bottom: 12px;">
+                <h4 style="color: #d63031; margin: 0 0 8px 0; font-size: 0.95em;">🌟 Aspetto Social</h4>
+                <p style="margin: 0; line-height: 1.6;">
+                    Pubblica le tue foto completate nella <strong>Sala degli Audaci</strong> e condividile con la community!
+                    <br><br>
+                    <strong>Interagisci:</strong>
+                    <br>• ❤️ Metti <strong>Like</strong> alle foto che ti piacciono
+                    <br>• 💖 Dai <strong>"I Love It"</strong> ai capolavori
+                    <br>• 💬 <strong>Commenta</strong> e lascia feedback agli altri Audaci
+                    <br>• 📱 <strong>Condividi</strong> su WhatsApp, Facebook e Instagram
+                    <br><br>
+                    Tutte le foto sono moderate da AI e la community può segnalare contenuti inappropriati.
+                </p>
+            </div>
+
+            <div style="background: #d4edda; padding: 10px; border-radius: 5px; font-size: 0.8em;">
+                <strong>⏭️ Puoi saltare</strong>: Non ti piace una challenge? Clicca "Salta" per caricarne una nuova senza penalità!
+            </div>
+        </div>
+
         <!-- Modalità Disegno Audio -->
         <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #667eea;">
             <h3 style="color: #667eea; margin-bottom: 12px; font-size: 1.05em;">🎨 Modalità Disegno Audio (2D/3D)</h3>
@@ -1912,24 +1945,6 @@
 
             <div style="background: #fff3cd; padding: 10px; border-radius: 5px; font-size: 0.8em;">
                 <strong>⏱️ Timer</strong>: Hai 30 secondi per rispondere. Più veloce rispondi, più punti ottieni! (Bonus fino a +20 punti)
-            </div>
-        </div>
-
-        <!-- Challenge Fotografiche -->
-        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #17a2b8;">
-            <h3 style="color: #17a2b8; margin-bottom: 12px; font-size: 1.05em;">📸 Photo Challenge</h3>
-
-            <p style="font-size: 0.85em; line-height: 1.6; color: #2c3e50; margin-bottom: 12px;">
-                <strong>200 sfide fotografiche</strong> divise in due livelli di difficoltà:
-            </p>
-
-            <ul style="font-size: 0.85em; line-height: 1.8; color: #2c3e50; margin-left: 20px; margin-bottom: 12px;">
-                <li><strong>BASE</strong> (100 sfide): Concettuali, ironiche, da eseguire comodamente. Osservazione e creatività!</li>
-                <li><strong>AUDACI</strong> (100 sfide): Performance pubbliche, coinvolgono altre persone, situazioni imbarazzanti e teatrali!</li>
-            </ul>
-
-            <div style="background: #d4edda; padding: 10px; border-radius: 5px; font-size: 0.8em;">
-                <strong>⏭️ Puoi saltare</strong>: Non ti piace una challenge? Clicca "Salta" per caricarne una nuova senza penalità!
             </div>
         </div>
 
@@ -6324,10 +6339,11 @@ async function loadHallOfFame() {
             // Costruisci i pulsanti actions
             let actionsHtml = '';
 
-            // Pulsante Like (SEMPRE presente)
-            const likeButtonHtml = `
-                <button class="fame-card-btn ${likeBtnClass}" ${likeBtnOnclick}>
-                    ${likeIcon} <span class="fame-card-likes-count">${likesCount}</span>
+            // Pulsante I Love It (sempre visibile al posto del like)
+            const loveItBtnOnclick = currentUser ? `onclick="toggleLoveIt('${postId}')"` : `onclick="showLoginModal()"`;
+            const loveItButtonHtml = `
+                <button class="fame-card-btn fame-card-btn-love" ${loveItBtnOnclick} style="flex: 2;">
+                    💖 <span style="font-weight: 600;">I Love It!</span> <span class="fame-card-likes-count">${likesCount}</span>
                 </button>
             `;
 
@@ -6341,18 +6357,18 @@ async function loadHallOfFame() {
             const canDelete = isOwner || isAdmin;
 
             if (canDelete) {
-                // Se sei il proprietario O admin: Like + Elimina
+                // Se sei il proprietario O admin: I Love It + Elimina (solo icona)
                 actionsHtml = `
-                    ${likeButtonHtml}
-                    <button class="fame-card-btn fame-card-btn-delete" onclick="deletePost('${postId}', '${data.imageUrl}')">
-                        🗑️ Elimina
+                    ${loveItButtonHtml}
+                    <button class="fame-card-btn fame-card-btn-delete" onclick="deletePost('${postId}', '${data.imageUrl}')" title="Elimina" style="flex: 0.5;">
+                        🗑️
                     </button>
                 `;
             } else {
-                // Se NON sei il proprietario: Like + Segnala
+                // Se NON sei il proprietario: I Love It + Segnala
                 actionsHtml = `
-                    ${likeButtonHtml}
-                    <button class="fame-card-btn ${flagBtnClass}" ${flagBtnDisabled} ${flagBtnOnclick}>
+                    ${loveItButtonHtml}
+                    <button class="fame-card-btn ${flagBtnClass}" ${flagBtnDisabled} ${flagBtnOnclick} style="flex: 1;">
                         ${flagBtnText}
                     </button>
                 `;
@@ -6393,13 +6409,6 @@ async function loadHallOfFame() {
                                 Instagram
                             </button>
                         </div>
-
-                        <!-- BOTTONE I LOVE IT -->
-                        <button class="love-it-btn" id="love-it-${postId}" onclick="toggleLoveIt('${postId}')" title="I Love It!">
-                            <span class="love-it-heart">💖</span>
-                            <span class="love-it-text">I Love It!</span>
-                            <span class="love-it-count" id="love-it-count-${postId}">0</span>
-                        </button>
 
                         <!-- SEZIONE COMMENTI -->
                         <div class="comments-section">
