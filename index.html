@@ -6277,8 +6277,8 @@ async function upgradeToGoogleAccount() {
         // 2. Apri popup Google Sign-In
         const result = await auth.signInWithPopup(provider);
 
-        // 3. Ottieni le credenziali Google dal risultato
-        const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+        // 3. Ottieni le credenziali Google dal risultato (sintassi v8 compat)
+        const credential = result.credential;
 
         if (!credential) {
             throw new Error('Impossibile ottenere le credenziali Google');
