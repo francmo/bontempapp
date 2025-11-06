@@ -1022,17 +1022,22 @@
             align-items: center;
             gap: 8px;
             width: 100%;
+            margin-top: 10px;
+            padding: 10px 0;
         }
         .comment-input {
             flex: 1;
-            min-width: 0;
-            padding: 10px 12px;
-            border: 2px solid #dee2e6;
+            min-width: 150px;
+            min-height: 40px;
+            padding: 10px 15px;
+            border: 2px solid #667eea;
             border-radius: 20px;
-            font-size: 0.85em;
+            font-size: 0.9em;
             font-family: 'Poppins', sans-serif;
             transition: all 0.2s ease;
             background: white;
+            color: #333;
+            box-sizing: border-box;
         }
         .comment-input:focus {
             outline: none;
@@ -6780,8 +6785,11 @@ async function likePost(postId) {
  * @param {string} postId - ID del post
  */
 function toggleCommentForm(postId) {
+    console.log('🔵 toggleCommentForm chiamata per postId:', postId);
+
     // Controlla autenticazione prima di aprire il form
     if (!currentUser || currentUser.isAnonymous) {
+        console.log('⚠️ Utente non autenticato, mostro Smart Wall');
         showSmartWallModal();
         return;
     }
@@ -6790,21 +6798,33 @@ function toggleCommentForm(postId) {
     const button = document.getElementById(`comment-open-${postId}`);
     const input = document.getElementById(`comment-input-${postId}`);
 
+    console.log('📋 Elementi trovati:', {form: !!form, button: !!button, input: !!input});
+
     if (!form || !button) {
+        console.log('❌ Form o button non trovati!');
         return;
     }
 
-    // Toggle visibilità
-    if (form.style.display === 'none') {
+    // Toggle visibilità - usa getComputedStyle per essere sicuro
+    const isHidden = form.style.display === 'none' || form.style.display === '';
+
+    console.log('👁️ Form nascosto?', isHidden, 'display attuale:', form.style.display);
+
+    if (isHidden) {
         // Apri il form
+        console.log('✅ Apro il form');
         form.style.display = 'flex';
         button.style.display = 'none';
         // Focus sull'input
         if (input) {
-            setTimeout(() => input.focus(), 100);
+            setTimeout(() => {
+                input.focus();
+                console.log('🎯 Focus su input');
+            }, 100);
         }
     } else {
         // Chiudi il form
+        console.log('❌ Chiudo il form');
         form.style.display = 'none';
         button.style.display = 'block';
         // Pulisci l'input
