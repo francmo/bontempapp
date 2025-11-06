@@ -198,10 +198,11 @@ exports.postComment = functions.https.onCall(async (data, context) => {
 
   // ========== 3. FILTRO AI GEMINI (Livello 1 Sicurezza) ==========
   try {
+    console.log('🔄 DEPLOY CHECK: postComment v2.0 - Gemini 2.0 Flash');
     console.log(`🔍 Analisi commento per post ${pubId} da utente ${context.auth.uid}`);
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.0-flash-exp',
       safetySettings: [
         {
           category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
