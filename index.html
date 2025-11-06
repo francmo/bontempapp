@@ -1085,6 +1085,39 @@
             font-size: 0.85em;
             font-style: italic;
         }
+        .comment-open-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 10px;
+        }
+        .comment-open-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .comment-cancel {
+            flex-shrink: 0;
+            background: #868e96;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .comment-cancel:hover {
+            background: #6c757d;
+        }
 
         .fame-empty {
             text-align: center;
@@ -6240,7 +6273,12 @@ async function loadHallOfFame() {
                             <div class="comments-list" id="comments-${postId}">
                                 <div class="comments-empty">Nessun commento ancora</div>
                             </div>
-                            <div class="comment-form"><input type="text" class="comment-input" id="comment-input-${postId}" placeholder="Scrivi un commento..." maxlength="500" onfocus="checkCommentAuth('${postId}')"><button class="comment-submit" onclick="handleCommentSubmit('${postId}')">Invia</button></div>
+
+                            <!-- Bottone per aprire il form commenti -->
+                            <button class="comment-open-btn" id="comment-open-${postId}" onclick="toggleCommentForm('${postId}')">💬 Commenta la sfida!</button>
+
+                            <!-- Form commenti (nascosto di default) -->
+                            <div class="comment-form" id="comment-form-${postId}" style="display: none;"><input type="text" class="comment-input" id="comment-input-${postId}" placeholder="Scrivi un commento..." maxlength="500"><button class="comment-submit" onclick="handleCommentSubmit('${postId}')">Invia</button><button class="comment-cancel" onclick="toggleCommentForm('${postId}')">Annulla</button></div>
                         </div>
                     </div>
                 </div>
@@ -6738,20 +6776,42 @@ async function likePost(postId) {
 // ==================== SISTEMA COMMENTI ====================
 
 /**
- * Controlla l'autenticazione prima di permettere di commentare
+ * Mostra/nasconde il form commenti
  * @param {string} postId - ID del post
  */
-function checkCommentAuth(postId) {
-    // Se non è autenticato o è anonimo, mostra Smart Wall e rimuovi focus
+function toggleCommentForm(postId) {
+    // Controlla autenticazione prima di aprire il form
     if (!currentUser || currentUser.isAnonymous) {
-        const inputElement = document.getElementById(`comment-input-${postId}`);
-        if (inputElement) {
-            inputElement.blur(); // Rimuovi il focus dall'input
-        }
         showSmartWallModal();
-        return false;
+        return;
     }
-    return true;
+
+    const form = document.getElementById(`comment-form-${postId}`);
+    const button = document.getElementById(`comment-open-${postId}`);
+    const input = document.getElementById(`comment-input-${postId}`);
+
+    if (!form || !button) {
+        return;
+    }
+
+    // Toggle visibilità
+    if (form.style.display === 'none') {
+        // Apri il form
+        form.style.display = 'flex';
+        button.style.display = 'none';
+        // Focus sull'input
+        if (input) {
+            setTimeout(() => input.focus(), 100);
+        }
+    } else {
+        // Chiudi il form
+        form.style.display = 'none';
+        button.style.display = 'block';
+        // Pulisci l'input
+        if (input) {
+            input.value = '';
+        }
+    }
 }
 
 /**
@@ -6881,6 +6941,14 @@ async function handleCommentSubmit(postId) {
 
             // Pulisci input
             inputElement.value = '';
+
+            // Chiudi il form commenti
+            const form = document.getElementById(`comment-form-${postId}`);
+            const button = document.getElementById(`comment-open-${postId}`);
+            if (form && button) {
+                form.style.display = 'none';
+                button.style.display = 'block';
+            }
 
             // Ricarica i commenti
             setTimeout(() => {
