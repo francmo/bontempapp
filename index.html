@@ -6255,88 +6255,79 @@ function closeSmartWallModal() {
  * Mantiene la cronologia dell'utente (quiz, punteggi, etc.)
  */
 async function upgradeToGoogleAccount() {
-    if (!auth || !currentUser) {
-        alert('⚠️ Errore: autenticazione non disponibile');
-        return;
-    }
-
-    if (!currentUser.isAnonymous) {
-        console.log('⚠️ Utente già autenticato con Google');
+    if (!auth || !currentUser || !currentUser.isAnonymous) {
+        console.warn('upgradeToGoogleAccount chiamato in uno stato non valido.');
         closeSmartWallModal();
         return;
     }
 
-    let credential = null; // Definiamo fuori dal try per accedervi nel catch
+    // 1. Crea provider Google
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('profile');
+    provider.addScope('email');
 
     try {
-        // 1. Crea provider Google
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.addScope('profile');
-        provider.addScope('email');
-
-        // 2. Apri popup Google Sign-In (il popup di Google indica già il processo in corso)
+        // 2. Apri popup Google Sign-In
         const result = await auth.signInWithPopup(provider);
 
-        // 3. Ottieni le credenziali Google dal risultato (sintassi v8 compat)
-        credential = result.credential;
-
+        // 3. Ottieni le credenziali (Sintassi v8 COMPAT)
+        const credential = result.credential;
         if (!credential) {
             throw new Error('Impossibile ottenere le credenziali Google');
         }
 
-        // 4. Collega le credenziali all'account anonimo esistente
-        const linkedUser = await currentUser.linkWithCredential(credential);
+        // 4. Prova a COLLEGARE le credenziali all'account anonimo
+        await currentUser.linkWithCredential(credential);
 
-        console.log('✅ Account collegato con successo!', linkedUser.user.displayName);
-        console.log('📊 Cronologia mantenuta per UID:', linkedUser.user.uid);
-
+        // SUCCESSO (Nuovo utente)
+        console.log('✅ Account collegato con successo!', result.user.displayName);
+        showIndicator('🎉 Benvenuto tra gli Audaci!');
         closeSmartWallModal();
-        showIndicator('✅ Benvenuto tra gli Audaci!');
 
     } catch (error) {
-        console.error('❌ Errore upgrade account:', error);
+        // 5. GESTIONE DEGLI ERRORI (Fondamentale)
+        console.error('❌ Errore upgrade account:', error.code, error.message);
 
-        // ⛔ GESTIONE ERRORE "ACCOUNT GIÀ ESISTENTE" ⛔
+        // CASO A: L'ACCOUNT GOOGLE ESISTE GIA' (IL NOSTRO BUG)
         if (error.code === 'auth/provider-already-linked' || error.code === 'auth/credential-already-in-use') {
 
             console.warn('⚠️ Account Google già in uso. Eseguo il merge (signIn) invece del link...');
 
-            // Ottieni le credenziali dall'errore (anche se il link è fallito)
-            const credential = error.credential; // <-- La chiave è qui!
+            // Prendi le credenziali dall'oggetto 'error'
+            const credential = error.credential;
 
             if (credential) {
-                // Accedi direttamente con l'account Google esistente.
-                // Questo abbandonerà l'account anonimo e farà il login con quello corretto.
-                auth.signInWithCredential(credential)
-                    .then(() => {
-                        console.log('✅ Merge riuscito. Accesso effettuato con account Google esistente.');
-                        showIndicator('✅ Accesso effettuato!');
-                        closeSmartWallModal(); // Chiude il pop-up bloccato
-                    })
-                    .catch((mergeError) => {
-                        console.error('❌ Errore durante il merge:', mergeError);
-                        alert(`⚠️ Errore critico durante il merge: ${mergeError.message}`);
-                        closeSmartWallModal(); // Chiude il pop-up bloccato
-                    });
+                try {
+                    // Esegui il Sign-In con l'account Google esistente.
+                    // Questo abbandonerà l'account anonimo.
+                    await auth.signInWithCredential(credential);
+
+                    console.log('✅ Merge riuscito. Accesso effettuato con account Google esistente.');
+                    showIndicator('✅ Bentornato!');
+
+                } catch (mergeError) {
+                    console.error('❌ Errore critico durante il merge/signIn:', mergeError);
+                    alert(`⚠️ Errore critico: ${mergeError.message}`);
+                }
             } else {
-                // Errore strano, non abbiamo le credenziali, chiudiamo il modale
                 alert('⚠️ Questo account Google è già registrato. Prova ad accedere normalmente.');
-                closeSmartWallModal();
             }
 
+        // CASO B: L'UTENTE HA CHIUSO IL POP-UP
+        } else if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+            showIndicator('⚠️ Operazione annullata');
+
+        // CASO C: IL BROWSER HA BLOCCATO IL POP-UP
+        } else if (error.code === 'auth/popup-blocked') {
+            alert('⚠️ Il popup è stato bloccato. Abilita i popup per questo sito.');
+
+        // CASO D: TUTTI GLI ALTRI ERRORI
         } else {
-            // Gestisci tutti gli altri errori (popup bloccati, rete, ecc.)
-            if (error.code === 'auth/popup-closed-by-user') {
-                showIndicator('⚠️ Operazione annullata');
-            } else if (error.code === 'auth/popup-blocked') {
-                alert('⚠️ Il popup è stato bloccato. Abilita i popup per questo sito.');
-            } else {
-                alert(`⚠️ Errore durante il collegamento: ${error.message}`);
-            }
-
-            // Assicurati di chiudere il modale anche in caso di altri errori
-            closeSmartWallModal();
+            alert(`⚠️ Errore durante il collegamento: ${error.message}`);
         }
+
+        // Infine, in QUALSIASI caso di errore, chiudi il modale
+        closeSmartWallModal();
     }
 }
 
