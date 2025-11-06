@@ -742,6 +742,60 @@
             background: #6c757d;
             transform: translateY(-2px);
         }
+        .publish-btn-yes:disabled {
+            background: #dee2e6;
+            color: #adb5bd;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .publish-btn-yes:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ToS Warning */
+        .tos-warning {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+            border-left: 4px solid #dc3545;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+        .tos-warning strong {
+            color: #721c24;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1em;
+        }
+        .tos-warning p {
+            margin: 0;
+            color: #856404;
+        }
+
+        /* ToS Checkbox */
+        .tos-checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 15px 0 20px 0;
+            cursor: pointer;
+            font-size: 0.85em;
+            line-height: 1.5;
+            color: #495057;
+            text-align: left;
+        }
+        .tos-checkbox {
+            margin-top: 2px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .tos-checkbox-label:hover {
+            color: #212529;
+        }
 
         /* SALA DELLA FAMA - Griglia Pubblicazioni */
         .hall-of-fame-grid {
@@ -1578,11 +1632,24 @@
     <div class="publish-modal-content">
         <div class="publish-modal-title">🏆 Capolavoro!</div>
         <div class="publish-modal-text" id="publishModalText"></div>
+
+        <!-- Disclaimer ToS -->
+        <div class="tos-warning">
+            <strong>⚠️ Contenuti Vietati:</strong>
+            <p>Non pubblicare foto con nudità, violenza, contenuti offensivi, di odio o che violino la legge. La violazione porterà alla rimozione del contenuto e al ban dell'account.</p>
+        </div>
+
+        <!-- Checkbox Consenso Obbligatoria -->
+        <label class="tos-checkbox-label">
+            <input type="checkbox" id="tosCheckbox" class="tos-checkbox" onchange="togglePublishButton()">
+            <span>Dichiaro che questa foto è appropriata per tutti, non contiene nudità, violenza o offese, e rispetto i Termini di Servizio.</span>
+        </label>
+
         <div class="publish-modal-buttons">
             <button class="publish-modal-btn publish-btn-no" onclick="closePublishModal()">
                 No, tienila per me
             </button>
-            <button class="publish-modal-btn publish-btn-yes" onclick="publishToHallOfFame()">
+            <button id="publishButton" class="publish-modal-btn publish-btn-yes" onclick="publishToHallOfFame()" disabled>
                 Sì, Pubblica! 🎉
             </button>
         </div>
@@ -5625,12 +5692,18 @@ loadUserProfile();
 function showPublishModal(aiComment) {
     const modal = document.getElementById('publishModal');
     const modalText = document.getElementById('publishModalText');
+    const tosCheckbox = document.getElementById('tosCheckbox');
+    const publishButton = document.getElementById('publishButton');
 
     modalText.innerHTML = `
         <strong style="color: #667eea;">"${aiComment}"</strong>
         <br><br>
         Vuoi esporre questa prodezza nella <strong>'Sala della Fama'</strong> e mostrarla agli altri Audaci?
     `;
+
+    // Reset checkbox e pulsante
+    tosCheckbox.checked = false;
+    publishButton.disabled = true;
 
     modal.classList.add('active');
 }
@@ -5640,7 +5713,25 @@ function showPublishModal(aiComment) {
  */
 function closePublishModal() {
     const modal = document.getElementById('publishModal');
+    const tosCheckbox = document.getElementById('tosCheckbox');
+    const publishButton = document.getElementById('publishButton');
+
+    // Reset stato
+    tosCheckbox.checked = false;
+    publishButton.disabled = true;
+
     modal.classList.remove('active');
+}
+
+/**
+ * Gestisce lo stato del pulsante Pubblica in base alla checkbox ToS
+ */
+function togglePublishButton() {
+    const tosCheckbox = document.getElementById('tosCheckbox');
+    const publishButton = document.getElementById('publishButton');
+
+    // Abilita pulsante solo se checkbox è spuntata
+    publishButton.disabled = !tosCheckbox.checked;
 }
 
 /**
