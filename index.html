@@ -247,6 +247,13 @@
             transform: translateY(-5px) scale(1.02);
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+
+        /* Desktop: Photo Challenge e Sala degli Audaci coprono tutta la larghezza */
+        @media (min-width: 768px) {
+            .mode-card.full-width {
+                grid-column: 1 / -1;
+            }
+        }
         .mode-icon { font-size: 1.8em; margin-bottom: 4px; }
         .mode-title { font-size: 0.8em; font-weight: bold; color: #333; }
         .mode-desc { font-size: 0.65em; color: #666; margin-top: 2px; }
@@ -1477,13 +1484,13 @@
 
         <div class="mode-selector">
             <!-- PULSANTI PRINCIPALI - PIÙ GRANDI -->
-            <div class="mode-card" onclick="selectMode('challenge')" style="grid-column: span 2; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); transform: scale(1.05);">
+            <div class="mode-card full-width" onclick="selectMode('challenge')" style="grid-column: span 2; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); transform: scale(1.05);">
                 <div class="mode-icon" style="font-size: 3em;">📸</div>
                 <div class="mode-title" style="font-size: 1.3em;">Photo Challenge</div>
                 <div class="mode-desc" style="font-size: 1.1em;">200 sfide creative!</div>
             </div>
 
-            <div class="mode-card" onclick="showHallOfFame()" style="grid-column: span 2; background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); transform: scale(1.05);">
+            <div class="mode-card full-width" onclick="showHallOfFame()" style="grid-column: span 2; background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); transform: scale(1.05);">
                 <div class="mode-icon" style="font-size: 3em;">🏆</div>
                 <div class="mode-title" style="font-size: 1.3em;">Sala degli Audaci</div>
                 <div class="mode-desc" style="font-size: 1.1em;">Le migliori sfide!</div>
@@ -3582,7 +3589,37 @@ const photoChallengesAudaci = [
     "📸 In un negozio di ferramenta, chiedi a un commesso di accordare un trapano. Fotografa il suo tentativo di trovare la nota",
     "📸 In ufficio, proponi un brindisi con le spillatrici per celebrare la fine della giornata lavorativa. Fotografa il cin-cin",
     "📸 Chiedi a un estraneo di scattarti una foto, ma invece di un telefono, dagli una banana e mettiti in posa. Fotografa la sua confusione",
-    "📸 In ascensore, poco prima che le porte si aprano al tuo piano, di' agli altri: Ricordate, questa conversazione non è mai avvenuta. Fotografa l'uscita"
+    "📸 In ascensore, poco prima che le porte si aprano al tuo piano, di' agli altri: Ricordate, questa conversazione non è mai avvenuta. Fotografa l'uscita",
+    "📸 Scrivi 'Sei la mia nota preferita' su un tovagliolo. Offrilo con un inchino teatrale a uno/a sconosciuto/a in un bar. Fotografa la sua reazione",
+    "📸 Vai in un parco. Chiedi a una coppia seduta su una panchina quale canzone descrive la loro storia d'amore. Fotografa la loro riflessione",
+    "📸 Entra in una pizzeria. Ordina una margherita 'per due cuori affamati' e offri la fetta più bella a qualcuno che mangia da solo",
+    "📸 In una libreria, chiedi a uno/a sconosciuto/a di bell'aspetto quale colonna sonora avrebbe la sua vita. Fotografa la sua scelta",
+    "📸 Vai in un bar. Chiedi al barista un cocktail 'per il colpo di fulmine' e faglielo portare alla persona che ti ha colpito. Fotografa (da lontano!) la consegna",
+    "📸 Disegna una chiave di violino col gesso sul marciapiede davanti a un locale. Scrivi 'Cercasi Duetto'. Fatti una foto mentre aspetti",
+    "📸 In un negozio di fiori, chiedi un singolo fiore 'che suoni come un adagio di Bach'. Regalalo alla prima persona che incontri uscendo",
+    "📸 Chiedi a uno/a sconosciuto/a di talento (con uno strumento, o che canticchia) di fare un duetto improvvisato di 15 secondi con te",
+    "📸 In un caffè, paga il caffè a uno/a sconosciuto/a e chiedi al barista di dirgli che è 'offerto da un compositore anonimo'. Fotografa la sua confusione",
+    "📸 In una piazza con musica, invita platealmente uno/a sconosciuto/a a ballare un valzer improvvisato per 30 secondi",
+    "📸 Ferma uno/a sconosciuto/a e digli: 'Scusa, ma il tuo look ha un'ottima composizione cromatica'. Fotografa la sua reazione artistica",
+    "📸 Al supermercato, usa due banane come telefoni e 'chiama' il tuo amico dall'altra parte della corsia, parlando ad alta voce di un amore impossibile",
+    "📸 Dedica una canzone al DJ di una festa o di un bar 'alla persona con il maglione blu laggiù'. Fotografa la reazione della persona",
+    "📸 In treno, scrivi una breve poesia musicale su un biglietto e fingi di 'perderlo' vicino a qualcuno di interessante",
+    "📸 Fai un brindisi ad alta voce in un ristorante 'All'Amore e alla Musica!' e fotografa chi alza il bicchiere con te",
+    "📸 Chiedi a uno/a sconosciuto/a di farti una foto 'romantica' e poi insisti per farne una anche a lui/lei, 'per bilanciare l'ispirazione'",
+    "📸 Mima una serenata appassionata (ma muta) sotto la finestra di un tuo amico/a, finché non si affaccia",
+    "📸 In un negozio di dischi, chiedi a uno/a sconosciuto/a di consigliarti l'album più 'strappacuore' che possiede",
+    "📸 Organizza una 'battaglia di air guitar' con uno/a sconosciuto/a alla fermata dell'autobus",
+    "📸 Chiedi a qualcuno in un bar: 'Se la tua serata fosse uno strumento musicale, quale sarebbe?'. Fotografa la sua risposta",
+    "📸 Fai un complimento plateale a uno/a sconosciuto/a sul suo 'ritmo' nel camminare",
+    "📸 Siediti su una panchina del parco e 'leggi' ad alta voce un libro di teoria musicale come se fosse la poesia d'amore più passionale mai scritta",
+    "📸 In una gelateria, ordina un cono 'Doppio Bacio' e offri il secondo (finto) bacio a uno/a sconosciuto/a",
+    "📸 Canticchia ad alta voce una canzone d'amore in un ascensore affollato, guardando una persona specifica. Fotografa chi sorride",
+    "📸 Fai un selfie con uno/a sconosciuto/a, ma insisti perché entrambi facciate la 'posa da copertina di album romantico'",
+    "📸 Vai in un museo. Posizionati davanti a un quadro romantico e sospira ad alta voce. Fotografa chi si gira",
+    "📸 Chiedi a uno/a sconosciuto/a di talento di disegnarti una nota musicale sul braccio con una penna",
+    "📸 In un ristorante, 'dirigi' la conversazione del tavolo accanto al tuo come se fosse un'orchestra",
+    "📸 Canta una serenata struggente... a un manichino in una vetrina. Fotografa i passanti che ti guardano come se fossi pazzo",
+    "📸 Proponi a uno/a sconosciuto/a di 'condividere le cuffiette' per 30 secondi per fargli sentire un capolavoro assoluto"
 ];
 
 function shuffleArray(array) {
@@ -7256,7 +7293,7 @@ async function handleCommentDelete(postId, commentId) {
  * @param {string} comment - Commento/descrizione del post
  * @param {string} imageUrl - URL dell'immagine
  */
-function shareToWhatsApp(postId, title, comment, imageUrl) {
+async function shareToWhatsApp(postId, title, comment, imageUrl) {
     // Costruisci il messaggio da condividere
     const message = `*BontempApp - Sfide Musicali Creative*
 
@@ -7272,15 +7309,35 @@ https://bontempapp.soundscapestudio.org
 
 ✓ Ogni giorno una nuova sfida musicale ti aspetta!`;
 
-    // Encode del messaggio per URL
+    // Se disponibile Web Share API (mobile), condividi immagine + testo
+    if (navigator.share && imageUrl) {
+        try {
+            // Scarica l'immagine come blob
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            const file = new File([blob], 'sfida.jpg', { type: 'image/jpeg' });
+
+            // Condividi tramite API nativa (apre WhatsApp con immagine + testo)
+            await navigator.share({
+                title: 'BontempApp - ' + title,
+                text: message,
+                files: [file]
+            });
+
+            console.log('✅ Condivisione WhatsApp con immagine:', postId);
+            return;
+        } catch (error) {
+            console.log('⚠️ Web Share API fallito, fallback a link:', error);
+            // Se fallisce, continua con il metodo tradizionale
+        }
+    }
+
+    // Fallback: apri WhatsApp Web con solo testo (desktop o browser senza Web Share API)
     const encodedMessage = encodeURIComponent(message);
-
-    // Apri WhatsApp Web con il messaggio pre-compilato
     const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
-
     window.open(whatsappUrl, '_blank');
 
-    console.log('✅ Condivisione WhatsApp:', postId);
+    console.log('✅ Condivisione WhatsApp (solo testo):', postId);
 }
 
 /**
