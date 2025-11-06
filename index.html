@@ -7227,7 +7227,19 @@ async function handleCommentDelete(postId, commentId) {
  */
 function shareToWhatsApp(postId, title, comment, imageUrl) {
     // Costruisci il messaggio da condividere
-    const message = `🎵 *${title}* 🎵\n\n${comment}\n\n📸 Guarda la sfida completa su BontempApp:\nhttps://bontempapp.web.app\n\n${imageUrl}`;
+    const message = `🎵 *BontempApp - Sfide Musicali Creative* 🎵
+
+🎯 Sfida: *${title}*
+
+${comment}
+
+🌟 Unisciti alla community di musicisti creativi!
+Accetta le sfide, condividi la tua musica e scopri quella degli altri.
+
+👉 Guarda questa sfida e partecipa:
+https://bontempapp.soundscapestudio.org
+
+🎸 Ogni giorno una nuova sfida musicale ti aspetta!`;
 
     // Encode del messaggio per URL
     const encodedMessage = encodeURIComponent(message);
@@ -7247,7 +7259,7 @@ function shareToWhatsApp(postId, title, comment, imageUrl) {
  */
 function shareToFacebook(postId, imageUrl) {
     // URL della pagina da condividere
-    const shareUrl = encodeURIComponent('https://bontempapp.web.app');
+    const shareUrl = encodeURIComponent('https://bontempapp.soundscapestudio.org');
 
     // Apri Facebook Share Dialog
     const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
@@ -7265,20 +7277,27 @@ function shareToFacebook(postId, imageUrl) {
  * @param {string} imageUrl - URL dell'immagine
  */
 function shareToInstagram(postId, imageUrl) {
-    // Crea il testo da copiare
-    const shareText = `Guarda questa sfida su BontempApp!\n\nhttps://bontempapp.web.app\n\nImmagine: ${imageUrl}`;
+    // Crea il testo da copiare con presentazione
+    const shareText = `🎵 BontempApp - Sfide Musicali Creative 🎵
+
+🌟 Unisciti alla community di musicisti creativi!
+Accetta le sfide, condividi la tua musica e scopri quella degli altri.
+
+👉 https://bontempapp.soundscapestudio.org
+
+🎸 Ogni giorno una nuova sfida musicale ti aspetta!`;
 
     // Prova a copiare negli appunti
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(shareText).then(() => {
-            alert('📋 Link copiato negli appunti!\n\nPer condividere su Instagram:\n1. Apri Instagram\n2. Crea un nuovo post o story\n3. Incolla il link nella descrizione');
+            alert('📋 Link e messaggio copiati negli appunti!\n\nPer condividere su Instagram:\n1. Apri Instagram\n2. Crea un nuovo post o story\n3. Incolla il testo nella descrizione');
         }).catch(err => {
             console.error('❌ Errore copia clipboard:', err);
-            alert('⚠️ Non è stato possibile copiare il link. Prova a condividere manualmente:\n\nhttps://bontempapp.web.app');
+            alert('⚠️ Non è stato possibile copiare. Link: https://bontempapp.soundscapestudio.org');
         });
     } else {
         // Fallback: mostra solo il messaggio
-        alert('📋 Per condividere su Instagram:\n\n1. Copia questo link: https://bontempapp.web.app\n2. Apri Instagram\n3. Crea un nuovo post o story\n4. Incolla il link nella descrizione');
+        alert('📋 Per condividere su Instagram:\n\n1. Copia questo link: https://bontempapp.soundscapestudio.org\n2. Apri Instagram\n3. Crea un nuovo post o story\n4. Incolla il link nella descrizione');
     }
 
     console.log('✅ Condivisione Instagram (clipboard):', postId);
