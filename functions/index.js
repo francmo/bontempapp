@@ -9,13 +9,22 @@
  * Schedulata ogni giorno alle 23:59 (Europe/Rome)
  * Calcola la foto con più likes pubblicate nelle ultime 24h
  * e salva il vincitore in configurazioniApp/vincitoreDelGiorno
+ *
+ * Funzione 3: postComment (CALLABLE)
+ * Permette agli utenti autenticati di postare commenti con filtro AI Gemini
+ * per bloccare contenuti offensivi (HATE_SPEECH, HARASSMENT, ecc.)
  */
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const {GoogleGenerativeAI, HarmCategory, HarmBlockThreshold} = require('@google/generative-ai');
+
 admin.initializeApp();
 
 const db = admin.firestore();
+
+// Inizializza Gemini AI (la chiave API verrà configurata come variabile d'ambiente)
+const genAI = new GoogleGenerativeAI(functions.config().gemini?.api_key || process.env.GEMINI_API_KEY);
 
 /**
  * Trigger: Quando un like viene creato o eliminato nella subcollection
@@ -128,3 +137,139 @@ exports.calculateDailyWinner = functions
       return null;
     }
   });
+
+/**
+ * Cloud Function CALLABLE: postComment
+ * Permette agli utenti autenticati di postare commenti con filtro AI Gemini
+ * per bloccare contenuti offensivi
+ *
+ * Input: { pubId: string, text: string }
+ * Output: { success: true } oppure errore
+ */
+exports.postComment = functions.https.onCall(async (data, context) => {
+  // ========== 1. VERIFICA AUTENTICAZIONE ==========
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+        'unauthenticated',
+        'Devi essere autenticato per commentare.'
+    );
+  }
+
+  // Verifica che NON sia un utente anonimo
+  if (context.auth.token.firebase.sign_in_provider === 'anonymous') {
+    throw new functions.https.HttpsError(
+        'permission-denied',
+        'Gli utenti anonimi non possono commentare. Accedi con Google.'
+    );
+  }
+
+  // ========== 2. VALIDAZIONE INPUT ==========
+  const {pubId, text} = data;
+
+  if (!pubId || typeof pubId !== 'string') {
+    throw new functions.https.HttpsError(
+        'invalid-argument',
+        'pubId mancante o non valido.'
+    );
+  }
+
+  if (!text || typeof text !== 'string') {
+    throw new functions.https.HttpsError(
+        'invalid-argument',
+        'Il testo del commento è obbligatorio.'
+    );
+  }
+
+  const trimmedText = text.trim();
+
+  if (trimmedText.length === 0) {
+    throw new functions.https.HttpsError(
+        'invalid-argument',
+        'Il commento non può essere vuoto.'
+    );
+  }
+
+  if (trimmedText.length > 500) {
+    throw new functions.https.HttpsError(
+        'invalid-argument',
+        'Il commento è troppo lungo (max 500 caratteri).'
+    );
+  }
+
+  // ========== 3. FILTRO AI GEMINI (Livello 1 Sicurezza) ==========
+  try {
+    console.log(`🔍 Analisi commento per post ${pubId} da utente ${context.auth.uid}`);
+
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-1.5-flash',
+      safetySettings: [
+        {
+          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+        },
+        {
+          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+        },
+        {
+          category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+        },
+        {
+          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+        },
+      ],
+    });
+
+    // Prompt per analizzare il commento
+    const prompt = `Analizza se questo commento rispetta le linee guida della community (no hate speech, no harassment, no contenuti offensivi). Commento: "${trimmedText}". Rispondi solo "SAFE" o "UNSAFE".`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const responseText = response.text().trim().toUpperCase();
+
+    console.log(`🤖 Gemini AI risposta: ${responseText}`);
+
+    // Se Gemini blocca o ritorna UNSAFE, nega il commento
+    if (response.promptFeedback?.blockReason || responseText.includes('UNSAFE')) {
+      console.log(`⛔ Commento bloccato da Gemini AI per utente ${context.auth.uid}`);
+      throw new functions.https.HttpsError(
+          'invalid-argument',
+          'Il tuo commento viola le linee guida della community.'
+      );
+    }
+
+    // ========== 4. SALVA IL COMMENTO IN FIRESTORE ==========
+    const commentData = {
+      text: trimmedText,
+      userId: context.auth.uid,
+      userName: context.auth.token.name || 'Utente',
+      userImage: context.auth.token.picture || null,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      flagCount: 0,
+      isHidden: false,
+    };
+
+    await db.collection('pubblicazioni')
+        .doc(pubId)
+        .collection('comments')
+        .add(commentData);
+
+    console.log(`✅ Commento salvato per post ${pubId} da ${context.auth.token.name}`);
+
+    return {success: true};
+  } catch (error) {
+    // Se l'errore è già un HttpsError, rilancia
+    if (error instanceof functions.https.HttpsError) {
+      throw error;
+    }
+
+    // Altrimenti logga e lancia un errore generico
+    console.error('❌ Errore in postComment:', error);
+    throw new functions.https.HttpsError(
+        'internal',
+        'Errore durante l\'invio del commento. Riprova.'
+    );
+  }
+});

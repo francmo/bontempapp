@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ====================================================================
+    // PUBBLICAZIONI (Sala della Fama)
+    // ====================================================================
+    match /pubblicazioni/{pubId} {
+      // Tutti possono leggere le pubblicazioni
+      allow read: if true;
+
+      // Solo utenti autenticati (non anonimi) possono creare pubblicazioni
+      allow create: if request.auth != null && !request.auth.token.firebase.sign_in_provider.matches('anonymous');
+
+      // Solo il proprietario può aggiornare/eliminare
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+
+      // ----------------------------------------------------------------
+      // SUBCOLLECTION: LIKES
+      // ----------------------------------------------------------------
+      match /likes/{userId} {
+        // Tutti possono leggere i likes
+        allow read: if true;
+
+        // Solo l'utente può aggiungere/rimuovere il proprio like
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // ----------------------------------------------------------------
+      // SUBCOLLECTION: FLAGS (Segnalazioni)
+      // ----------------------------------------------------------------
+      match /flags/{userId} {
+        // Tutti possono leggere i flags
+        allow read: if true;
+
+        // Solo utenti autenticati possono segnalare
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      // ----------------------------------------------------------------
+      // SUBCOLLECTION: COMMENTS ⭐ NUOVA!
+      // ----------------------------------------------------------------
+      match /comments/{commentId} {
+        // ✅ Tutti possono leggere i commenti
+        allow read: if true;
+
+        // ⛔ NESSUNO può scrivere direttamente
+        // La scrittura avviene SOLO tramite la Cloud Function sicura 'postComment'
+        // che include il filtro AI per contenuti offensivi
+        allow create, update, delete: if false;
+      }
+    }
+
+    // ====================================================================
+    // CONFIGURAZIONI APP
+    // ====================================================================
+    match /configurazioniApp/{docId} {
+      // Tutti possono leggere le configurazioni (es. vincitore del giorno)
+      allow read: if true;
+
+      // Solo le Cloud Functions possono scrivere
+      allow write: if false;
+    }
+
+    // ====================================================================
+    // PROFILI UTENTI
+    // ====================================================================
+    match /utenti/{userId} {
+      // Gli utenti possono leggere tutti i profili
+      allow read: if true;
+
+      // Gli utenti possono creare/aggiornare solo il proprio profilo
+      allow create, update: if request.auth != null && request.auth.uid == userId;
+
+      // Solo il proprietario può eliminare il proprio profilo
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ====================================================================
+    // DEFAULT: Nega tutto il resto
+    // ====================================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

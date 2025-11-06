@@ -966,6 +966,120 @@
             margin-left: 3px;
         }
 
+        /* Sistema Commenti */
+        .comments-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .comments-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        .comments-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        .comment-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+        }
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+        .comment-user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .comment-user-name {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9em;
+        }
+        .comment-timestamp {
+            font-size: 0.75em;
+            color: #868e96;
+            margin-left: auto;
+        }
+        .comment-body {
+            color: #495057;
+            line-height: 1.4;
+            margin-left: 32px;
+        }
+        .comment-form {
+            display: flex;
+            gap: 8px;
+        }
+        .comment-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.2s ease;
+        }
+        .comment-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .comment-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .comment-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .comment-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .comments-login-prompt {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: #495057;
+        }
+        .comments-login-link {
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .comments-login-link:hover {
+            color: #764ba2;
+        }
+        .comments-empty {
+            text-align: center;
+            padding: 20px;
+            color: #868e96;
+            font-size: 0.85em;
+            font-style: italic;
+        }
+
         .fame-empty {
             text-align: center;
             padding: 60px 20px;
@@ -6113,6 +6227,30 @@ async function loadHallOfFame() {
                         <div class="fame-card-actions">
                             ${actionsHtml}
                         </div>
+
+                        <!-- SEZIONE COMMENTI -->
+                        <div class="comments-section">
+                            <div class="comments-title">💬 Commenti</div>
+                            <div class="comments-list" id="comments-${postId}">
+                                <div class="comments-empty">Nessun commento ancora</div>
+                            </div>
+                            <div class="comment-form">
+                                <input
+                                    type="text"
+                                    class="comment-input"
+                                    id="comment-input-${postId}"
+                                    placeholder="Scrivi un commento..."
+                                    maxlength="500"
+                                    onfocus="checkCommentAuth('${postId}')"
+                                >
+                                <button
+                                    class="comment-submit"
+                                    onclick="handleCommentSubmit('${postId}')"
+                                >
+                                    Invia
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -6120,6 +6258,11 @@ async function loadHallOfFame() {
 
         html += '</div>';
         area.innerHTML = html;
+
+        // Carica i commenti per ogni post
+        for (const doc of snapshot.docs) {
+            loadComments(doc.id);
+        }
 
     } catch (error) {
         console.error('Errore caricamento Sala della Fama:', error);
@@ -6598,6 +6741,184 @@ async function likePost(postId) {
     } catch (error) {
         console.error('❌ Errore like/unlike:', error);
         alert(`⚠️ Errore durante l'operazione: ${error.message}`);
+    }
+}
+
+// ==================== SISTEMA COMMENTI ====================
+
+/**
+ * Controlla l'autenticazione prima di permettere di commentare
+ * @param {string} postId - ID del post
+ */
+function checkCommentAuth(postId) {
+    // Se non è autenticato o è anonimo, mostra Smart Wall e rimuovi focus
+    if (!currentUser || currentUser.isAnonymous) {
+        const inputElement = document.getElementById(`comment-input-${postId}`);
+        if (inputElement) {
+            inputElement.blur(); // Rimuovi il focus dall'input
+        }
+        showSmartWallModal();
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Carica e mostra i commenti per un post
+ * @param {string} postId - ID del post
+ */
+async function loadComments(postId) {
+    const commentsContainer = document.getElementById(`comments-${postId}`);
+
+    if (!commentsContainer || !db) {
+        return;
+    }
+
+    try {
+        // Carica commenti dalla subcollection, ordinati per timestamp
+        const snapshot = await db.collection('pubblicazioni')
+            .doc(postId)
+            .collection('comments')
+            .where('isHidden', '==', false)
+            .orderBy('timestamp', 'asc')
+            .limit(50)
+            .get();
+
+        if (snapshot.empty) {
+            commentsContainer.innerHTML = '<div class="comments-empty">Nessun commento ancora</div>';
+            return;
+        }
+
+        // Costruisci HTML dei commenti
+        let html = '';
+        snapshot.forEach(doc => {
+            const comment = doc.data();
+
+            // Formatta timestamp
+            let timeStr = 'Ora';
+            if (comment.timestamp) {
+                const date = comment.timestamp.toDate();
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+
+                if (diffMins < 1) {
+                    timeStr = 'Adesso';
+                } else if (diffMins < 60) {
+                    timeStr = `${diffMins}m fa`;
+                } else if (diffHours < 24) {
+                    timeStr = `${diffHours}h fa`;
+                } else if (diffDays < 7) {
+                    timeStr = `${diffDays}g fa`;
+                } else {
+                    timeStr = date.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+                }
+            }
+
+            // Avatar dell'utente
+            const avatarHtml = comment.userImage
+                ? `<img src="${comment.userImage}" class="comment-user-avatar" onerror="this.style.display='none'">`
+                : '<div class="comment-user-avatar" style="background: #667eea; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7em;">👤</div>';
+
+            html += `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        ${avatarHtml}
+                        <span class="comment-user-name">${comment.userName || 'Utente'}</span>
+                        <span class="comment-timestamp">${timeStr}</span>
+                    </div>
+                    <div class="comment-body">${comment.text}</div>
+                </div>
+            `;
+        });
+
+        commentsContainer.innerHTML = html;
+
+    } catch (error) {
+        console.error('❌ Errore caricamento commenti:', error);
+        commentsContainer.innerHTML = '<div class="comments-empty">Errore caricamento commenti</div>';
+    }
+}
+
+/**
+ * Gestisce l'invio di un nuovo commento
+ * @param {string} postId - ID del post
+ */
+async function handleCommentSubmit(postId) {
+    // Verifica autenticazione
+    if (!currentUser || currentUser.isAnonymous) {
+        showSmartWallModal();
+        return;
+    }
+
+    const inputElement = document.getElementById(`comment-input-${postId}`);
+
+    if (!inputElement) {
+        return;
+    }
+
+    const text = inputElement.value.trim();
+
+    // Validazione input
+    if (!text) {
+        alert('⚠️ Scrivi un commento prima di inviare!');
+        return;
+    }
+
+    if (text.length > 500) {
+        alert('⚠️ Il commento è troppo lungo (max 500 caratteri).');
+        return;
+    }
+
+    try {
+        // Disabilita input durante l'invio
+        inputElement.disabled = true;
+        showIndicator('💬 Invio commento...');
+
+        // Chiama la Cloud Function postComment
+        const postCommentFunction = firebase.functions().httpsCallable('postComment');
+        const result = await postCommentFunction({
+            pubId: postId,
+            text: text
+        });
+
+        if (result.data.success) {
+            console.log('✅ Commento postato con successo');
+            showIndicator('✅ Commento pubblicato!');
+
+            // Pulisci input
+            inputElement.value = '';
+
+            // Ricarica i commenti
+            setTimeout(() => {
+                loadComments(postId);
+            }, 500);
+
+        } else {
+            throw new Error('Risposta non valida dalla Cloud Function');
+        }
+
+    } catch (error) {
+        console.error('❌ Errore invio commento:', error);
+
+        // Gestisci errori specifici
+        if (error.code === 'unauthenticated') {
+            alert('⚠️ Devi essere autenticato per commentare.');
+            showLoginModal();
+        } else if (error.code === 'permission-denied') {
+            alert('⚠️ Gli utenti anonimi non possono commentare. Accedi con Google!');
+            showSmartWallModal();
+        } else if (error.message && error.message.includes('linee guida')) {
+            alert('⚠️ Il tuo commento viola le linee guida della community. Riprova con un contenuto più appropriato.');
+        } else {
+            alert(`⚠️ Errore durante l'invio del commento: ${error.message || 'Riprova più tardi.'}`);
+        }
+
+    } finally {
+        // Riabilita input
+        inputElement.disabled = false;
     }
 }
 
