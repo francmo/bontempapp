@@ -6266,6 +6266,8 @@ async function upgradeToGoogleAccount() {
         return;
     }
 
+    let credential = null; // Definiamo fuori dal try per accedervi nel catch
+
     try {
         showIndicator('🔗 Collegamento account in corso...');
 
@@ -6278,7 +6280,7 @@ async function upgradeToGoogleAccount() {
         const result = await auth.signInWithPopup(provider);
 
         // 3. Ottieni le credenziali Google dal risultato (sintassi v8 compat)
-        const credential = result.credential;
+        credential = result.credential;
 
         if (!credential) {
             throw new Error('Impossibile ottenere le credenziali Google');
@@ -6302,10 +6304,31 @@ async function upgradeToGoogleAccount() {
         console.error('❌ Errore upgrade account:', error);
 
         // Gestione errori specifici
-        if (error.code === 'auth/credential-already-in-use') {
-            // L'account Google esiste già (usato da un altro account)
-            alert('⚠️ Questo account Google è già registrato. Effettua il logout e accedi direttamente con Google.');
-            closeSmartWallModal();
+        if (error.code === 'auth/credential-already-in-use' || error.code === 'auth/provider-already-linked') {
+            // L'account Google esiste già - facciamo il merge automatico
+            console.log('🔄 Account Google esistente rilevato. Merge in corso...');
+
+            try {
+                if (credential) {
+                    // Accedi con l'account Google esistente (abbandona l'account anonimo)
+                    showIndicator('🔄 Accesso con account esistente...');
+                    await auth.signInWithCredential(credential);
+
+                    console.log('✅ Merge completato! Login effettuato con account Google esistente');
+                    showIndicator('✅ Benvenuto!');
+                    closeSmartWallModal();
+
+                    setTimeout(() => {
+                        showIndicator('✅ Ora puoi pubblicare e votare!');
+                    }, 2000);
+                } else {
+                    throw new Error('Credenziali non disponibili per il merge');
+                }
+            } catch (mergeError) {
+                console.error('❌ Errore durante il merge:', mergeError);
+                alert('⚠️ Errore durante il collegamento. Prova a fare logout e accedi con Google.');
+                closeSmartWallModal();
+            }
         } else if (error.code === 'auth/popup-closed-by-user') {
             showIndicator('⚠️ Operazione annullata');
         } else if (error.code === 'auth/popup-blocked') {
