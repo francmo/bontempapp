@@ -4021,7 +4021,7 @@ function showQuizFeedback(isCorrect, correctAnswer = '', timeBonus = 0) {
 
 // ==================== CONDIVISIONE SOCIAL ====================
 function condividiWhatsApp() {
-    const text = encodeURIComponent('🎵 Scopri BontempApp - L\'app musicale interattiva!\n\n🎨 Disegna e crea suoni in 2D e 3D\n🎯 Quiz su Jazz, Classica e Musica del \'900\n📸 Sfide fotografiche creative\n🧠 Curiosità musicali\n\nGratis e installabile su qualsiasi dispositivo!\n\n👉 https://bontempapp.soundscapestudio.org');
+    const text = encodeURIComponent('*BontempApp - L\'app musicale interattiva!*\n\n✓ Disegna e crea suoni in 2D e 3D\n✓ Quiz su Jazz, Classica e Musica del \'900\n✓ Sfide fotografiche creative\n✓ Curiosità musicali\n\nGratis e installabile su qualsiasi dispositivo!\n\nhttps://bontempapp.soundscapestudio.org');
     const url = `https://wa.me/?text=${text}`;
     window.open(url, '_blank');
 }
@@ -7278,19 +7278,19 @@ async function handleCommentDelete(postId, commentId) {
  */
 function shareToWhatsApp(postId, title, comment, imageUrl) {
     // Costruisci il messaggio da condividere
-    const message = `🎵 *BontempApp - Sfide Musicali Creative* 🎵
+    const message = `*BontempApp - Sfide Musicali Creative*
 
-🎯 Sfida: *${title}*
+✓ Sfida: *${title}*
 
 ${comment}
 
-🌟 Unisciti alla community di musicisti creativi!
-Accetta le sfide, condividi la tua musica e scopri quella degli altri.
+✓ Unisciti alla community di musicisti creativi!
+✓ Accetta le sfide, condividi la tua musica e scopri quella degli altri.
 
-👉 Guarda questa sfida e partecipa:
+Guarda questa sfida e partecipa:
 https://bontempapp.soundscapestudio.org
 
-🎸 Ogni giorno una nuova sfida musicale ti aspetta!`;
+✓ Ogni giorno una nuova sfida musicale ti aspetta!`;
 
     // Encode del messaggio per URL
     const encodedMessage = encodeURIComponent(message);
