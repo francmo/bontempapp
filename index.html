@@ -70,6 +70,71 @@
         
         h1 { color: #667eea; text-align: center; margin-bottom: 5px; font-size: 1.5em; }
         .subtitle { text-align: center; color: #666; margin-bottom: 8px; font-size: 0.75em; }
+
+        /* Featured Challenge Card */
+        .featured-challenge-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .featured-challenge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.35);
+            border-color: #667eea;
+        }
+        .featured-challenge-header {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .featured-challenge-title {
+            font-size: 1em;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+        }
+        .featured-challenge-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        .featured-challenge-content {
+            padding: 15px;
+        }
+        .featured-challenge-name {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #667eea;
+            margin: 0 0 8px 0;
+        }
+        .featured-challenge-comment {
+            font-size: 0.85em;
+            color: #666;
+            line-height: 1.5;
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-style: italic;
+        }
+        .featured-challenge-cta {
+            font-size: 0.8em;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 10px;
+            text-align: center;
+        }
+
         .screen { display: none; }
         .screen.active { display: block; animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn {
@@ -961,6 +1026,19 @@
             </p>
         </div>
 
+        <!-- Card Sfida in Evidenza -->
+        <div id="featuredChallengeCard" class="featured-challenge-card" style="display: none;" onclick="showHallOfFame()">
+            <div class="featured-challenge-header">
+                <span class="featured-challenge-title">🌟 Sfida in Evidenza</span>
+            </div>
+            <img id="featuredChallengeImage" class="featured-challenge-image" src="" alt="Sfida in evidenza">
+            <div class="featured-challenge-content">
+                <p id="featuredChallengeName" class="featured-challenge-name"></p>
+                <p id="featuredChallengeComment" class="featured-challenge-comment"></p>
+                <div class="featured-challenge-cta">👉 Vedi la Sala della Fama →</div>
+            </div>
+        </div>
+
         <div class="input-group">
             <label for="userName">👤 Il tuo nome:</label>
             <input type="text" id="userName" placeholder="Inserisci il tuo nome..." value="Studente" />
@@ -1598,6 +1676,9 @@ try {
         updateAuthUI(user);
         console.log('👤 Stato auth:', user ? `${user.displayName || 'Anonimo'} (${user.uid})` : 'Non autenticato');
     });
+
+    // Carica sfida in evidenza nella home
+    loadFeaturedChallenge();
 } catch (error) {
     console.error('❌ Errore inizializzazione Firebase:', error);
 }
@@ -6022,6 +6103,59 @@ async function deletePost(postId, imageUrl) {
     } catch (error) {
         console.error('❌ Errore eliminazione:', error);
         alert(`⚠️ Errore durante l'eliminazione: ${error.message}`);
+    }
+}
+
+/**
+ * Carica una sfida random dalla Sala della Fama per la home
+ */
+async function loadFeaturedChallenge() {
+    const card = document.getElementById('featuredChallengeCard');
+    const image = document.getElementById('featuredChallengeImage');
+    const name = document.getElementById('featuredChallengeName');
+    const comment = document.getElementById('featuredChallengeComment');
+
+    // Nascondi la card se Firebase non è configurato
+    if (!db) {
+        card.style.display = 'none';
+        return;
+    }
+
+    try {
+        // Carica 1 pubblicazione random tra le ultime 20
+        const snapshot = await db.collection('pubblicazioni')
+            .where('flags', '<', 3)
+            .orderBy('flags', 'asc')
+            .orderBy('timestamp', 'desc')
+            .limit(20)
+            .get();
+
+        if (snapshot.empty) {
+            card.style.display = 'none';
+            return;
+        }
+
+        // Seleziona una pubblicazione random
+        const docs = snapshot.docs;
+        const randomDoc = docs[Math.floor(Math.random() * docs.length)];
+        const data = randomDoc.data();
+
+        // Popola la card
+        image.src = data.imageUrl;
+        image.onerror = function() {
+            card.style.display = 'none';
+        };
+        name.textContent = `📸 ${data.sfidaTitolo}`;
+        comment.textContent = `"${data.aiCommento}"`;
+
+        // Mostra la card
+        card.style.display = 'block';
+
+        console.log('✅ Sfida in evidenza caricata:', data.sfidaTitolo);
+
+    } catch (error) {
+        console.error('❌ Errore caricamento sfida in evidenza:', error);
+        card.style.display = 'none';
     }
 }
 
