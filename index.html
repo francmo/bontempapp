@@ -71,61 +71,103 @@
         h1 { color: #667eea; text-align: center; margin-bottom: 5px; font-size: 1.5em; }
         .subtitle { text-align: center; color: #666; margin-bottom: 8px; font-size: 0.75em; }
 
-        /* Featured Challenge Card - Posizionata in alto a destra */
-        .featured-challenge-card {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            width: 240px;
-            max-width: calc(100vw - 30px);
-            background: white;
+        /* Welcome Hero Grid - Responsive Layout */
+        .welcome-hero-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        /* Desktop: 2 colonne (60% sinistra, 40% destra) */
+        @media (min-width: 769px) {
+            .welcome-hero-grid {
+                grid-template-columns: 1.5fr 1fr;
+                gap: 30px;
+            }
+        }
+
+        .welcome-hero-left {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .welcome-hero-right {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        /* CTA Primary Button - Grande e visibile */
+        .btn-cta-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border: none;
             border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            width: 100%;
+        }
+        .btn-cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        /* Featured Challenge Card - Nel flusso del layout */
+        .featured-challenge-card {
+            background: white;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
-            z-index: 999;
+            width: 100%;
         }
         .featured-challenge-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.35);
             border-color: #667eea;
         }
         .featured-challenge-header {
             background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            padding: 8px 12px;
+            padding: 12px 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
         }
         .featured-challenge-title {
-            font-size: 0.85em;
+            font-size: 0.9em;
             font-weight: 700;
             color: #333;
             margin: 0;
+            text-align: center;
         }
         .featured-challenge-image {
             width: 100%;
-            height: 180px;
+            height: 200px;
             object-fit: contain;
             display: block;
             background: #f8f9fa;
         }
         .featured-challenge-content {
-            padding: 12px;
+            padding: 15px;
         }
         .featured-challenge-name {
-            font-size: 0.85em;
+            font-size: 0.9em;
             font-weight: 600;
             color: #667eea;
-            margin: 0 0 6px 0;
+            margin: 0 0 8px 0;
         }
         .featured-challenge-comment {
-            font-size: 0.75em;
+            font-size: 0.85em;
             color: #666;
-            line-height: 1.4;
+            line-height: 1.5;
             margin: 0;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -134,18 +176,11 @@
             font-style: italic;
         }
         .featured-challenge-cta {
-            font-size: 0.7em;
+            font-size: 0.8em;
             color: #667eea;
             font-weight: 600;
-            margin-top: 8px;
+            margin-top: 10px;
             text-align: center;
-        }
-
-        /* Nascondi card su schermi piccoli per non coprire contenuto */
-        @media (max-width: 768px) {
-            .featured-challenge-card {
-                display: none;
-            }
         }
 
         .screen { display: none; }
@@ -1072,46 +1107,40 @@
         <h1>🎵 BontempApp v3.1</h1>
         <p class="subtitle">Bontempapp è un Parco Giochi Creativo-Musicale</p>
 
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; margin: 20px 0; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
-            <h3 style="color: white; margin: 0 0 15px 0; font-size: 1.1em;">📖 Cos'è BontempApp?</h3>
-            <p style="color: rgba(255,255,255,0.95); font-size: 0.9em; line-height: 1.6; margin: 0 0 15px 0;">
-                Un'app interattiva per esplorare la musica attraverso il disegno audio, quiz musicali e sfide creative.
-                Rendere l'apprendimento musicale coinvolgente e divertente!
-            </p>
+        <!-- Layout Hero Responsive -->
+        <div class="welcome-hero-grid">
+            <!-- Colonna Sinistra: CTA Principale -->
+            <div class="welcome-hero-left">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                    <h3 style="color: white; margin: 0 0 10px 0; font-size: 1em;">✨ Esplora la Musica</h3>
+                    <p style="color: rgba(255,255,255,0.95); font-size: 0.85em; line-height: 1.5; margin: 0;">
+                        Disegno audio, quiz, sfide creative e AI. Divertimento musicale interattivo!
+                    </p>
+                </div>
 
-            <h4 style="color: white; margin: 15px 0 10px 0; font-size: 1em;">🎯 Modalità disponibili:</h4>
-            <ul style="color: rgba(255,255,255,0.95); font-size: 0.85em; line-height: 1.8; margin: 0; padding-left: 20px; text-align: left;">
-                <li><strong>Disegno 2D/3D:</strong> Crea forme che producono suoni mentre disegni</li>
-                <li><strong>Modalità Guidata:</strong> 10 preset musicali con demo interattive</li>
-                <li><strong>Quiz Musicali:</strong> Testa le tue conoscenze su musica classica, jazz e '900</li>
-                <li><strong>Photo Challenge:</strong> Sfide creative valutate dall'intelligenza artificiale</li>
-                <li><strong>Curiosità:</strong> Scopri fatti interessanti sul mondo musicale</li>
-            </ul>
+                <div class="input-group">
+                    <label for="userName">👤 Il tuo nome:</label>
+                    <input type="text" id="userName" placeholder="Inserisci il tuo nome..." value="Studente" />
+                </div>
 
-            <p style="color: rgba(255,255,255,0.9); font-size: 0.8em; margin: 15px 0 0 0; font-style: italic;">
-                💡 Suggerimento: Inizia con la modalità guidata per scoprire tutte le possibilità!
-            </p>
-        </div>
-
-        <!-- Card Sfida in Evidenza -->
-        <div id="featuredChallengeCard" class="featured-challenge-card" style="display: none;" onclick="showHallOfFame()">
-            <div class="featured-challenge-header">
-                <span class="featured-challenge-title">🌟 Sfida in Evidenza</span>
+                <button onclick="iniziaGioco()" class="btn-cta-primary">🚀 Inizia l'Avventura!</button>
             </div>
-            <img id="featuredChallengeImage" class="featured-challenge-image" src="" alt="Sfida in evidenza">
-            <div class="featured-challenge-content">
-                <p id="featuredChallengeName" class="featured-challenge-name"></p>
-                <p id="featuredChallengeComment" class="featured-challenge-comment"></p>
-                <div class="featured-challenge-cta">👉 Vedi la Sala della Fama →</div>
+
+            <!-- Colonna Destra: Card Sfida in Evidenza (Desktop) -->
+            <div class="welcome-hero-right">
+                <div id="featuredChallengeCard" class="featured-challenge-card" style="display: none;" onclick="showHallOfFame()">
+                    <div class="featured-challenge-header">
+                        <span class="featured-challenge-title">🌟 L'Audace della Settimana</span>
+                    </div>
+                    <img id="featuredChallengeImage" class="featured-challenge-image" src="" alt="Sfida in evidenza">
+                    <div class="featured-challenge-content">
+                        <p id="featuredChallengeName" class="featured-challenge-name"></p>
+                        <p id="featuredChallengeComment" class="featured-challenge-comment"></p>
+                        <div class="featured-challenge-cta">👉 Vedi la Sala della Fama →</div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="input-group">
-            <label for="userName">👤 Il tuo nome:</label>
-            <input type="text" id="userName" placeholder="Inserisci il tuo nome..." value="Studente" />
-        </div>
-
-        <button onclick="iniziaGioco()">🚀 Inizia l'Avventura!</button>
 
         <div style="display: flex; gap: 10px; margin-top: 15px;">
             <button onclick="showAbout()" style="background: #17a2b8; flex: 1;">ℹ️ About</button>
