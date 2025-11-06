@@ -939,6 +939,30 @@
             color: white;
             transform: translateY(-2px);
         }
+
+        /* Sistema Likes */
+        .fame-card-btn-like {
+            color: #e91e63;
+            border-color: #e91e63;
+        }
+        .fame-card-btn-like:hover {
+            background: #fce4ec;
+            transform: translateY(-2px);
+        }
+        .fame-card-btn-like.liked {
+            background: #e91e63;
+            color: white;
+            border-color: #e91e63;
+        }
+        .fame-card-btn-like.liked:hover {
+            background: #c2185b;
+            transform: scale(1.05);
+        }
+        .fame-card-likes-count {
+            font-weight: 700;
+            margin-left: 3px;
+        }
+
         .fame-empty {
             text-align: center;
             padding: 60px 20px;
@@ -5936,8 +5960,22 @@ async function loadHallOfFame() {
                 hasFlag = flagDoc.exists;
             }
 
+            // Controlla se l'utente corrente ha già likato questo post
+            let hasLike = false;
+            if (currentUser) {
+                const likeDoc = await db.collection('pubblicazioni').doc(postId)
+                    .collection('likes').doc(currentUser.uid).get();
+                hasLike = likeDoc.exists;
+            }
+
             // Verifica se l'utente corrente è il proprietario
             const isOwner = currentUser && currentUser.uid === data.userId;
+
+            // Pulsante like (SEMPRE visibile per tutti)
+            const likesCount = data.likes || 0;
+            const likeBtnClass = hasLike ? 'fame-card-btn fame-card-btn-like liked' : 'fame-card-btn fame-card-btn-like';
+            const likeIcon = hasLike ? '❤️' : '🤍';
+            const likeBtnOnclick = currentUser ? `onclick="likePost('${postId}')"` : `onclick="showLoginModal()"`;
 
             // Pulsante segnala (solo se NON sei il proprietario)
             const flagBtnClass = hasFlag ? 'fame-card-btn-flag flagged' : 'fame-card-btn-flag';
@@ -5947,16 +5985,26 @@ async function loadHallOfFame() {
 
             // Costruisci i pulsanti actions
             let actionsHtml = '';
+
+            // Pulsante Like (SEMPRE presente)
+            const likeButtonHtml = `
+                <button class="fame-card-btn ${likeBtnClass}" ${likeBtnOnclick}>
+                    ${likeIcon} <span class="fame-card-likes-count">${likesCount}</span>
+                </button>
+            `;
+
             if (isOwner) {
-                // Se sei il proprietario: mostra solo "Elimina"
+                // Se sei il proprietario: Like + Elimina
                 actionsHtml = `
+                    ${likeButtonHtml}
                     <button class="fame-card-btn fame-card-btn-delete" onclick="deletePost('${postId}', '${data.imageUrl}')">
                         🗑️ Elimina
                     </button>
                 `;
             } else {
-                // Se NON sei il proprietario: mostra "Segnala"
+                // Se NON sei il proprietario: Like + Segnala
                 actionsHtml = `
+                    ${likeButtonHtml}
                     <button class="fame-card-btn ${flagBtnClass}" ${flagBtnDisabled} ${flagBtnOnclick}>
                         ${flagBtnText}
                     </button>
@@ -6289,6 +6337,64 @@ async function loadFeaturedChallenge() {
     } catch (error) {
         console.error('❌ Errore caricamento sfida in evidenza:', error);
         card.style.display = 'none';
+    }
+}
+
+/**
+ * Gestisce il like/unlike di una pubblicazione
+ * @param {string} postId - ID del documento Firestore
+ */
+async function likePost(postId) {
+    // Verifica autenticazione
+    if (!currentUser) {
+        showLoginModal();
+        return;
+    }
+
+    if (!db) {
+        alert('⚠️ Firebase non configurato');
+        return;
+    }
+
+    try {
+        showIndicator('❤️ Elaborazione...');
+
+        const postRef = db.collection('pubblicazioni').doc(postId);
+        const likeRef = postRef.collection('likes').doc(currentUser.uid);
+
+        // Verifica se l'utente ha già likato
+        const likeDoc = await likeRef.get();
+
+        if (likeDoc.exists) {
+            // UNLIKE: Rimuovi like dalla subcollection
+            // Il contatore verrà aggiornato automaticamente dalla Cloud Function
+            await likeRef.delete();
+
+            console.log('💔 Like rimosso da post:', postId);
+            showIndicator('💔 Like rimosso');
+
+        } else {
+            // LIKE: Aggiungi like alla subcollection
+            // Il contatore verrà aggiornato automaticamente dalla Cloud Function
+            await likeRef.set({
+                userId: currentUser.uid,
+                userDisplayName: currentUser.displayName || 'Anonimo',
+                likedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            console.log('❤️ Like aggiunto a post:', postId);
+            showIndicator('❤️ Like aggiunto!');
+        }
+
+        // Ricarica la Sala della Fama per aggiornare l'UI
+        // Aspetta un po' di più per dare tempo alla Cloud Function di aggiornare il contatore
+        setTimeout(() => {
+            loadHallOfFame();
+        }, 1500);
+
+    } catch (error) {
+        console.error('❌ Errore like/unlike:', error);
+        alert(`⚠️ Errore durante l'operazione: ${error.message}`);
     }
 }
 
