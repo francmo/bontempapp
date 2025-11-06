@@ -6280,7 +6280,7 @@ async function loadHallOfFame() {
                             </div>
 
                             <!-- Bottone per aprire il form commenti -->
-                            <button class="comment-open-btn" id="comment-open-${postId}" onclick="toggleCommentForm('${postId}')">💬 Commenta la sfida!</button>
+                            <button class="comment-open-btn" id="comment-open-${postId}" onclick="console.log('🔴 CLICK BOTTONE COMMENTA!', '${postId}'); toggleCommentForm('${postId}')">💬 Commenta la sfida!</button>
 
                             <!-- Form commenti (nascosto di default) -->
                             <div class="comment-form" id="comment-form-${postId}" style="display: none;"><input type="text" class="comment-input" id="comment-input-${postId}" placeholder="Scrivi un commento..." maxlength="500"><button class="comment-submit" onclick="handleCommentSubmit('${postId}')">Invia</button><button class="comment-cancel" onclick="toggleCommentForm('${postId}')">Annulla</button></div>
