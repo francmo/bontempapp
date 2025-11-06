@@ -6261,23 +6261,31 @@ async function upgradeToGoogleAccount() {
         return;
     }
 
+    // !! FIX FONDAMENTALE: Salva l'utente anonimo PRIMA di avviare il popup !!
+    const anonymousUser = auth.currentUser;
+
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('profile');
     provider.addScope('email');
 
-    let credential; // <-- DICHIARA LA VARIABILE QUI FUORI
+    let credential;
 
     try {
+        // 1. Apri popup Google Sign-In
         const result = await auth.signInWithPopup(provider);
 
-        credential = result.credential; // <-- ASSEGNA LA CREDENZIALE QUI
+        // 2. Ottieni le credenziali
+        credential = result.credential;
         if (!credential) {
             throw new Error('Impossibile ottenere le credenziali Google');
         }
 
-        await currentUser.linkWithCredential(credential); // Questa linea fallirà (come previsto)
+        // 3. Prova a COLLEGARE le credenziali all'utente ANONIMO che avevamo salvato
+        await anonymousUser.linkWithCredential(credential);
 
-        // SUCCESSO (Nuovo utente)
+        // -----------------------------------------------------
+        // SUCCESSO (Nuovo Utente) - Questo è il flusso "Benvenuto!"
+        // -----------------------------------------------------
         console.log('✅ Account collegato con successo!');
         showIndicator('🎉 Benvenuto tra gli Audaci!');
         closeSmartWallModal();
@@ -6285,23 +6293,27 @@ async function upgradeToGoogleAccount() {
     } catch (error) {
         console.error('❌ Errore upgrade account:', error.code, error.message);
 
-        // CASO A: L'ACCOUNT GOOGLE ESISTE GIA'
+        // -----------------------------------------------------------------
+        // CASO A: L'ACCOUNT GOOGLE ESISTE GIA' - Questo è il flusso "Bentornato!"
+        // -----------------------------------------------------------------
         if (error.code === 'auth/provider-already-linked' || error.code === 'auth/credential-already-in-use') {
 
             console.warn('⚠️ Account Google già in uso. Eseguo il merge (signIn)...');
 
-            // Ora 'credential' è accessibile da qui!
             if (credential) {
                 try {
-                    await auth.signInWithCredential(credential); // Esegui il merge
+                    // Accedi direttamente con l'account Google esistente.
+                    // L'account anonimo (anonymousUser) verrà abbandonato.
+                    await auth.signInWithCredential(credential);
+
                     console.log('✅ Merge riuscito. Accesso effettuato.');
-                    showIndicator('✅ Bentornato!');
+                    showIndicator('✅ Bentornato!'); // <-- Messaggio corretto per il merge
+
                 } catch (mergeError) {
                     console.error('❌ Errore critico durante il merge/signIn:', mergeError);
                     alert(`⚠️ Errore critico: ${mergeError.message}`);
                 }
             } else {
-                // Questo fallback ora è meno probabile, ma è una sicurezza
                 alert('⚠️ Questo account Google è già registrato. Prova ad accedere normalmente.');
             }
 
