@@ -6514,6 +6514,13 @@ async function loginWithGoogle() {
         const user = result.user;
 
         console.log('✅ Login Google riuscito:', user.displayName);
+        console.log('🔑 TUO UID:', user.uid);
+        console.log('📧 TUA EMAIL:', user.email);
+        console.log('👤 UID MODERATORE CONFIGURATO: a3n2RtORHYc2olmdVmmPE7zDqt42');
+
+        // Alert visibile con il tuo UID
+        alert(`✅ Login effettuato!\n\n📧 Email: ${user.email}\n🔑 Tuo UID: ${user.uid}\n\n👤 UID Moderatore: a3n2RtORHYc2olmdVmmPE7zDqt42\n\n${user.uid === 'a3n2RtORHYc2olmdVmmPE7zDqt42' ? '✅ SEI IL MODERATORE!' : '⚠️ Non sei il moderatore'}`);
+
         showIndicator('✅ Login effettuato!');
         closeLoginModal();
 
@@ -7042,6 +7049,18 @@ async function loadComments(postId) {
 
             // Verifica permessi eliminazione (autore O moderatore)
             const MODERATOR_UID = 'a3n2RtORHYc2olmdVmmPE7zDqt42'; // Stesso UID della Cloud Function
+
+            // DEBUG: Log per verificare UID
+            if (currentUser) {
+                console.log('🔍 DEBUG Permessi Delete:', {
+                    currentUserUID: currentUser.uid,
+                    commentUserID: comment.userId,
+                    moderatorUID: MODERATOR_UID,
+                    isAuthor: currentUser.uid === comment.userId,
+                    isModerator: currentUser.uid === MODERATOR_UID
+                });
+            }
+
             const canDelete = currentUser && (
                 currentUser.uid === comment.userId ||  // Autore
                 currentUser.uid === MODERATOR_UID       // Moderatore
