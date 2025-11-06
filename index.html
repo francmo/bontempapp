@@ -6441,6 +6441,10 @@ async function upgradeToGoogleAccount() {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('profile');
     provider.addScope('email');
+    // Forza la selezione dell'account ogni volta (permette cambio utente)
+    provider.setCustomParameters({
+        prompt: 'select_account'
+    });
 
     // Salva l'utente anonimo attuale
     const anonymousUser = auth.currentUser;
