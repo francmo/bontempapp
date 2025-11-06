@@ -12,8 +12,10 @@ service cloud.firestore {
       // Solo utenti autenticati (non anonimi) possono creare pubblicazioni
       allow create: if request.auth != null && !request.auth.token.firebase.sign_in_provider.matches('anonymous');
 
-      // Solo il proprietario può aggiornare/eliminare
-      allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+      // Solo il proprietario O gli admin possono aggiornare/eliminare
+      allow update, delete: if request.auth != null &&
+                              (request.auth.uid == resource.data.userId ||
+                               request.auth.token.email in ['francescomariano@gmail.com', 'artistmentalhealth@gmail.com']);
 
       // ----------------------------------------------------------------
       // SUBCOLLECTION: LIKES

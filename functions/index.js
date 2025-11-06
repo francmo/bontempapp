@@ -26,8 +26,11 @@ const db = admin.firestore();
 // Inizializza Gemini AI (la chiave API verrà configurata come variabile d'ambiente)
 const genAI = new GoogleGenerativeAI(functions.config().gemini?.api_key || process.env.GEMINI_API_KEY);
 
-// ID del moderatore (può eliminare qualsiasi commento)
-const MODERATOR_UID = 'a3n2RtORHYc2olmdVmmPE7zDqt42'; // SOSTITUISCI CON IL TUO UID
+// Email degli amministratori (possono eliminare qualsiasi commento)
+const ADMIN_EMAILS = [
+  'francescomariano@gmail.com',
+  'artistmentalhealth@gmail.com'
+];
 
 /**
  * Trigger: Quando un like viene creato o eliminato nella subcollection
@@ -332,13 +335,14 @@ exports.deleteComment = functions.https.onCall(async (data, context) => {
     }
 
     const commentData = commentDoc.data();
-    const isModerator = context.auth.uid === MODERATOR_UID;
+    const userEmail = context.auth.token.email;
+    const isAdmin = ADMIN_EMAILS.includes(userEmail);
     const isAuthor = context.auth.uid === commentData.userId;
 
-    console.log(`🔍 Check permessi: isModerator=${isModerator}, isAuthor=${isAuthor}`);
+    console.log(`🔍 Check permessi: email=${userEmail}, isAdmin=${isAdmin}, isAuthor=${isAuthor}`);
 
-    // Verifica: deve essere l'autore O il moderatore
-    if (!isAuthor && !isModerator) {
+    // Verifica: deve essere l'autore O un amministratore
+    if (!isAuthor && !isAdmin) {
       throw new functions.https.HttpsError(
           'permission-denied',
           'Non hai i permessi per eliminare questo commento.'
@@ -348,7 +352,7 @@ exports.deleteComment = functions.https.onCall(async (data, context) => {
     // ========== 4. ELIMINA IL COMMENTO ==========
     await commentRef.delete();
 
-    const role = isModerator ? 'MODERATORE' : 'AUTORE';
+    const role = isAdmin ? 'ADMIN' : 'AUTORE';
     console.log(`✅ Commento ${commentId} eliminato da ${context.auth.token.name} (${role})`);
 
     return {success: true};

@@ -6359,8 +6359,17 @@ async function loadHallOfFame() {
                 </button>
             `;
 
-            if (isOwner) {
-                // Se sei il proprietario: Like + Elimina
+            // Verifica se l'utente è admin
+            const ADMIN_EMAILS = [
+                'francescomariano@gmail.com',
+                'artistmentalhealth@gmail.com'
+            ];
+            const userEmail = currentUser ? currentUser.email : null;
+            const isAdmin = userEmail && ADMIN_EMAILS.includes(userEmail);
+            const canDelete = isOwner || isAdmin;
+
+            if (canDelete) {
+                // Se sei il proprietario O admin: Like + Elimina
                 actionsHtml = `
                     ${likeButtonHtml}
                     <button class="fame-card-btn fame-card-btn-delete" onclick="deletePost('${postId}', '${data.imageUrl}')">
@@ -6782,6 +6791,16 @@ async function deletePost(postId, imageUrl) {
         return;
     }
 
+    // Verifica se l'utente è admin o proprietario
+    const ADMIN_EMAILS = [
+        'francescomariano@gmail.com',
+        'artistmentalhealth@gmail.com'
+    ];
+    const userEmail = currentUser.email;
+    const isAdmin = ADMIN_EMAILS.includes(userEmail);
+
+    console.log(`🗑️ Tentativo eliminazione post ${postId} da ${userEmail} (isAdmin: ${isAdmin})`);
+
     const confirmDelete = confirm('Vuoi davvero eliminare questa pubblicazione?\n\nQuesta azione è irreversibile!');
     if (!confirmDelete) return;
 
@@ -7047,23 +7066,30 @@ async function loadComments(postId) {
                 ? `<img src="${comment.userImage}" class="comment-user-avatar" onerror="this.style.display='none'">`
                 : '<div class="comment-user-avatar" style="background: #667eea; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7em;">👤</div>';
 
-            // Verifica permessi eliminazione (autore O moderatore)
-            const MODERATOR_UID = 'a3n2RtORHYc2olmdVmmPE7zDqt42'; // Stesso UID della Cloud Function
+            // Verifica permessi eliminazione (autore O amministratore)
+            const ADMIN_EMAILS = [
+                'francescomariano@gmail.com',
+                'artistmentalhealth@gmail.com'
+            ];
 
-            // DEBUG: Log per verificare UID
+            // DEBUG: Log per verificare permessi
             if (currentUser) {
+                const userEmail = currentUser.email;
+                const isAdmin = ADMIN_EMAILS.includes(userEmail);
                 console.log('🔍 DEBUG Permessi Delete:', {
-                    currentUserUID: currentUser.uid,
+                    currentUserEmail: userEmail,
                     commentUserID: comment.userId,
-                    moderatorUID: MODERATOR_UID,
                     isAuthor: currentUser.uid === comment.userId,
-                    isModerator: currentUser.uid === MODERATOR_UID
+                    isAdmin: isAdmin
                 });
             }
 
+            const userEmail = currentUser ? currentUser.email : null;
+            const isAdmin = userEmail && ADMIN_EMAILS.includes(userEmail);
+
             const canDelete = currentUser && (
                 currentUser.uid === comment.userId ||  // Autore
-                currentUser.uid === MODERATOR_UID       // Moderatore
+                isAdmin                                 // Amministratore
             );
 
             const deleteButtonHtml = canDelete ? `
