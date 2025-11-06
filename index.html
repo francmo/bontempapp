@@ -6251,7 +6251,7 @@ function closeSmartWallModal() {
 }
 
 /**
- * Upgrade da account anonimo a Google Account con linkWithCredential
+ * Upgrade da account anonimo a Google Account con linkWithPopup
  * Mantiene la cronologia dell'utente (quiz, punteggi, etc.)
  */
 async function upgradeToGoogleAccount() {
@@ -6261,44 +6261,40 @@ async function upgradeToGoogleAccount() {
         return;
     }
 
-    // !! FIX FONDAMENTALE: Salva l'utente anonimo PRIMA di avviare il popup !!
-    const anonymousUser = auth.currentUser;
-
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('profile');
     provider.addScope('email');
 
-    let credential;
+    // Salva l'utente anonimo attuale
+    const anonymousUser = auth.currentUser;
 
     try {
-        // 1. Apri popup Google Sign-In
-        const result = await auth.signInWithPopup(provider);
+        // ========================================================
+        // 1. TENTA IL COLLEGAMENTO (FLUSSO PER NUOVI UTENTI)
+        // Questo è il flusso corretto per un nuovo utente.
+        // L'utente anonimo viene "trasformato" nell'utente Google.
+        // ========================================================
 
-        // 2. Ottieni le credenziali
-        credential = result.credential;
-        if (!credential) {
-            throw new Error('Impossibile ottenere le credenziali Google');
-        }
+        await anonymousUser.linkWithPopup(provider);
 
-        // 3. Prova a COLLEGARE le credenziali all'utente ANONIMO che avevamo salvato
-        await anonymousUser.linkWithCredential(credential);
-
-        // -----------------------------------------------------
-        // SUCCESSO (Nuovo Utente) - Questo è il flusso "Benvenuto!"
-        // -----------------------------------------------------
-        console.log('✅ Account collegato con successo!');
+        // SUCCESSO (Nuovo Utente)
+        console.log('✅ Account collegato con successo! (Nuovo Utente)');
         showIndicator('🎉 Benvenuto tra gli Audaci!');
         closeSmartWallModal();
 
     } catch (error) {
-        console.error('❌ Errore upgrade account:', error.code, error.message);
+        console.error('❌ Errore durante il linkWithPopup:', error.code, error.message);
 
-        // -----------------------------------------------------------------
-        // CASO A: L'ACCOUNT GOOGLE ESISTE GIA' - Questo è il flusso "Bentornato!"
-        // -----------------------------------------------------------------
+        // ========================================================
+        // 2. GESTIONE FALLIMENTO (FLUSSO PER UTENTI ESISTENTI)
+        // Questo blocco scatta se l'account Google esiste già.
+        // ========================================================
         if (error.code === 'auth/provider-already-linked' || error.code === 'auth/credential-already-in-use') {
 
             console.warn('⚠️ Account Google già in uso. Eseguo il merge (signIn)...');
+
+            // Prendi le credenziali dall'errore
+            const credential = error.credential;
 
             if (credential) {
                 try {
@@ -6317,7 +6313,7 @@ async function upgradeToGoogleAccount() {
                 alert('⚠️ Questo account Google è già registrato. Prova ad accedere normalmente.');
             }
 
-        // CASO B: ALTRI ERRORI (Popup chiuso, bloccato, ecc.)
+        // GESTIONE ALTRI ERRORI (Popup chiuso, bloccato, ecc.)
         } else {
             if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
                 showIndicator('⚠️ Operazione annullata');
